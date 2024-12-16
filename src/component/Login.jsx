@@ -10,46 +10,8 @@ const Login = () => {
   const [bsgnumber, setBsgNumber] = useState('');
   const [parchmentNumber, setParchmentNumber] = useState('');
   const [message, setMessage] = useState('');
-  const [honourableNumbers, setHonourableNumbers] = useState([]);
-  const [parchmentNumbers, setParchmentNumbers] = useState([]);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Fetch data from APIs on component mount
-    getLtData();
-    getALtData();
-    getHwbData();
-  }, []);
-
-  const getLtData = async () => {
-    try {
-      const response = await axios.get(`${BASE_URL}/api/v1/ltuser`);
-      const result = response.data?.map(item => item.HONOURABLE_CHARGE_NO) || [];
-      setHonourableNumbers(prev => [...prev, ...result]);
-    } catch (error) {
-      console.error('Error fetching LT data:', error);
-    }
-  };
-
-  const getALtData = async () => {
-    try {
-      const response = await axios.get(`${BASE_URL}/api/v1/altuser`);
-      const result = response.data?.map(item => item.HONOURABLE_CHARGE_NO) || [];
-      setHonourableNumbers(prev => [...prev, ...result]);
-    } catch (error) {
-      console.error('Error fetching ALT data:', error);
-    }
-  };
-
-  const getHwbData = async () => {
-    try {
-      const response = await axios.get(`${BASE_URL}/api/v1/hwbuser`);
-      const result = response.data?.map(item => item.PARCHMENT_NO) || [];
-      setParchmentNumbers(result);
-    } catch (error) {
-      console.error('Error fetching HWB data:', error);
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -71,10 +33,7 @@ const Login = () => {
         return;
       }
 
-      if (!honourableNumbers.includes(honourableNumber.trim())) {
-        setMessage('Honourable Number is not valid. Please check your input.');
-        return;
-      }
+  
     }
 
     if (selectedCourse === 'HWB') {
@@ -83,10 +42,6 @@ const Login = () => {
         return;
       }
 
-      if (!parchmentNumbers.includes(parchmentNumber.trim())) {
-        setMessage('Parchment Number is not valid. Please check your input.');
-        return;
-      }
     }
 
     // Prepare data for API request
@@ -101,7 +56,7 @@ const Login = () => {
     try {
       const response = await axios.post(`${BASE_URL}/api/v1/login`, loginData);
 
-      if (response.data.success) {
+      if (response.data) {
         setMessage('Login successful! Proceeding to the form page...');
         setTimeout(() => {
           navigate('/form');
