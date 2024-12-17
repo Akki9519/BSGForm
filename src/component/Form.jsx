@@ -69,7 +69,15 @@ const Form = () => {
     try {
       const response = await axios.post(`${BASE_URL}/api/v1/post`, dataToSubmit);
       console.log(response.data, "response"); // Log the response data
-      // Optionally, you can reset the form or show a success message here
+      const sectionq = response.data.section;
+// Store the sectionq value in localStorage
+localStorage.setItem("sectionq", sectionq);
+
+// Optionally, you can reset the form or show a success message here
+// If you want to retrieve and use the stored value, you can do:
+const section = localStorage.setItem("sectionq");
+console.log("Stored section:", section);
+
     } catch (error) {
       console.error("There was an error submitting the form!", error);
       // Optionally, you can show an error message to the user

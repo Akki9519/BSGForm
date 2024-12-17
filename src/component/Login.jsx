@@ -55,8 +55,17 @@ const Login = () => {
 
     try {
       const response = await axios.post(`${BASE_URL}/api/v1/login`, loginData);
-
+console.log(response.data,"sdkfndjg")
       if (response.data) {
+        const sectionq = response.data.section;
+// Store the sectionq value in localStorage
+localStorage.setItem("sectionq", sectionq);
+
+// Optionally, you can reset the form or show a success message here
+// If you want to retrieve and use the stored value, you can do:
+const section = localStorage.getItem("sectionq");
+console.log("Stored section:", section);
+
         setMessage('Login successful! Proceeding to the form page...');
         setTimeout(() => {
           navigate('/form');
