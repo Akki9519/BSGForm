@@ -5,6 +5,7 @@ const Form = () => {
   const [selectedWing, setSelectedWing] = useState("");
   const [selectedCourse, setSelectedCourse] = useState("");
   const [selectedSubWing, setSelectedSubWing] = useState("");
+  const [courses,setCourses]=useState([])
   const [formData, setFormData] = useState({
     currentAddress: "",
     permanentAddress: "",
@@ -54,9 +55,34 @@ const Form = () => {
     Guide: ["Bulbul", "Guide", "Ranger"],
   };
 
+
+  const handleAddCourse = () => {
+    setCourses([
+      ...courses,
+      {
+        courseType: selectedCourse,
+        wing: selectedWing,
+        subWing: selectedSubWing,
+        trainingCourses: [
+          {
+            type: selectType,
+            courseDate: "", // Add logic to capture this
+            place: "",
+            leader: "",
+            participants: 0,
+            courseFromDate: "",
+            courseToDate: "",
+            certificateNumber: "",
+            certificateDate: "",
+          },
+        ],
+      },
+    ]);
+  };
+  
   const handleSubmit = async (event) => {
     event.preventDefault(); // Prevent default form submission
-
+  
     // Prepare the data to be sent
     const dataToSubmit = {
       ...formData,
@@ -64,7 +90,29 @@ const Form = () => {
       selectedCourse,
       selectedSubWing,
       selectType,
+      courses: [
+        {
+          courseType: "LT" || "ALT" || "HWB", // or "ALT", "HWB", etc.
+          wing: selectedWing,
+          subWing: selectedSubWing,
+          trainingCourses: [
+            {
+              type: selectType, // "conducted" or "assisted"
+              courseDate: new Date(), // Replace with actual date
+              place: "Some Place", // Replace with actual place
+              leader: "Some Leader", // Replace with actual leader
+              participants: 10, // Replace with actual number
+              courseFromDate: new Date(), // Replace with actual date
+              courseToDate: new Date(), // Replace with actual date
+              certificateNumber: "12345", // Replace with actual number
+              certificateDate: new Date(), // Replace with actual date
+            },
+          ],
+        },
+     
+      ],
     };
+  
     console.log("Data to Submit:", dataToSubmit);
     try {
       const response = await axios.post(
@@ -72,14 +120,15 @@ const Form = () => {
         dataToSubmit
       );
       console.log(response.data, "response"); // Log the response data
-     if(response.data){
-      alert("Form submitted successfully");
-     }
+      if (response.data) {
+        alert("Form submitted successfully");
+      }
     } catch (error) {
       console.error("There was an error submitting the form!", error);
-      // Optionally, you can show an error message to the user
     }
   };
+  
+  
   useEffect(() => {
     // Check if localStorage is available
     if (typeof localStorage !== "undefined") {
@@ -454,6 +503,7 @@ const Form = () => {
             <>
               <div className="font-medium text-red-500">LT Form</div>
               <div className="border p-4 rounded bg-gray-100">
+
                 <h2 className="font-bold text-black text-lg mb-4">
                   Wing and Sub-Wing Selection
                 </h2>
@@ -647,6 +697,9 @@ const Form = () => {
                     </div>{" "}
                   </div>
                 </div>
+                <button type="button" onClick={handleAddCourse} className="bg-blue-500 text-white px-4 py-2 rounded">
+                Add LT Course
+              </button>
               </div>
 
               <div className="font-medium text-red-500">ALT Form</div>
@@ -844,6 +897,9 @@ const Form = () => {
                     </div>{" "}
                   </div>
                 </div>
+                <button type="button" onClick={handleAddCourse} className="bg-blue-500 text-white px-4 py-2 rounded">
+                Add ALT Course
+              </button>
               </div>
 
               <div className="space-y-4">
@@ -884,8 +940,8 @@ const Form = () => {
                         ))}
                     </select>
                   </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  </div>
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block mb-2 font-bold text-black">
                       Parchment Date
@@ -988,6 +1044,9 @@ const Form = () => {
                     </div>
                   </div>
                 </div>
+                <button type="button" onClick={handleAddCourse} className="bg-blue-500 text-white px-4 py-2 rounded">
+                Add HWB Course
+              </button>
               </div>
 
               <div className="space-y-4">
@@ -1106,6 +1165,9 @@ const Form = () => {
                     />
                   </div>
                 </div>
+                <button type="button" onClick={handleAddCourse} className="bg-blue-500 text-white px-4 py-2 rounded">
+                Add Advanced Course
+              </button>
               </div>
 
               <div className="space-y-4">
@@ -1222,6 +1284,9 @@ const Form = () => {
                     />
                   </div>
                 </div>
+                <button type="button" onClick={handleAddCourse} className="bg-blue-500 text-white px-4 py-2 rounded">
+                Add BASIC Course
+              </button>
               </div>
             </>
           ) : (
@@ -2206,3 +2271,8 @@ const Form = () => {
 };
 
 export default Form;
+
+
+
+
+
