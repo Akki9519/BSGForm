@@ -20,7 +20,11 @@ console.log(response.data.message,"message")
           error: "",
           success: "Your email has been successfully verified! Redirecting...",
         });
-        navigate("/form");
+        setTimeout(() => {
+          navigate("/form");
+        }, 5000); 
+
+       
       } catch (err) {
         setStatus({
           error: err.response?.data?.message || "Something went wrong!",
@@ -43,11 +47,11 @@ console.log(response.data.message,"message")
             {status.success}
           </div>
         )}
-        {status.error && (
+        {/* {status.error && (
           <div className="text-red-600 font-semibold mb-4">
             {status.error}
           </div>
-        )}
+        )} */}
         <p className="text-gray-600">
           {status.success
             ? "Hang tight! We'll take you to the next step."
