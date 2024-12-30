@@ -242,7 +242,7 @@ const Login = () => {
           {/* BSG Number Update Section */}
           {userData.bsgUid === "NA" && (
             <div className="mb-4">
-              <label htmlFor="bsgnumber" className="block mb-2 font-medium">Enter New BSGUID:</label>
+              <label htmlFor="bsgnumber" className="block mb-2 font-medium">Enter BSGUID Number:</label>
               <input
                 type="text"
                 id="bsgnumber"
