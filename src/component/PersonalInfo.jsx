@@ -139,9 +139,9 @@ const PersonalInformation = () => {
     }
   };
 
-  // useEffect(() => {
-  //   getDataa();
-  // }, []);
+  useEffect(() => {
+    getDataa();
+  }, []);
 
   const getDataa = async () => {
     try {
@@ -167,9 +167,9 @@ setName(name)
     }
   };
 
-  // useEffect(() => {
-  //   getData();
-  // }, []);
+  useEffect(() => {
+    getData();
+  }, []);
 
   const getData = async () => {
     try {
@@ -227,11 +227,11 @@ setName(name)
     return regex.test(email);
   }
 
-  // useEffect(() => {
-  //   getState();
-  //   getRevenueState();
-  //   getRevenueDistrict();
-  // }, []);
+  useEffect(() => {
+    getState();
+    getRevenueState();
+    getRevenueDistrict();
+  }, []);
 
   const getState = async () => {
     try {

@@ -154,44 +154,44 @@ const HwbForm = () => {
   useEffect(()=>{
     window.scrollTo(0,0)
       },[])
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const storedIdString = localStorage.getItem("_id");
-  //       const userId = JSON.parse(storedIdString);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const storedIdString = localStorage.getItem("_id");
+        const userId = JSON.parse(storedIdString);
 
-  //       const response = await axios.get(
-  //         `${BASE_URL}/api/v1/hwbDetails/${userId}`
-  //       );
+        const response = await axios.get(
+          `${BASE_URL}/api/v1/hwbDetails/${userId}`
+        );
 
-  //       const hwbDetails = response.data.map((course) => ({
-  //         id: course.id,
-  //         wing: course.wing,
-  //         subwing: course.subwing,
-  //         fromDate: course.fromDate,
-  //         toDate: course.toDate,
-  //         venue: course.venue,
-  //         certificateNumber: course.certificateNumber,
-  //         certificateDate: course.certificateDate,
-  //         parchmentNumber: course.parchmentNumber,
-  //         parchmentDate: course.parchmentDate,
-  //         uploadCertificate: course.uploadCertificate,
-  //         uploadparchment: course.uploadparchment,
-  //         new: false, // mark fetched courses as not new
-  //       }));
-  //       console.log(hwbDetails, "hwbDetails");
+        const hwbDetails = response.data.map((course) => ({
+          id: course.id,
+          wing: course.wing,
+          subwing: course.subwing,
+          fromDate: course.fromDate,
+          toDate: course.toDate,
+          venue: course.venue,
+          certificateNumber: course.certificateNumber,
+          certificateDate: course.certificateDate,
+          parchmentNumber: course.parchmentNumber,
+          parchmentDate: course.parchmentDate,
+          uploadCertificate: course.uploadCertificate,
+          uploadparchment: course.uploadparchment,
+          new: false, // mark fetched courses as not new
+        }));
+        console.log(hwbDetails, "hwbDetails");
 
-  //       if (hwbDetails[0]) {
-  //         setCourseDisable(new Array(hwbDetails.length).fill(true));
-  //         setCourses(hwbDetails);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching personal details:", error);
-  //     }
-  //   };
+        if (hwbDetails[0]) {
+          setCourseDisable(new Array(hwbDetails.length).fill(true));
+          setCourses(hwbDetails);
+        }
+      } catch (error) {
+        console.error("Error fetching personal details:", error);
+      }
+    };
 
-  //   fetchData();
-  // }, []);
+    fetchData();
+  }, []);
 
   return (
     <>
@@ -457,7 +457,7 @@ const HwbForm = () => {
           </button>
           <button
             type="submit"
-            className="px-6 py-2 bg-[#1D56A5] text-white rounded-md "
+            className="px-6 py-2 bg-[#1D56A5] text-white rounded-md " onClick={handleSubmit}
           >
             Submit
           </button>
