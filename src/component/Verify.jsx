@@ -12,7 +12,7 @@ const EmailVerification = () => {
     const verifyEmail = async () => {
       try {
         const response = await axios.get(
-          `${BASE_URL}/api/v1/verify-email/${token}`
+          `${BASE_URL}/api/v2/verify-email/${token}`
         );
         console.log(response,"response")
 console.log(response.data.message,"message")

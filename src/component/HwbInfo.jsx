@@ -31,6 +31,8 @@ const HwbForm = () => {
   const [selectedSubWings, setSelectedSubWings] = useState([]);
   const [courseDisable, setCourseDisable] = useState([]);
 
+
+  
   const addCourse = () => {
     const newCourse = {
       id: courses.length + 1,
@@ -148,44 +150,48 @@ const HwbForm = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const storedIdString = localStorage.getItem("_id");
-        const userId = JSON.parse(storedIdString);
+  
+  useEffect(()=>{
+    window.scrollTo(0,0)
+      },[])
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const storedIdString = localStorage.getItem("_id");
+  //       const userId = JSON.parse(storedIdString);
 
-        const response = await axios.get(
-          `${BASE_URL}/api/v1/hwbDetails/${userId}`
-        );
+  //       const response = await axios.get(
+  //         `${BASE_URL}/api/v1/hwbDetails/${userId}`
+  //       );
 
-        const hwbDetails = response.data.map((course) => ({
-          id: course.id,
-          wing: course.wing,
-          subwing: course.subwing,
-          fromDate: course.fromDate,
-          toDate: course.toDate,
-          venue: course.venue,
-          certificateNumber: course.certificateNumber,
-          certificateDate: course.certificateDate,
-          parchmentNumber: course.parchmentNumber,
-          parchmentDate: course.parchmentDate,
-          uploadCertificate: course.uploadCertificate,
-          uploadparchment: course.uploadparchment,
-          new: false, // mark fetched courses as not new
-        }));
-        console.log(hwbDetails, "hwbDetails");
+  //       const hwbDetails = response.data.map((course) => ({
+  //         id: course.id,
+  //         wing: course.wing,
+  //         subwing: course.subwing,
+  //         fromDate: course.fromDate,
+  //         toDate: course.toDate,
+  //         venue: course.venue,
+  //         certificateNumber: course.certificateNumber,
+  //         certificateDate: course.certificateDate,
+  //         parchmentNumber: course.parchmentNumber,
+  //         parchmentDate: course.parchmentDate,
+  //         uploadCertificate: course.uploadCertificate,
+  //         uploadparchment: course.uploadparchment,
+  //         new: false, // mark fetched courses as not new
+  //       }));
+  //       console.log(hwbDetails, "hwbDetails");
 
-        if (hwbDetails[0]) {
-          setCourseDisable(new Array(hwbDetails.length).fill(true));
-          setCourses(hwbDetails);
-        }
-      } catch (error) {
-        console.error("Error fetching personal details:", error);
-      }
-    };
+  //       if (hwbDetails[0]) {
+  //         setCourseDisable(new Array(hwbDetails.length).fill(true));
+  //         setCourses(hwbDetails);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching personal details:", error);
+  //     }
+  //   };
 
-    fetchData();
-  }, []);
+  //   fetchData();
+  // }, []);
 
   return (
     <>
@@ -194,7 +200,7 @@ const HwbForm = () => {
     <div className="max-w-5xl mx-auto">
       <ToastContainer />
       <div className="text-center font-bold py-5 text-2xl">HWB COURSE</div>
-      <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+      <div onSubmit={handleSubmit} className="mt-8 space-y-6">
         {courses.map((course, index) => (
           <div
             key={course.id}
@@ -224,7 +230,7 @@ const HwbForm = () => {
               )}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2gap-x-20 gap-y-5">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-20 gap-y-5">
               <div className="flex flex-col mb-4">
                 <label className="mb-1 font-medium text-black">Wing</label>
                 <select
@@ -389,7 +395,7 @@ const HwbForm = () => {
                 />
               </div>
 
-              <div>
+              {/* <div>
                 <label className="block text-sm font-bold text-black">
                   Upload Certificate
                 </label>
@@ -411,9 +417,9 @@ const HwbForm = () => {
                   }
                   className="w-full px-4 py-2 border border-gray-300 rounded-md"
                 />
-              </div>
+              </div> */}
 
-              <div>
+              {/* <div>
                 <label className="block text-sm font-bold text-black">
                   Upload Parchment
                 </label>
@@ -436,7 +442,7 @@ const HwbForm = () => {
                     className="w-full px-4 py-2 border border-gray-300 rounded-md"
                   />
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         ))}
@@ -456,7 +462,7 @@ const HwbForm = () => {
             Submit
           </button>
         </div>
-      </form>
+      </div>
     </div>
     </>
   );

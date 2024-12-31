@@ -1,4 +1,4 @@
-import React,{useState} from 'react'
+import React,{useState,useEffect} from 'react'
 
 import { ToastContainer } from 'react-toastify';
 
@@ -35,7 +35,9 @@ const ALTInfo = () => {
     setCourses(updatedCourses);
   };
 
-
+  useEffect(()=>{
+    window.scrollTo(0,0)
+      },[])
 
   const handleChange = (index, field, value) => {
     const updatedCourses = [...courses];

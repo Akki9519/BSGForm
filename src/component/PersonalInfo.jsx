@@ -44,7 +44,7 @@ const PersonalInformation = () => {
   const [states, setStates] = useState([]);
   const [status, setStatus] = useState("");
 
-  const token = localStorage.getItem("userToken");
+  const token = localStorage.getItem("kyttoken");
   console.log(token,"token")
   const axiosConfig = {
     headers: {
@@ -107,6 +107,8 @@ const PersonalInformation = () => {
     formData.append("toDate1", toDate1);
     formData.append("place", place);
 
+
+
     try {
       const storedIdString = localStorage.getItem("_id");
       const userId = JSON.parse(storedIdString);
@@ -137,9 +139,9 @@ const PersonalInformation = () => {
     }
   };
 
-  useEffect(() => {
-    getDataa();
-  }, []);
+  // useEffect(() => {
+  //   getDataa();
+  // }, []);
 
   const getDataa = async () => {
     try {
@@ -165,9 +167,9 @@ setName(name)
     }
   };
 
-  useEffect(() => {
-    getData();
-  }, []);
+  // useEffect(() => {
+  //   getData();
+  // }, []);
 
   const getData = async () => {
     try {
@@ -225,11 +227,11 @@ setName(name)
     return regex.test(email);
   }
 
-  useEffect(() => {
-    getState();
-    getRevenueState();
-    getRevenueDistrict();
-  }, []);
+  // useEffect(() => {
+  //   getState();
+  //   getRevenueState();
+  //   getRevenueDistrict();
+  // }, []);
 
   const getState = async () => {
     try {
@@ -276,6 +278,10 @@ setName(name)
     }
   };
 
+
+  useEffect(()=>{
+    window.scrollTo(0,0)
+      },[])
   return (
     <>
       <div className="flex justify-center items-center mb-8">

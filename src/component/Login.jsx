@@ -56,10 +56,18 @@ const Login = () => {
     };
 
     try {
-      const response = await axios.post(`${BASE_URL}/api/v1/login`, loginData);
+      const response = await axios.post(`${BASE_URL}/api/v2/login`, loginData);
+      console.log(response.data,"response")
       if (response.data) {
         const sectionq = response.data.user.course;
         localStorage.setItem("sectionq", sectionq);
+        const kyttoken = response.data.token;
+        const _id= response.data._id;
+        const id = JSON.stringify(_id);
+        console.log(kyttoken,"kyttoken")
+        localStorage.setItem("kyttoken", kyttoken);
+        localStorage.setItem("_id", id);
+
         const userDetails = response.data.ltuser; // Assuming user details come here
         if (userDetails) {
           setUserData(userDetails);
@@ -81,7 +89,7 @@ const Login = () => {
   const handleVerifyEmail = async (email) => {
     setVerifyingEmail(true);
     try {
-      const response = await axios.post(`${BASE_URL}/api/v1/verify-email`, { email });
+      const response = await axios.post(`${BASE_URL}/api/v2/verify-email`, { email });
       if (response.data.message === "Verification email sent! Please check your inbox.") {
         setMessage("Verification email sent! Please check your inbox.");
       }
@@ -106,7 +114,7 @@ const Login = () => {
 
     setEmailUpdating(true);
     try {
-      const response = await axios.put(`${BASE_URL}/api/v1/ltuser/${userId}`, { email: userEmail });
+      const response = await axios.put(`${BASE_URL}/api/v2/ltuser/${userId}`, { email: userEmail });
       setMessage("Email updated successfully.");
       setUserData((prevData) => ({ ...prevData, email: userEmail }));
     } catch (error) {
@@ -124,7 +132,7 @@ const Login = () => {
 
     setBsgUpdating(true);
     try {
-      const response = await axios.put(`${BASE_URL}/api/v1/ltuser/${userId}`, { bsgNumber: bsgnumber });
+      const response = await axios.put(`${BASE_URL}/api/v2/ltuser/${userId}`, { bsgNumber: bsgnumber });
       setMessage("BSG Number updated successfully.");
       setUserData((prevData) => ({ ...prevData, bsgUid: bsgnumber }));
     } catch (error) {

@@ -1,4 +1,4 @@
-import React,{useState} from 'react'
+import React,{useState,useEffect} from 'react'
 import { ToastContainer } from 'react-toastify';
 const LTInfo = () => {
   const [selectedWing, setSelectedWing] = useState("");
@@ -27,6 +27,8 @@ const LTInfo = () => {
       certificateDate: "",
     },
   ]);
+
+
   const removeCourse = (id) => {
     const updatedCourses = courses.filter((course) => course.id !== id);
     setCourses(updatedCourses);
@@ -68,7 +70,9 @@ const LTInfo = () => {
     setSelectType(e.target.value);
   };
 
-
+  useEffect(()=>{
+    window.scrollTo(0,0)
+      },[])
   return (
     <>
       <div>
