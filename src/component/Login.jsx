@@ -146,7 +146,6 @@ const Login = () => {
     <div className="p-4 max-w-md mx-auto border rounded shadow-md mt-32">
       <h1 className="text-2xl font-bold mb-4 uppercase text-center text-[#1D56A5]">The Bharat Scouts and Guides</h1>
       <h2 className="text-xl font-bold mb-4 uppercase text-center text-[#1D56A5]">Trainer's Portal-Know Your Trainer's</h2>
-
       <div className="mb-4">
         <label htmlFor="course" className="block mb-2 font-medium">You Are:</label>
         <select

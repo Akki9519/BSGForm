@@ -131,10 +131,17 @@ const BasicForm = () => {
         const response = await axios.get(
           `${BASE_URL}/api/v1/basicDetails/${userId}`
         );
+        console.log(response,"response")
+        // if (response.data.some((item) => item.isSubmitted === true)) {
+        //   setIsSubmitted(true);
+        // }
         if (response.data.some((item) => item.isSubmitted === true)) {
           setIsSubmitted(true);
-        }
-
+          console.log("isSubmitted set to:", true);
+      } else {
+          console.log("isSubmitted remains:", false);
+      }
+      
         if (response.data && response.data.length > 0) {
           setCourses(response.data);
           setCourseDisable(new Array(response.data.length).fill(true));
@@ -157,7 +164,7 @@ const BasicForm = () => {
             {courses.map((course) => (
               <div key={course._id} className="p-4 border border-gray-300 rounded mb-4">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-20 gap-y-5">
-                  <div><strong>Wing:</strong> {course.wing}</div>
+                  <div><strong>Wing:</strong> {course?.wing}</div>
                   <div><strong>Section:</strong> {course.subwing}</div>
                   <div><strong>From Date:</strong> {course.fromDate}</div>
                   <div><strong>To Date:</strong> {course.toDate}</div>

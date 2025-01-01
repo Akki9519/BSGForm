@@ -5,6 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { BASE_URL } from "../constant/constant";
 
 const HwbForm = () => {
+
   const [courses, setCourses] = useState([
     {
       id: 1,
@@ -22,7 +23,8 @@ const HwbForm = () => {
       new: true, // mark this course as new
     },
   ]);
-
+  const [fetchedData, setFetchedData] = useState([]);
+  const [isSubmitted,setIsSubmitted] = useState(false);
   const [subWingOptions, setSubWingOptions] = useState({
     Scout: ["HWB-Cub", "HWB-Scout", "HWB-Rover"],
     Guide: ["HWB-Bulbul", "HWB-Guide", "HWB-Ranger"],
@@ -154,6 +156,7 @@ const HwbForm = () => {
   useEffect(()=>{
     window.scrollTo(0,0)
       },[])
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -164,27 +167,38 @@ const HwbForm = () => {
           `${BASE_URL}/api/v1/hwbDetails/${userId}`
         );
 
-        const hwbDetails = response.data.map((course) => ({
-          id: course.id,
-          wing: course.wing,
-          subwing: course.subwing,
-          fromDate: course.fromDate,
-          toDate: course.toDate,
-          venue: course.venue,
-          certificateNumber: course.certificateNumber,
-          certificateDate: course.certificateDate,
-          parchmentNumber: course.parchmentNumber,
-          parchmentDate: course.parchmentDate,
-          uploadCertificate: course.uploadCertificate,
-          uploadparchment: course.uploadparchment,
-          new: false, // mark fetched courses as not new
-        }));
-        console.log(hwbDetails, "hwbDetails");
+        console.log(response.data,"response")
+        if (response.data.some((item) => item.isSubmitted === true)) {
+          setIsSubmitted(true);
+          console.log("isSubmitted set to:", true);
+      } else {
+          console.log("isSubmitted remains:", false);
+      }
+      
+      
+        // const hwbDetails = response.data.map((course) => ({
+        //   id: course.id,
+        //   wing: course.wing,
+        //   subwing: course.subwing,
+        //   fromDate: course.fromDate,
+        //   toDate: course.toDate,
+        //   venue: course.venue,
+        //   certificateNumber: course.certificateNumber,
+        //   certificateDate: course.certificateDate,
+        //   parchmentNumber: course.parchmentNumber,
+        //   parchmentDate: course.parchmentDate,
+        //   uploadCertificate: course.uploadCertificate,
+        //   uploadparchment: course.uploadparchment,
+        //   new: false, // mark fetched courses as not new
+        // }));
+        // console.log(hwbDetails, "hwbDetails");
 
-        if (hwbDetails[0]) {
-          setCourseDisable(new Array(hwbDetails.length).fill(true));
-          setCourses(hwbDetails);
-        }
+        // if (hwbDetails[0]) {
+        //   setCourseDisable(new Array(hwbDetails.length).fill(true));
+        //   setCourses(hwbDetails);
+        // }
+
+
       } catch (error) {
         console.error("Error fetching personal details:", error);
       }
@@ -197,9 +211,29 @@ const HwbForm = () => {
     <>
    
 
+
     <div className="max-w-5xl mx-auto">
       <ToastContainer />
       <div className="text-center font-bold py-5 text-2xl">HWB COURSE</div>
+
+      {isSubmitted ? (
+          <div className="mt-8 space-y-6">
+            {courses.map((course) => (
+              <div key={course._id} className="p-4 border border-gray-300 rounded mb-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-20 gap-y-5">
+                  <div><strong>Wing:</strong> {course.wing}</div>
+                  <div><strong>Section:</strong> {course.subwing}</div>
+                  <div><strong>From Date:</strong> {course.fromDate}</div>
+                  <div><strong>To Date:</strong> {course.toDate}</div>
+                  <div><strong>Venue:</strong> {course.venue}</div>
+                  <div><strong>Leader:</strong> {course.leader}</div>
+                  <div><strong>Certificate Number:</strong> {course.certificateNumber}</div>
+                  <div><strong>Certificate Date:</strong> {course.certificateDate}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
       <div onSubmit={handleSubmit} className="mt-8 space-y-6">
         {courses.map((course, index) => (
           <div
@@ -463,6 +497,7 @@ const HwbForm = () => {
           </button>
         </div>
       </div>
+        )}
     </div>
     </>
   );

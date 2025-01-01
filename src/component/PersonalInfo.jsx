@@ -44,8 +44,11 @@ const PersonalInformation = () => {
   const [states, setStates] = useState([]);
   const [status, setStatus] = useState("");
 
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [fetchedData, setFetchedData] = useState("");
+
   const token = localStorage.getItem("kyttoken");
-  console.log(token,"token")
+  console.log(token, "token");
   const axiosConfig = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -55,23 +58,22 @@ const PersonalInformation = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (
-      name === "" || email === "" || dob === "" || bsgUid === "" || 
-      state === "" || aadharNumber === "" || mobileNumber === "" || 
-      whatsappNumber === "" || currentAddress === "" || 
-      permanentAddress === "" || revenueDistrict === "" || 
-      revenueState === "" || revenuePincode === "" || 
-      valid === "" || maritalStatus === "" || gender === "" || 
-      group === "" || groupregisterform === "" || 
-      warrantDate === "" || warrantNumber === "" || 
-      uploadPhoto === "" || occupation === "" || 
-      qualification === "" || highestqualification === "" || 
-      place === "" || fromDate1 === "" || toDate1 === ""
-  ) {
-      toast.error("Please fill out all fields before submitting.");
-      return;
-  }
-  
+    //   if (
+    //     name === "" || email === "" || dob === "" || bsgUid === "" ||
+    //     state === "" || aadharNumber === "" || mobileNumber === "" ||
+    //     whatsappNumber === "" || currentAddress === "" ||
+    //     permanentAddress === "" || revenueDistrict === "" ||
+    //      revenuePincode === "" ||
+    //     valid === "" || maritalStatus === "" || gender === "" ||
+
+    //     warrantDate === "" || warrantNumber === "" ||
+    //     uploadPhoto === "" || occupation === "" ||
+    //     qualification === "" || highestqualification === "" ||
+    //     place === "" || fromDate1 === "" || toDate1 === ""
+    // ) {
+    //     toast.error("Please fill out all fields before submitting.");
+    //     return;
+    // }
 
     const formData = new FormData();
     formData.append("name", name);
@@ -107,8 +109,6 @@ const PersonalInformation = () => {
     formData.append("toDate1", toDate1);
     formData.append("place", place);
 
-
-
     try {
       const storedIdString = localStorage.getItem("_id");
       const userId = JSON.parse(storedIdString);
@@ -119,7 +119,6 @@ const PersonalInformation = () => {
       }
 
       const response = await axios.post(
-
         `${BASE_URL}/api/v1/personaldetails/${userId}`,
         formData,
         {
@@ -145,23 +144,26 @@ const PersonalInformation = () => {
 
   const getDataa = async () => {
     try {
-      const bsgUid = localStorage.getItem("bsgUid");
+      const bsgUid = localStorage.getItem("_id");
+      console.log(bsgUid, "bsgUid");
       const response = await axios.get(
-        `${BASE_URL}/api/v1/user/${bsgUid}`,axiosConfig,
-
+        `${BASE_URL}/api/v1/user/${bsgUid}`,
+        axiosConfig
       );
-const name=response.data.altDetails.name;
-console.log(name,"name")
+
+      console.log(response, "unknownnnn");
+      const name = response.data.altDetails.name;
+      console.log(name, "name");
       const email = response.data.email;
       const state = response.data.altDetails.STATE;
-      console.log(state,"state")
+      console.log(state, "state");
       const formattedDob = response?.data?.dob.split("-").reverse().join("-");
-setName(name)
+      setName(name);
       setDob(formattedDob);
       const bsgUidd = response.data.bsgUid;
       setEmail(email);
       setBsgUid(bsgUidd);
-      setState(state)
+      setState(state);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -178,44 +180,50 @@ setName(name)
       console.log(userId, "storedId");
 
       const response = await axios.get(
-        `${BASE_URL}/api/v1/personaldetails/${userId}`,axiosConfig,
+        `${BASE_URL}/api/v1/personaldetails/${userId}`,
+        axiosConfig
       );
-      console.log(response.data, "data");
-      const personalDetails = response.data; 
-
-      if (personalDetails) {
-        setCourseDisable(new Array(personalDetails.length).fill(true));
-        setName(personalDetails.name);
-        setEmail(personalDetails.email);
-        setBsgUid(personalDetails.bsgUid);
-        setState(personalDetails.state);
-        setAadharNumber(personalDetails.aadharNumber);
-        setCurrentAddress(personalDetails.currentAddress);
-        setPermanentAddress(personalDetails.permanentAddress);
-        setWhatsAppNumber(personalDetails.whatsappNumber);
-        setMobileNumber(personalDetails.mobileNumber);
-        setUploadPhoto1(personalDetails.uploadPhoto);
-        setDob(personalDetails.dob);
-        setGender(personalDetails.gender);
-        setMaritalStatus(personalDetails.maritalStatus);
-        setWarrantNumber(personalDetails.warrantNumber);
-        setWarrantDate(personalDetails.warrantDate);
-        setWarrantUpload1(personalDetails.uploadWarrant);
-        setGroup(personalDetails.group);
-        setOccupation(personalDetails.occupation);
-        setGroupRegisterForm1(personalDetails.groupregisterform);
-        setRevenueDistrict(personalDetails.revenueDistrict);
-        setRevenuePincode(personalDetails.revenuePincode);
-        setRevenueState(personalDetails.revenueState);
-        setPlace(personalDetails.place);
-        setQualification(personalDetails.qualification);
-        setFromDate1(personalDetails.fromDate1);
-        setToDate1(personalDetails.toDate1);
-        setValidTill(personalDetails.valid);
-        setHighestQualification1(personalDetails.highestqualification);
-        setStatus(personalDetails.status);
-  
+      console.log(response.data, "personaldata");
+      const personalDetails = response.data;
+      if (personalDetails && personalDetails.status === true) {
+        setIsSubmitted(true);
       }
+      
+
+      setFetchedData(response.data);
+
+      // if (personalDetails) {
+      //   setCourseDisable(new Array(personalDetails.length).fill(true));
+      //   setName(personalDetails.name);
+      //   setEmail(personalDetails.email);
+      //   setBsgUid(personalDetails.bsgUid);
+      //   setState(personalDetails.state);
+      //   setAadharNumber(personalDetails.aadharNumber);
+      //   setCurrentAddress(personalDetails.currentAddress);
+      //   setPermanentAddress(personalDetails.permanentAddress);
+      //   setWhatsAppNumber(personalDetails.whatsappNumber);
+      //   setMobileNumber(personalDetails.mobileNumber);
+      //   setUploadPhoto1(personalDetails.uploadPhoto);
+      //   setDob(personalDetails.dob);
+      //   setGender(personalDetails.gender);
+      //   setMaritalStatus(personalDetails.maritalStatus);
+      //   setWarrantNumber(personalDetails.warrantNumber);
+      //   setWarrantDate(personalDetails.warrantDate);
+      //   setWarrantUpload1(personalDetails.uploadWarrant);
+      //   setGroup(personalDetails.group);
+      //   setOccupation(personalDetails.occupation);
+      //   setGroupRegisterForm1(personalDetails.groupregisterform);
+      //   setRevenueDistrict(personalDetails.revenueDistrict);
+      //   setRevenuePincode(personalDetails.revenuePincode);
+      //   setRevenueState(personalDetails.revenueState);
+      //   setPlace(personalDetails.place);
+      //   setQualification(personalDetails.qualification);
+      //   setFromDate1(personalDetails.fromDate1);
+      //   setToDate1(personalDetails.toDate1);
+      //   setValidTill(personalDetails.valid);
+      //   setHighestQualification1(personalDetails.highestqualification);
+      //   setStatus(personalDetails.status);
+      // }
     } catch (error) {
       console.error("Error fetching personal details:", error);
     }
@@ -237,9 +245,10 @@ setName(name)
     try {
       const storedIdString = localStorage.getItem("_id");
       const userId = JSON.parse(storedIdString);
-      console.log(userId, "storedId");
+
+      console.log(userId, "storedIdState");
       const response = await axios.get(`${BASE_URL}/api/v1/getstate/${userId}`);
-      console.log(response, "response");
+      console.log(response, "responseState");
       console.log(response.data);
       setState1(response.data);
     } catch (error) {
@@ -278,12 +287,138 @@ setName(name)
     }
   };
 
-
-  useEffect(()=>{
-    window.scrollTo(0,0)
-      },[])
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <>
+
+{isSubmitted ? (
+          <div className="mt-8 space-y-6">
+            {/* {fetchedData.map((course, index) => ( */}
+              <div
+                // key={index}
+                className="p-4 border border-gray-300 rounded mb-4"
+              >
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-20 gap-y-5">
+
+                  <div>
+  <strong>Name:</strong> {fetchedData.name}
+</div>
+<div>
+  <strong>Aadhar Number:</strong> {fetchedData.aadharNumber}
+</div>
+<div>
+  <strong>BSG UID:</strong> {fetchedData.bsgUid}
+</div>
+<div>
+  <strong>Created At:</strong> {fetchedData.createdAt}
+</div>
+<div>
+  <strong>Current Address:</strong> {fetchedData.currentAddress}
+</div>
+<div>
+  <strong>Date of Birth:</strong> {fetchedData.dob}
+</div>
+<div>
+  <strong>Email:</strong> {fetchedData.email}
+</div>
+<div>
+  <strong>From Date:</strong> {fetchedData.fromDate1}
+</div>
+<div>
+  <strong>Gender:</strong> {fetchedData.gender}
+</div>
+<div>
+  <strong>Group:</strong> {fetchedData.group}
+</div>
+<div>
+  <strong>Group Register Form:</strong> 
+  <a href={fetchedData.groupregisterform} target="_blank" rel="noopener noreferrer">
+    View File
+  </a>
+</div>
+<div>
+  <strong>Highest Qualification:</strong> 
+  <a href={fetchedData.highestqualification} target="_blank" rel="noopener noreferrer">
+    View Certificate
+  </a>
+</div>
+<div>
+  <strong>Marital Status:</strong> {fetchedData.maritalStatus}
+</div>
+<div>
+  <strong>Mobile Number:</strong> {fetchedData.mobileNumber}
+</div>
+<div>
+  <strong>Occupation:</strong> {fetchedData.occupation}
+</div>
+<div>
+  <strong>Permanent Address:</strong> {fetchedData.permanentAddress}
+</div>
+<div>
+  <strong>Place:</strong> {fetchedData.place}
+</div>
+<div>
+  <strong>Qualification:</strong> {fetchedData.qualification}
+</div>
+<div>
+  <strong>Revenue District:</strong> {fetchedData.revenueDistrict}
+</div>
+<div>
+  <strong>Revenue Pincode:</strong> {fetchedData.revenuePincode}
+</div>
+<div>
+  <strong>Revenue State:</strong> {fetchedData.revenueState}
+</div>
+<div>
+  <strong>State:</strong> {fetchedData.state}
+</div>
+<div>
+  <strong>Status:</strong> {fetchedData.status ? "True" : "False"}
+</div>
+<div>
+  <strong>To Date:</strong> {fetchedData.toDate1}
+</div>
+<div>
+  <strong>Updated At:</strong> {fetchedData.updatedAt}
+</div>
+<div>
+  <strong>Upload Photo:</strong> 
+  <a href={fetchedData.uploadPhoto} target="_blank" rel="noopener noreferrer">
+    View Photo
+  </a>
+</div>
+<div>
+  <strong>Upload Warrant:</strong> 
+  <a href={fetchedData.uploadWarrant} target="_blank" rel="noopener noreferrer">
+    View Warrant
+  </a>
+</div>
+<div>
+  <strong>User ID:</strong> {fetchedData.userId}
+</div>
+<div>
+  <strong>Valid Till:</strong> {fetchedData.valid}
+</div>
+<div>
+  <strong>Warrant Date:</strong> {fetchedData.warrantDate}
+</div>
+<div>
+  <strong>Warrant Number:</strong> {fetchedData.warrantNumber}
+</div>
+<div>
+  <strong>WhatsApp Number:</strong> {fetchedData.whatsappNumber}
+</div>
+
+
+                </div>
+              </div>
+            {/* ))} */}
+          </div>
+        ) : (
+
+
       <div className="flex justify-center items-center mb-8">
         <div className="pt-5  w-full  rounded-lg shadow-md">
           <div className="px-8 ">
@@ -342,7 +477,6 @@ setName(name)
               </div>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-0  lg:gap-10 ">
-              
               <div className="flex flex-col mb-4">
                 <label className="mb-1 font-medium text-black">BSG State</label>
                 <select
@@ -389,8 +523,6 @@ setName(name)
               </div>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-0  lg:gap-10">
-              
-
               <div className="flex flex-col mb-4">
                 <label className="mb-1 font-medium text-black">
                   Whatsapp Number
@@ -405,38 +537,36 @@ setName(name)
                 />
               </div>
 
-             
-                <div className="flex flex-col mb-4">
-                  <label className="mb-1 font-medium text-black">
-                    Current Address
-                  </label>
-                  <textarea
-                    type="text"
-                    value={currentAddress}
-                    disabled={courseDisable.length}
-                    onChange={(e) => setCurrentAddress(e.target.value)}
-                    placeholder="Enter the Current Address"
-                    className="outline-none bg-white rounded-md px-3 py-1 border  border-gray-300 focus:border-indigo-500"
-                  />
-                </div>
-
-                <div className="flex flex-col mb-4">
-                  <label className="mb-1 font-medium text-black">
-                    Permanent Address
-                  </label>
-                  <textarea
-                    type="text"
-                    value={permanentAddress}
-                    disabled={courseDisable.length}
-                    onChange={(e) => setPermanentAddress(e.target.value)}
-                    placeholder="Enter the Permanent Address"
-                    className="outline-none bg-white  rounded-md px-3 py-1 border border-gray-300 focus:border-indigo-500"
-                  />
-                </div>
+              <div className="flex flex-col mb-4">
+                <label className="mb-1 font-medium text-black">
+                  Current Address
+                </label>
+                <textarea
+                  type="text"
+                  value={currentAddress}
+                  disabled={courseDisable.length}
+                  onChange={(e) => setCurrentAddress(e.target.value)}
+                  placeholder="Enter the Current Address"
+                  className="outline-none bg-white rounded-md px-3 py-1 border  border-gray-300 focus:border-indigo-500"
+                />
               </div>
 
+              <div className="flex flex-col mb-4">
+                <label className="mb-1 font-medium text-black">
+                  Permanent Address
+                </label>
+                <textarea
+                  type="text"
+                  value={permanentAddress}
+                  disabled={courseDisable.length}
+                  onChange={(e) => setPermanentAddress(e.target.value)}
+                  placeholder="Enter the Permanent Address"
+                  className="outline-none bg-white  rounded-md px-3 py-1 border border-gray-300 focus:border-indigo-500"
+                />
+              </div>
+            </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-0  lg:gap-10">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-0  lg:gap-10">
               <div className="flex flex-col mb-4">
                 <label className="mb-1 font-medium text-black">
                   Revenue State
@@ -455,7 +585,7 @@ setName(name)
                   ))}
                 </select>
               </div>
-              <div className="flex flex-col mb-4">
+              {/* <div className="flex flex-col mb-4">
                 <label className="mb-1 font-medium text-black">
                   Revenue District
                 </label>
@@ -472,7 +602,7 @@ setName(name)
                     </option>
                   ))}
                 </select>
-              </div>
+              </div> */}
 
               <div className="flex flex-col mb-4">
                 <label className="mb-1 font-medium text-black">
@@ -489,7 +619,6 @@ setName(name)
               </div>
             </div>
 
-          
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-0  lg:gap-10">
               <div className="flex flex-col mb-4">
                 <label className="mb-1 font-medium text-black">
@@ -523,7 +652,7 @@ setName(name)
                 </select>
               </div>
 
-              <div className="grid grid-cols-2 gap-0  lg:gap-10">
+              {/* <div className="grid grid-cols-2 gap-0  lg:gap-10">
                 <div className="flex flex-col mb-4">
                   <label className="mb-1 font-medium text-black">
                     Group Name
@@ -537,9 +666,9 @@ setName(name)
                     className="outline-none bg-white rounded-md px-3 py-1 w-80 border border-gray-300 focus:border-indigo-500"
                   />
                 </div>
-              </div>
+              </div> */}
 
-              <div className="flex flex-col mb-4">
+              {/* <div className="flex flex-col mb-4">
                 <label className="mb-1 font-medium text-black">
                   Group Register Form
                 </label>
@@ -560,7 +689,7 @@ setName(name)
                   className="outline-none mb-3 mt-1 py-2 bg-slate-200 px-2 block w-full border-gray-300 rounded-md shadow-sm "
                   onChange={(e) => setGroupRegisterForm(e.target.files[0])}
                 />
-              </div>
+              </div> */}
 
               <div className="flex flex-col mb-4">
                 <label className="mb-1 font-medium text-black">
@@ -586,7 +715,7 @@ setName(name)
                   <img
                     src={uploadPhoto1}
                     alt="photo"
-                    style={{ maxWidth: "200px", maxHeight: "200px" }}
+                    style={{ maxWidth: "100px", maxHeight: "100px" }}
                   />
                 )}
                 <input
@@ -626,30 +755,28 @@ setName(name)
                 />
               </div>
 
-              
-                <div className="flex flex-col mb-4">
-                  <label className="mb-1 font-medium text-black">
-                    Upload Warrant
-                  </label>
-                  {uploadWarrant1 && (
-                    <iframe
-                      src={uploadWarrant1}
-                      width="100%"
-                      height="150px"
-                      title="PDF Viewer"
-                    ></iframe>
-                  )}
-                  <input
-                    type="file"
-                    name="avatar"
-                         accept="image/*,application/pdf"
-                    disabled={courseDisable.length}
-                    className="outline-none mb-3 mt-1 py-2 bg-slate-200 px-2 block w-full border-gray-300 rounded-md shadow-sm "
-                    style={{ width: "300px" }}
-                    onChange={(e) => setWarrantUpload(e.target.files[0])}
-                  />
-                </div>
-          
+              <div className="flex flex-col mb-4">
+                <label className="mb-1 font-medium text-black">
+                  Upload Warrant
+                </label>
+                {uploadWarrant1 && (
+                  <iframe
+                    src={uploadWarrant1}
+                    width="100%"
+                    height="150px"
+                    title="PDF Viewer"
+                  ></iframe>
+                )}
+                <input
+                  type="file"
+                  name="avatar"
+                  accept="image/*,application/pdf"
+                  disabled={courseDisable.length}
+                  className="outline-none mb-3 mt-1 py-2 bg-slate-200 px-2 block w-full border-gray-300 rounded-md shadow-sm "
+                  style={{ width: "300px" }}
+                  onChange={(e) => setWarrantUpload(e.target.files[0])}
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-0  lg:gap-10">
@@ -676,37 +803,34 @@ setName(name)
                   className="outline-none bg-white rounded-md px-3 py-1 border border-gray-300 focus:border-indigo-500"
                 />
               </div>{" "}
-             
-                <div>
-                  <label className="block text-sm font-bold text-black ">
-                    From Date
-                  </label>
-                  <input
-                    type="date"
-                    disabled={courseDisable.length}
-                    value={fromDate1}
-                    onChange={(e) => setFromDate1(e.target.value)}
-                    className="outline-none mb-3 mt-1 py-2 bg-slate-200 px-2 block w-full border-gray-300 rounded-md shadow-sm "
-                  />
-              
+              <div>
+                <label className="block text-sm font-bold text-black ">
+                  From Date
+                </label>
+                <input
+                  type="date"
+                  disabled={courseDisable.length}
+                  value={fromDate1}
+                  onChange={(e) => setFromDate1(e.target.value)}
+                  className="outline-none mb-3 mt-1 py-2 bg-slate-200 px-2 block w-full border-gray-300 rounded-md shadow-sm "
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-0  lg:gap-10">
+              <div>
+                <label className="block text-sm font-bold text-black">
+                  To Date
+                </label>
+                <input
+                  type="date"
+                  value={toDate1}
+                  disabled={courseDisable.length}
+                  onChange={(e) => setToDate1(e.target.value)}
+                  className="outline-none mb-3 mt-1 py-2 bg-slate-200 px-2 block w-full border-gray-300 rounded-md shadow-sm "
+                />
               </div>
 
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-0  lg:gap-10">
-                <div>
-                  <label className="block text-sm font-bold text-black">
-                    To Date
-                  </label>
-                  <input
-                    type="date"
-                    value={toDate1}
-                    disabled={courseDisable.length}
-                    onChange={(e) => setToDate1(e.target.value)}
-                    className="outline-none mb-3 mt-1 py-2 bg-slate-200 px-2 block w-full border-gray-300 rounded-md shadow-sm "
-                  />
-                </div>
-            
               <div className="flex flex-col mb-4">
                 <label className="mb-1 font-medium text-black">
                   Qualification
@@ -762,6 +886,7 @@ setName(name)
           </div>
         </div>
       </div>
+       )}
     </>
   );
 };
