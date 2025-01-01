@@ -139,19 +139,20 @@ const PersonalInformation = () => {
   };
 
   useEffect(() => {
-    getDataa();
+    getLTDataa();
   }, []);
 
-  const getDataa = async () => {
+  const getLTDataa = async () => {
     try {
-      const bsgUid = localStorage.getItem("_id");
-      console.log(bsgUid, "bsgUid");
+      const storedIdString = localStorage.getItem("_id");
+      const userId = JSON.parse(storedIdString);
       const response = await axios.get(
-        `${BASE_URL}/api/v1/user/${bsgUid}`,
+        `${BASE_URL}/api/v1/ltuser/${userId}`,
         axiosConfig
       );
 
       console.log(response, "unknownnnn");
+
       const name = response.data.altDetails.name;
       console.log(name, "name");
       const email = response.data.email;
@@ -188,8 +189,6 @@ const PersonalInformation = () => {
       if (personalDetails && personalDetails.status === true) {
         setIsSubmitted(true);
       }
-      
-
       setFetchedData(response.data);
 
       // if (personalDetails) {

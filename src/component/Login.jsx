@@ -59,6 +59,7 @@ const Login = () => {
       const response = await axios.post(`${BASE_URL}/api/v2/login`, loginData);
       console.log(response.data,"response")
       if (response.data) {
+        console.log(response.data,"course")
         const sectionq = response.data.user.course;
         localStorage.setItem("sectionq", sectionq);
         const kyttoken = response.data.token;
