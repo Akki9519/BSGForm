@@ -57,9 +57,10 @@ const Login = () => {
       honourableNumber: selectedCourse !== "HWB" ? honourableNumber : undefined,
       parchmentNumber: selectedCourse === "HWB" ? parchmentNumber : undefined,
     };
-
+console.log(loginData,"loginDatasdsfgh")
     try {
       const response = await axios.post(`${BASE_URL}/api/v2/login`, loginData);
+      console.log(response.data,"loginData")
       if (response.data) {
         const sectionq = response.data.user.course;
         ls.set("sectionq", sectionq);
@@ -109,6 +110,7 @@ const Login = () => {
       const response = await axios.post(`${BASE_URL}/api/v2/verify-email`, {
         email,
       });
+      console.log(response,"response")
       if (
         response.data.message ===
         "Verification email sent! Please check your inbox."
@@ -129,16 +131,17 @@ const Login = () => {
   };
 
   const handleUpdateEmail = async (userId) => {
+    console.log(userId,"userId")
     if (!userEmail) {
       setMessage("Please enter a valid email to update.");
       return;
     }
-
     setEmailUpdating(true);
     try {
       const response = await axios.put(`${BASE_URL}/api/v2/ltuser/${userId}`, {
-        email: userEmail,
+        email: userEmail,userId:userId,
       });
+      console.log(response,"responseeeeee")
       setMessage("Email updated successfully.");
       setUserData((prevData) => ({ ...prevData, email: userEmail }));
     } catch (error) {
@@ -157,8 +160,9 @@ const Login = () => {
     setBsgUpdating(true);
     try {
       const response = await axios.put(`${BASE_URL}/api/v2/ltuser/${userId}`, {
-        bsgNumber: bsgnumber,
+        bsgNumber: bsgnumber,userId:userId,
       });
+      console.log(response,"response")
       setMessage("BSG Number updated successfully.");
       setUserData((prevData) => ({ ...prevData, bsgUid: bsgnumber }));
     } catch (error) {
@@ -316,7 +320,7 @@ const Login = () => {
             </div>
           )}
 
-          {userData.email !== "NA" && userData.bsgnumber !== "NA" && (
+          {userData.email !== "NA" && userData.bsgUid !== "NA" && (
             <div className="mt-4">
               {!emailVerified ? (
                 <button

@@ -3,49 +3,50 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Verify from "./component/Verify";
 import Login from "./component/Login";
 import Navigation from "./component/Form"; // Import the Navigation component
-
+import ProtectedRoute from "./ProtectedRoute";
 const App = () => {
   return (
     <Router>
       <Routes>
+      {/* <Route path="/profile" exact element={< ProtectedRoute component={Profile} />} /> */}
         <Route path="/" element={<Login />} />
         <Route
           path="/form"
-          element={
+          exact element={
             <>
-              <Navigation />
+              <ProtectedRoute component={Navigation}/>
             </>
           }
         />
         <Route
           path="/lt"
-          element={
+          exact element={
             <>
-              <Navigation />
+              <ProtectedRoute component={Navigation} />
             </>
           }
         />
         <Route
           path="/alt"
-          element={
+          exact element={
             <>
-              <Navigation />
+              < ProtectedRoute component={Navigation} />
             </>
           }
         />
         <Route
           path="/hwb"
-          element={
+         exact element={
             <>
-              <Navigation />
+              < ProtectedRoute component={Navigation} />
             </>
           }
         />
         <Route
           path="/basic"
-          element={
+          exact element={
             <>
-              <Navigation />
+              <ProtectedRoute component={Navigation} />
             </>
           }
         />
@@ -54,7 +55,7 @@ const App = () => {
           exact
           element={
             <>
-              <Navigation />
+              <ProtectedRoute component={Navigation} />
             </>
           }
         />

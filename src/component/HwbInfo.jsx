@@ -521,22 +521,20 @@ const HwbForm = () => {
               </div>
             ))}
 
-            <div className="flex justify-between mt-6">
-              <button
-                type="button"
-                onClick={addCourse}
-                className="px-6 py-2 bg-[#1D56A5] text-white rounded-md "
-              >
-                Add Course
-              </button>
-              <button
-                type="submit"
-                className="px-6 py-2 bg-[#1D56A5] text-white rounded-md "
-                onClick={handleSubmit}
-              >
-                Submit
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={addCourse}
+              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 "
+            >
+              Add Course
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 ml-5"
+              onClick={handleSubmit}
+            >
+              Submit
+            </button>
           </div>
         )}
       </div>

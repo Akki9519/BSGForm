@@ -190,7 +190,7 @@ const PersonalInformation = () => {
       const response = await axios.get(
         `${BASE_URL}/api/v1/personaldetails/${userId}`,
         axiosConfig
-      );
+      )
       console.log(response.data, "personaldata");
       const personalDetails = response.data;
       if (personalDetails && personalDetails.status === true) {
@@ -542,6 +542,28 @@ const PersonalInformation = () => {
                     className="outline-none bg-white rounded-md px-3 py-1 border border-gray-300 focus:border-indigo-500"
                   />
                 </div>
+
+
+                
+                <div className="flex flex-col">
+                  <label className="mb-1 font-medium text-black">
+                    Uploaded Photo
+                  </label>
+                  {uploadPhoto1 && (
+                    <img
+                      src={uploadPhoto1}
+                      alt="photo"
+                      style={{ maxWidth: "100px", maxHeight: "100px" }}
+                    />
+                  )}
+                  <input
+                    type="file"
+                    disabled={courseDisable.length}
+                    name="avatar"
+                    className="outline-none mb-3 mt-1 py-2 bg-slate-200 px-2 block w-full border-gray-300 rounded-md shadow-sm"
+                    onChange={(e) => setUploadPhoto(e.target.files[0])}
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 lg:gap-10">
@@ -593,25 +615,6 @@ const PersonalInformation = () => {
                   </select>
                 </div>
 
-                <div className="flex flex-col">
-                  <label className="mb-1 font-medium text-black">
-                    Uploaded Photo
-                  </label>
-                  {uploadPhoto1 && (
-                    <img
-                      src={uploadPhoto1}
-                      alt="photo"
-                      style={{ maxWidth: "100px", maxHeight: "100px" }}
-                    />
-                  )}
-                  <input
-                    type="file"
-                    disabled={courseDisable.length}
-                    name="avatar"
-                    className="outline-none mb-3 mt-1 py-2 bg-slate-200 px-2 block w-full border-gray-300 rounded-md shadow-sm"
-                    onChange={(e) => setUploadPhoto(e.target.files[0])}
-                  />
-                </div>
               </div>
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 lg:gap-10">
                 <div className="flex flex-col mb-4">
@@ -658,7 +661,7 @@ const PersonalInformation = () => {
                     name="avatar"
                     accept="image/*,application/pdf"
                     disabled={courseDisable.length}
-                    className="outline-none mb-3 mt-1 py-2 bg-slate-200 px-2 block w-full border-gray-300 rounded-md shadow-sm"
+                    className="outline-none mb-3 mt-1 py-2  px-2 block border-gray-300 w-32 rounded-md shadow-sm"
                     style={{ width: "300px" }}
                     onChange={(e) => setWarrantUpload(e.target.files[0])}
                   />
@@ -762,7 +765,7 @@ const PersonalInformation = () => {
               </div>
 
               <div
-                className="bg-[#1D56A5] rounded-md flex justify-center items-center lg:mx-80 py-1 text-white font-medium my-5 cursor-pointer"
+                className="bg-[#1D56A5] rounded-md flex justify-center items-center  py-1 text-white font-medium my-5 cursor-pointer"
                 onClick={handleSubmit}
               >
                 <ToastContainer />

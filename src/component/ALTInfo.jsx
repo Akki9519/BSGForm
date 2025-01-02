@@ -117,7 +117,7 @@ const ALTInfo = () => {
     <>
       <div>
         <ToastContainer />
-        <h2 className="text-2xl font-bold text-center text-yellow-500 mb-4 uppercase">
+        <h2 className="text-2xl font-bold text-center text-yellow-500 mb-2 uppercase">
           ALT Form
         </h2>
 
@@ -126,7 +126,7 @@ const ALTInfo = () => {
             {fetchedData.map((course, index) => (
               <div
                 key={index}
-                className="p-4 border border-gray-300 rounded mb-4"
+                className="p-4 border border-gray-300 rounded mb-2"
               >
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-20 gap-y-5">
                   <div>
@@ -173,7 +173,7 @@ const ALTInfo = () => {
         ) : (
           <div className="border p-4 rounded">
             {/* Wing Selection */}
-            <div className="mb-4">
+            <div className="mb-2">
               <label className="block mb-2 font-bold text-black">
                 Select Wing
               </label>
@@ -189,7 +189,7 @@ const ALTInfo = () => {
             </div>
 
             {/* Sub-Wing Selection */}
-            <div className="mb-4">
+            <div className="mb-2">
               <label className="block mb-2 font-bold text-black">
                 Select Sub-Wing
               </label>
@@ -211,8 +211,8 @@ const ALTInfo = () => {
             </div>
 
             {/* Training Details */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div className="mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+              <div className="mb-2">
                 <label className="block mb-2 font-bold text-black">
                   Select Type
                 </label>
@@ -227,7 +227,7 @@ const ALTInfo = () => {
                   <option value="assisted">Assisted</option>
                 </select>
               </div>
-              <div className="mb-4">
+              <div className="mb-2">
                 <label className="block mb-2 font-bold text-black">
                   Course Date
                 </label>
@@ -241,8 +241,8 @@ const ALTInfo = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div className="mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+              <div className="mb-2">
                 <label className="block mb-2 font-bold text-black">Place</label>
                 <input
                   type="text"
@@ -252,7 +252,7 @@ const ALTInfo = () => {
                 />
               </div>
               {selectType !== "conducted" && (
-                <div className="mb-4">
+                <div className="mb-2">
                   <label className="block mb-2 font-bold text-black">
                     Leader of the Course
                   </label>
@@ -265,8 +265,8 @@ const ALTInfo = () => {
                 </div>
               )}
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div className="mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+              <div className="mb-2">
                 <label className="block mb-2 font-bold text-black">
                   No. of Participants
                 </label>
@@ -283,7 +283,7 @@ const ALTInfo = () => {
                 Details of Last ROT Attended
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
                 <div>
                   <label className="block mb-2 font-bold text-black">
                     Course From Date
@@ -309,8 +309,8 @@ const ALTInfo = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div className="mb-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                <div className="mb-2">
                   <label className="block mb-2 font-bold text-black">
                     Certificate Number
                   </label>
@@ -323,7 +323,7 @@ const ALTInfo = () => {
                   />
                 </div>
 
-                <div className="mb-4">
+                <div className="mb-2">
                   <label className="block mb-2 font-bold text-black">
                     Certificate Date
                   </label>
@@ -336,8 +336,8 @@ const ALTInfo = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div className="mb-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                <div className="mb-2">
                   <label className="block mb-2 font-bold text-black">
                     Leader of the Course
                   </label>
@@ -349,7 +349,7 @@ const ALTInfo = () => {
                     className="border border-gray-300 rounded px-3 py-2 w-full"
                   />
                 </div>
-                <div className="mb-4">
+                <div className="mb-2">
                   <label className="block mb-2 font-bold text-black">
                     Place
                   </label>
