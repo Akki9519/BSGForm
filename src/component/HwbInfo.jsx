@@ -3,9 +3,10 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { BASE_URL } from "../constant/constant";
+import SecureLS from "secure-ls";
 
+const ls = new SecureLS({ encodingType: "aes", isCompression: false });
 const HwbForm = () => {
-
   const [courses, setCourses] = useState([
     {
       id: 1,
@@ -24,7 +25,7 @@ const HwbForm = () => {
     },
   ]);
   const [fetchedData, setFetchedData] = useState([]);
-  const [isSubmitted,setIsSubmitted] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [subWingOptions, setSubWingOptions] = useState({
     Scout: ["HWB-Cub", "HWB-Scout", "HWB-Rover"],
     Guide: ["HWB-Bulbul", "HWB-Guide", "HWB-Ranger"],
@@ -33,8 +34,14 @@ const HwbForm = () => {
   const [selectedSubWings, setSelectedSubWings] = useState([]);
   const [courseDisable, setCourseDisable] = useState([]);
 
+  const functionDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, "0"); // Ensure two digits
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
 
-  
   const addCourse = () => {
     const newCourse = {
       id: courses.length + 1,
@@ -79,8 +86,8 @@ const HwbForm = () => {
     event.preventDefault();
 
     try {
-      const storedIdString = localStorage.getItem("_id");
-      const userId = JSON.parse(storedIdString);
+      const userId = ls.get("_id");
+      // const userId = JSON.parse(storedIdString);
 
       const newCourses = courses.filter((course) => course.new);
 
@@ -117,8 +124,8 @@ const HwbForm = () => {
           }
         );
 
-        const responseMessage1 = response.data._id;
-        localStorage.setItem("id", responseMessage1);
+        // const responseMessage1 = response.data._id;
+        // ls.setItem("id", responseMessage1);
       }
 
       toast.success("Form Submitted Successfully");
@@ -152,30 +159,32 @@ const HwbForm = () => {
     }
   };
 
-  
-  useEffect(()=>{
-    window.scrollTo(0,0)
-      },[])
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const storedIdString = localStorage.getItem("_id");
-        const userId = JSON.parse(storedIdString);
+        const userId = ls.get("_id");
+        // const userId = JSON.parse(storedIdString);
 
         const response = await axios.get(
           `${BASE_URL}/api/v1/hwbDetails/${userId}`
         );
 
-        console.log(response.data,"response")
+        console.log(response.data, "response");
         if (response.data.some((item) => item.isSubmitted === true)) {
           setIsSubmitted(true);
           console.log("isSubmitted set to:", true);
-      } else {
+        } else {
           console.log("isSubmitted remains:", false);
-      }
-      
-      
+        }
+        if (response.data && response.data.length > 0) {
+          setCourses(response.data);
+          // setCourseDisable(new Array(response.data.length).fill(true));
+        }
+
         // const hwbDetails = response.data.map((course) => ({
         //   id: course.id,
         //   wing: course.wing,
@@ -197,8 +206,6 @@ const HwbForm = () => {
         //   setCourseDisable(new Array(hwbDetails.length).fill(true));
         //   setCourses(hwbDetails);
         // }
-
-
       } catch (error) {
         console.error("Error fetching personal details:", error);
       }
@@ -209,227 +216,260 @@ const HwbForm = () => {
 
   return (
     <>
-   
+      <div className="max-w-5xl mx-auto">
+        <ToastContainer />
+        <div className="text-center font-bold  text-2xl text-yellow-500">
+          HWB COURSE
+        </div>
 
-
-    <div className="max-w-5xl mx-auto">
-      <ToastContainer />
-      <div className="text-center font-bold py-5 text-2xl">HWB COURSE</div>
-
-      {isSubmitted ? (
+        {isSubmitted ? (
           <div className="mt-8 space-y-6">
             {courses.map((course) => (
-              <div key={course._id} className="p-4 border border-gray-300 rounded mb-4">
+              <div
+                key={course.id}
+                className="p-4 border border-gray-300 rounded mb-4"
+              >
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-20 gap-y-5">
-                  <div><strong>Wing:</strong> {course.wing}</div>
-                  <div><strong>Section:</strong> {course.subwing}</div>
-                  <div><strong>From Date:</strong> {course.fromDate}</div>
-                  <div><strong>To Date:</strong> {course.toDate}</div>
-                  <div><strong>Venue:</strong> {course.venue}</div>
-                  <div><strong>Leader:</strong> {course.leader}</div>
-                  <div><strong>Certificate Number:</strong> {course.certificateNumber}</div>
-                  <div><strong>Certificate Date:</strong> {course.certificateDate}</div>
+                  <div>
+                    <strong>Wing:</strong> {course.wing}
+                  </div>
+                  <div>
+                    <strong>Section:</strong> {course.subwing}
+                  </div>
+                  <div>
+                    <strong>From Date:</strong> {functionDate(course.fromDate)}
+                  </div>
+                  <div>
+                    <strong>To Date:</strong> {functionDate(course.toDate)}
+                  </div>
+                  <div>
+                    <strong>Venue:</strong> {course.venue}
+                  </div>
+                  {/* <div><strong>Leader:</strong> {course.leader}</div> */}
+                  <div>
+                    <strong>Certificate Number:</strong>{" "}
+                    {course.certificateNumber}
+                  </div>
+                  <div>
+                    <strong>Certificate Date:</strong>{" "}
+                    {functionDate(course.certificateDate)}
+                  </div>
+                  <div>
+                    <strong>Parchment Number:</strong> {course.parchmentNumber}
+                  </div>
+                  <div>
+                    <strong>Parchment Date:</strong>{" "}
+                    {functionDate(course.parchmentDate)}
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-      <div onSubmit={handleSubmit} className="mt-8 space-y-6">
-        {courses.map((course, index) => (
-          <div
-            key={course.id}
-            className="p-4 border border-gray-300 rounded mb-4"
-          >
-            <div className="flex justify-end mb-2">
-              {courses.length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => removeCourse(course.id)}
-                  className="text-red-600 hover:text-red-700"
-                >
-                  <svg
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-20 gap-y-5">
-              <div className="flex flex-col mb-4">
-                <label className="mb-1 font-medium text-black">Wing</label>
-                <select
-                  value={course.wing}
-                  disabled={
-                    index < courseDisable.length && courseDisable[index]
-                  }
-                  onChange={(e) => handleChange(index, "wing", e.target.value)}
-                  className="outline-none bg-white rounded-md px-3 py-1 border border-gray-300 focus:border-indigo-500"
-                >
-                  <option value="">Select Wing</option>
-                  <option value="Scout">Scout</option>
-                  <option value="Guide">Guide</option>
-                </select>
-              </div>
-              {course.wing && (
-                <div className="mt-2 flex flex-col">
-                  <label className="mb-1 font-medium text-black">
-                    Sub-Wing
-                  </label>
-                  <select
-                    value={course.subwing}
-                    disabled={
-                      index < courseDisable.length && courseDisable[index]
-                    }
-                    onChange={(e) =>
-                      handleChange(index, "subwing", e.target.value)
-                    }
-                    className="outline-none bg-white rounded-md px-3 py-1 border border-gray-300 focus:border-indigo-500"
-                  >
-                    <option value="">Select Sub-Wing</option>
-                    {subWingOptions[course.wing].map((option) => (
-                      <option
-                        key={option}
-                        value={option}
-                        disabled={
-                          // Disable if the option is already selected in another course
-                          courses.some(
-                            (c, idx) => idx !== index && c.subwing === option
-                          )
-                        }
+          <div onSubmit={handleSubmit} className="mt-8 space-y-6">
+            {courses.map((course, index) => (
+              <div
+                key={course.id}
+                className="p-4 border border-gray-300 rounded mb-4"
+              >
+                <div className="flex justify-end mb-2">
+                  {courses.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeCourse(course.id)}
+                      className="text-red-600 hover:text-red-700"
+                    >
+                      <svg
+                        className="h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
                       >
-                        {option}
-                      </option>
-                    ))}
-                  </select>
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  )}
                 </div>
-              )}
 
-              <div>
-                <label className="block text-sm font-bold text-black">
-                  From Date
-                </label>
-                <input
-                  type="date"
-                  value={course.fromDate}
-                  disabled={
-                    index < courseDisable.length && courseDisable[index]
-                  }
-                  onChange={(e) =>
-                    handleChange(index, "fromDate", e.target.value)
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-bold text-black">
-                  To Date
-                </label>
-                <input
-                  type="date"
-                  value={course.toDate}
-                  disabled={
-                    index < courseDisable.length && courseDisable[index]
-                  }
-                  onChange={(e) =>
-                    handleChange(index, "toDate", e.target.value)
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                />
-              </div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-20 gap-y-5">
+                  <div className="flex flex-col mb-4">
+                    <label className="mb-1 font-medium text-black">Wing</label>
+                    <select
+                      value={course.wing}
+                      disabled={
+                        index < courseDisable.length && courseDisable[index]
+                      }
+                      onChange={(e) =>
+                        handleChange(index, "wing", e.target.value)
+                      }
+                      className="outline-none bg-white rounded-md px-3 py-1 border border-gray-300 focus:border-indigo-500"
+                    >
+                      <option value="">Select Wing</option>
+                      <option value="Scout">Scout</option>
+                      <option value="Guide">Guide</option>
+                    </select>
+                  </div>
+                  {course.wing && (
+                    <div className="mt-2 flex flex-col">
+                      <label className="mb-1 font-medium text-black">
+                        Sub-Wing
+                      </label>
+                      <select
+                        value={course.subwing}
+                        disabled={
+                          index < courseDisable.length && courseDisable[index]
+                        }
+                        onChange={(e) =>
+                          handleChange(index, "subwing", e.target.value)
+                        }
+                        className="outline-none bg-white rounded-md px-3 py-1 border border-gray-300 focus:border-indigo-500"
+                      >
+                        <option value="">Select Sub-Wing</option>
+                        {subWingOptions[course.wing].map((option) => (
+                          <option
+                            key={option}
+                            value={option}
+                            disabled={
+                              // Disable if the option is already selected in another course
+                              courses.some(
+                                (c, idx) =>
+                                  idx !== index && c.subwing === option
+                              )
+                            }
+                          >
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
 
-              <div>
-                <label className="block text-sm font-bold text-black">
-                  Venue
-                </label>
-                <input
-                  type="text"
-                  value={course.venue}
-                  disabled={
-                    index < courseDisable.length && courseDisable[index]
-                  }
-                  onChange={(e) => handleChange(index, "venue", e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                />
-              </div>
+                  <div>
+                    <label className="block text-sm font-bold text-black">
+                      From Date
+                    </label>
+                    <input
+                      type="date"
+                      value={course.fromDate}
+                      disabled={
+                        index < courseDisable.length && courseDisable[index]
+                      }
+                      onChange={(e) =>
+                        handleChange(index, "fromDate", e.target.value)
+                      }
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-black">
+                      To Date
+                    </label>
+                    <input
+                      type="date"
+                      value={course.toDate}
+                      disabled={
+                        index < courseDisable.length && courseDisable[index]
+                      }
+                      onChange={(e) =>
+                        handleChange(index, "toDate", e.target.value)
+                      }
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                    />
+                  </div>
 
-              <div>
-                <label className="block text-sm font-bold text-black">
-                  Certificate Number
-                </label>
-                <input
-                  type="text"
-                  value={course.certificateNumber}
-                  disabled={
-                    index < courseDisable.length && courseDisable[index]
-                  }
-                  onChange={(e) =>
-                    handleChange(index, "certificateNumber", e.target.value)
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-bold text-black">
-                  Certificate Date
-                </label>
-                <input
-                  type="date"
-                  value={course.certificateDate}
-                  disabled={
-                    index < courseDisable.length && courseDisable[index]
-                  }
-                  onChange={(e) =>
-                    handleChange(index, "certificateDate", e.target.value)
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                />
-              </div>
+                  <div>
+                    <label className="block text-sm font-bold text-black">
+                      Venue
+                    </label>
+                    <input
+                      type="text"
+                      value={course.venue}
+                      placeholder="Enter The Venue"
+                      disabled={
+                        index < courseDisable.length && courseDisable[index]
+                      }
+                      onChange={(e) =>
+                        handleChange(index, "venue", e.target.value)
+                      }
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                    />
+                  </div>
 
-              <div>
-                <label className="block text-sm font-bold text-black">
-                  Parchment Number
-                </label>
-                <input
-                  type="text"
-                  value={course.parchmentNumber}
-                  disabled={
-                    index < courseDisable.length && courseDisable[index]
-                  }
-                  onChange={(e) =>
-                    handleChange(index, "parchmentNumber", e.target.value)
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                />
-              </div>
+                  <div>
+                    <label className="block text-sm font-bold text-black">
+                      Certificate Number
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Enter The CertificateNumber"
+                      value={course.certificateNumber}
+                      disabled={
+                        index < courseDisable.length && courseDisable[index]
+                      }
+                      onChange={(e) =>
+                        handleChange(index, "certificateNumber", e.target.value)
+                      }
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-black">
+                      Certificate Date
+                    </label>
+                    <input
+                      type="date"
+                      value={course.certificateDate}
+                      disabled={
+                        index < courseDisable.length && courseDisable[index]
+                      }
+                      onChange={(e) =>
+                        handleChange(index, "certificateDate", e.target.value)
+                      }
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                    />
+                  </div>
 
-              <div>
-                <label className="block text-sm font-bold text-black">
-                  Parchment Date
-                </label>
-                <input
-                  type="date"
-                  value={course.parchmentDate}
-                  disabled={
-                    index < courseDisable.length && courseDisable[index]
-                  }
-                  onChange={(e) =>
-                    handleChange(index, "parchmentDate", e.target.value)
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                />
-              </div>
+                  <div>
+                    <label className="block text-sm font-bold text-black">
+                      Parchment Number
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Enter The Parchment Number"
+                      value={course.parchmentNumber}
+                      disabled={
+                        index < courseDisable.length && courseDisable[index]
+                      }
+                      onChange={(e) =>
+                        handleChange(index, "parchmentNumber", e.target.value)
+                      }
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                    />
+                  </div>
 
-              {/* <div>
+                  <div>
+                    <label className="block text-sm font-bold text-black">
+                      Parchment Date
+                    </label>
+                    <input
+                      type="date"
+                      value={course.parchmentDate}
+                      disabled={
+                        index < courseDisable.length && courseDisable[index]
+                      }
+                      onChange={(e) =>
+                        handleChange(index, "parchmentDate", e.target.value)
+                      }
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                    />
+                  </div>
+
+                  {/* <div>
                 <label className="block text-sm font-bold text-black">
                   Upload Certificate
                 </label>
@@ -453,7 +493,7 @@ const HwbForm = () => {
                 />
               </div> */}
 
-              {/* <div>
+                  {/* <div>
                 <label className="block text-sm font-bold text-black">
                   Upload Parchment
                 </label>
@@ -477,28 +517,29 @@ const HwbForm = () => {
                   />
                 </div>
               </div> */}
+                </div>
+              </div>
+            ))}
+
+            <div className="flex justify-between mt-6">
+              <button
+                type="button"
+                onClick={addCourse}
+                className="px-6 py-2 bg-[#1D56A5] text-white rounded-md "
+              >
+                Add Course
+              </button>
+              <button
+                type="submit"
+                className="px-6 py-2 bg-[#1D56A5] text-white rounded-md "
+                onClick={handleSubmit}
+              >
+                Submit
+              </button>
             </div>
           </div>
-        ))}
-
-        <div className="flex justify-between mt-6">
-          <button
-            type="button"
-            onClick={addCourse}
-            className="px-6 py-2 bg-[#1D56A5] text-white rounded-md "
-          >
-            Add Course
-          </button>
-          <button
-            type="submit"
-            className="px-6 py-2 bg-[#1D56A5] text-white rounded-md " onClick={handleSubmit}
-          >
-            Submit
-          </button>
-        </div>
-      </div>
         )}
-    </div>
+      </div>
     </>
   );
 };

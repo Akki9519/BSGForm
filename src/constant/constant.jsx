@@ -1,1 +1,1 @@
- export const BASE_URL="http://localhost:3005"
+export const BASE_URL="https://bw-tp.bsgindia.tech"

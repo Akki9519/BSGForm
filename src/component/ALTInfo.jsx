@@ -1,13 +1,11 @@
-
-
-
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { BASE_URL } from "../constant/constant";
+import SecureLS from "secure-ls";
 
+const ls = new SecureLS({ encodingType: "aes", isCompression: false });
 const ALTInfo = () => {
   const [selectedWing, setSelectedWing] = useState("");
   const [selectedSubWings, setSelectedSubWings] = useState([]);
@@ -39,6 +37,14 @@ const ALTInfo = () => {
     setFormData({ ...formData, [name]: value });
   };
 
+  const functionDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, "0"); // Ensure two digits
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
   const handleSubWingChange = (subWing) => {
     setSelectedSubWings((prev) => {
       if (prev.includes(subWing)) {
@@ -54,8 +60,8 @@ const ALTInfo = () => {
   };
 
   const handleSubmit = async () => {
-    const storedIdString = localStorage.getItem("_id");
-    const userId = storedIdString ? JSON.parse(storedIdString) : null;
+    const userId = ls.get("_id");
+    // const userId = storedIdString ? JSON.parse(storedIdString) : null;
 
     const data = {
       selectedWing,
@@ -77,19 +83,20 @@ const ALTInfo = () => {
     }
   };
 
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const storedIdString = localStorage.getItem("_id");
-        const userId = storedIdString ? JSON.parse(storedIdString) : null;
+        const userId = ls.get("_id");
+        // const userId = storedIdString ? JSON.parse(storedIdString) : null;
 
         if (!userId) {
           toast.error("User ID not found. Please log in again.");
           return;
         }
 
-        const response = await axios.get(`${BASE_URL}/api/v2/altinfo/${userId}`);
+        const response = await axios.get(
+          `${BASE_URL}/api/v2/altinfo/${userId}`
+        );
         console.log(response.data, "response");
 
         if (response.data.some((item) => item.isSubmitted === true)) {
@@ -123,20 +130,23 @@ const ALTInfo = () => {
               >
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-20 gap-y-5">
                   <div>
-                    <strong>Wing:</strong> {course.selectedWing
-                    }
+                    <strong>Wing:</strong> {course.selectedWing}
                   </div>
                   <div>
-                    <strong>Section:</strong> {course.selectedSubWings?.join(", ")}
+                    <strong>Section:</strong>{" "}
+                    {course.selectedSubWings?.join(", ")}
                   </div>
                   <div>
-                    <strong>Training Type:</strong> {course.trainingType}
+                    <strong>Training Type:</strong> {course.selectType}
                   </div>
                   <div>
-                    <strong>From Date:</strong> {course.courseFromDate}
+                    <strong>From Date:</strong>{" "}
+                    {functionDate(course.courseFromDate)}
                   </div>
+
                   <div>
-                    <strong>To Date:</strong> {course.courseToDate}
+                    <strong>To Date:</strong>
+                    {functionDate(course.courseToDate)}
                   </div>
                   <div>
                     <strong>Venue:</strong> {course.place}
@@ -145,8 +155,14 @@ const ALTInfo = () => {
                     <strong>Leader:</strong> {course.leader}
                   </div>
                   <div>
-                    <strong>Certificate Number:</strong> {course.certificateNumber}
+                    <strong>Certificate Number:</strong>{" "}
+                    {course.certificateNumber}
                   </div>
+                  <div>
+                    <strong>Certificate Date:</strong>{" "}
+                    {functionDate(course.certificateDate)}
+                  </div>
+
                   <div>
                     <strong>Participants:</strong> {course.participants}
                   </div>
@@ -155,161 +171,70 @@ const ALTInfo = () => {
             ))}
           </div>
         ) : (
-        <div className="border p-4 rounded">
-          {/* Wing Selection */}
-          <div className="mb-4">
-            <label className="block mb-2 font-bold text-black">Select Wing</label>
-            <select
-              className="border border-gray-300 rounded px-3 py-2 w-full"
-              value={selectedWing}
-              onChange={(e) => setSelectedWing(e.target.value)}
-            >
-              <option value="">-- Select Wing --</option>
-              <option value="Scout">Scout</option>
-              <option value="Guide">Guide</option>
-            </select>
-          </div>
-
-          {/* Sub-Wing Selection */}
-          <div className="mb-4">
-            <label className="block mb-2 font-bold text-black">Select Sub-Wing</label>
-            {selectedWing &&
-              subWingOptions[selectedWing]?.map((subWing) => (
-                <div key={subWing} className="flex items-center mb-2">
-                  <input
-                    type="checkbox"
-                    id={subWing}
-                    checked={selectedSubWings.includes(subWing)}
-                    onChange={() => handleSubWingChange(subWing)}
-                    className="mr-2"
-                  />
-                  <label htmlFor={subWing} className="text-black">
-                    {subWing}
-                  </label>
-                </div>
-              ))}
-          </div>
-
-          {/* Training Details */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div className="mb-4">
-              <label className="block mb-2 font-bold text-black">Select Type</label>
-              <select
-                name="selectType"
-                value={selectType}
-                onChange={handleSelectTypeChange}
-                className="border border-gray-300 rounded px-3 py-2 w-full"
-              >
-                <option value="">-- Select Type --</option>
-                <option value="conducted">Conducted</option>
-                <option value="assisted">Assisted</option>
-              </select>
-            </div>
-            <div className="mb-4">
-              <label className="block mb-2 font-bold text-black">Course Date</label>
-              <input
-                type="date"
-                name="courseDate"
-                value={formData.courseDate}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded px-3 py-2 w-full"
-              />
-            </div>
-          </div>
-
-
-
-
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-             <div className="mb-4">
-               <label className="block mb-2 font-bold text-black">Place</label>
-               <input
-                type="text"
-                name="place"
-                placeholder="Place"
-                className="border border-gray-300 rounded px-3 py-2 w-full"
-              />
-            </div>
-            {selectType !== "conducted" && (
-              <div className="mb-4">
-                <label className="block mb-2 font-bold text-black">
-                  Leader of the Course
-                </label>
-                <input
-                  type="text"
-                  name="leader"
-                  placeholder="Leader of the Course"
-                  className="border border-gray-300 rounded px-3 py-2 w-full"
-                />
-              </div>
-            )}
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div className="border p-4 rounded">
+            {/* Wing Selection */}
             <div className="mb-4">
               <label className="block mb-2 font-bold text-black">
-                No. of Participants
+                Select Wing
               </label>
-              <input
-                type="number"
-                name="participants"
-                placeholder="No. of Participants"
+              <select
                 className="border border-gray-300 rounded px-3 py-2 w-full"
-              />
-            </div>
-          </div>
-          <div className="space-y-4 mt-6">
-            <div className="font-bold text-black">
-              Details of Last ROT Attended
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="block mb-2 font-bold text-black">
-                  Course From Date
-                </label>
-                <input
-                  type="date"
-                  name="courseFromDate"
-                  onChange={handleInputChange}
-                  className="border border-gray-300 rounded px-3 py-2 w-full"
-                />
-              </div>
-
-              <div>
-                <label className="block mb-2 font-bold text-black">
-                  Course To Date
-                </label>
-                <input
-                  type="date"
-                  name="courseToDate"
-                  onChange={handleInputChange}
-                  className="border border-gray-300 rounded px-3 py-2 w-full"
-                />
-              </div>
+                value={selectedWing}
+                onChange={(e) => setSelectedWing(e.target.value)}
+              >
+                <option value="">-- Select Wing --</option>
+                <option value="Scout">Scout</option>
+                <option value="Guide">Guide</option>
+              </select>
             </div>
 
+            {/* Sub-Wing Selection */}
+            <div className="mb-4">
+              <label className="block mb-2 font-bold text-black">
+                Select Sub-Wing
+              </label>
+              {selectedWing &&
+                subWingOptions[selectedWing]?.map((subWing) => (
+                  <div key={subWing} className="flex items-center mb-2">
+                    <input
+                      type="checkbox"
+                      id={subWing}
+                      checked={selectedSubWings.includes(subWing)}
+                      onChange={() => handleSubWingChange(subWing)}
+                      className="mr-2"
+                    />
+                    <label htmlFor={subWing} className="text-black">
+                      {subWing}
+                    </label>
+                  </div>
+                ))}
+            </div>
+
+            {/* Training Details */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div className="mb-4">
                 <label className="block mb-2 font-bold text-black">
-                  Certificate Number
+                  Select Type
                 </label>
-                <input
-                  type="text"
-                  name="certificateNumber"
-                  onChange={handleInputChange}
-                  placeholder="Certificate Number"
+                <select
+                  name="selectType"
+                  value={selectType}
+                  onChange={handleSelectTypeChange}
                   className="border border-gray-300 rounded px-3 py-2 w-full"
-                />
+                >
+                  <option value="">-- Select Type --</option>
+                  <option value="conducted">Conducted</option>
+                  <option value="assisted">Assisted</option>
+                </select>
               </div>
-
               <div className="mb-4">
                 <label className="block mb-2 font-bold text-black">
-                  Certificate Date
+                  Course Date
                 </label>
                 <input
                   type="date"
-                  name="certificateDate"
+                  name="courseDate"
+                  value={formData.courseDate}
                   onChange={handleInputChange}
                   className="border border-gray-300 rounded px-3 py-2 w-full"
                 />
@@ -317,42 +242,136 @@ const ALTInfo = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div className="mb-4">
-                <label className="block mb-2 font-bold text-black">
-                  Leader of the Course
-                </label>
-                <input
-                  type="text"
-                  name="leader"
-                  onChange={handleInputChange}
-                  placeholder="Leader of the Course"
-                  className="border border-gray-300 rounded px-3 py-2 w-full"
-                />
-              </div>
               <div className="mb-4">
                 <label className="block mb-2 font-bold text-black">Place</label>
                 <input
                   type="text"
                   name="place"
-                  onChange={handleInputChange}
                   placeholder="Place"
                   className="border border-gray-300 rounded px-3 py-2 w-full"
                 />
               </div>
+              {selectType !== "conducted" && (
+                <div className="mb-4">
+                  <label className="block mb-2 font-bold text-black">
+                    Leader of the Course
+                  </label>
+                  <input
+                    type="text"
+                    name="leader"
+                    placeholder="Leader of the Course"
+                    className="border border-gray-300 rounded px-3 py-2 w-full"
+                  />
+                </div>
+              )}
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div className="mb-4">
+                <label className="block mb-2 font-bold text-black">
+                  No. of Participants
+                </label>
+                <input
+                  type="number"
+                  name="participants"
+                  placeholder="No. of Participants"
+                  className="border border-gray-300 rounded px-3 py-2 w-full"
+                />
               </div>
-         
+            </div>
+            <div className="space-y-4 mt-6">
+              <div className="font-bold text-black">
+                Details of Last ROT Attended
+              </div>
 
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="block mb-2 font-bold text-black">
+                    Course From Date
+                  </label>
+                  <input
+                    type="date"
+                    name="courseFromDate"
+                    onChange={handleInputChange}
+                    className="border border-gray-300 rounded px-3 py-2 w-full"
+                  />
+                </div>
 
+                <div>
+                  <label className="block mb-2 font-bold text-black">
+                    Course To Date
+                  </label>
+                  <input
+                    type="date"
+                    name="courseToDate"
+                    onChange={handleInputChange}
+                    className="border border-gray-300 rounded px-3 py-2 w-full"
+                  />
+                </div>
+              </div>
 
-          <div
-            className="bg-[#1D56A5] rounded-md flex justify-center items-center py-1 text-white font-medium my-5 cursor-pointer"
-            onClick={handleSubmit}
-          >
-            Submit
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div className="mb-4">
+                  <label className="block mb-2 font-bold text-black">
+                    Certificate Number
+                  </label>
+                  <input
+                    type="text"
+                    name="certificateNumber"
+                    onChange={handleInputChange}
+                    placeholder="Certificate Number"
+                    className="border border-gray-300 rounded px-3 py-2 w-full"
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label className="block mb-2 font-bold text-black">
+                    Certificate Date
+                  </label>
+                  <input
+                    type="date"
+                    name="certificateDate"
+                    onChange={handleInputChange}
+                    className="border border-gray-300 rounded px-3 py-2 w-full"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div className="mb-4">
+                  <label className="block mb-2 font-bold text-black">
+                    Leader of the Course
+                  </label>
+                  <input
+                    type="text"
+                    name="leader"
+                    onChange={handleInputChange}
+                    placeholder="Leader of the Course"
+                    className="border border-gray-300 rounded px-3 py-2 w-full"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block mb-2 font-bold text-black">
+                    Place
+                  </label>
+                  <input
+                    type="text"
+                    name="place"
+                    onChange={handleInputChange}
+                    placeholder="Place"
+                    className="border border-gray-300 rounded px-3 py-2 w-full"
+                  />
+                </div>
+              </div>
+
+              <div
+                className="bg-[#1D56A5] rounded-md flex justify-center items-center py-1 text-white font-medium my-5 cursor-pointer"
+                onClick={handleSubmit}
+              >
+                Submit
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-          )}
+        )}
       </div>
     </>
   );

@@ -14,17 +14,15 @@ const EmailVerification = () => {
         const response = await axios.get(
           `${BASE_URL}/api/v2/verify-email/${token}`
         );
-        console.log(response,"response")
-console.log(response.data.message,"message")
+        console.log(response, "response");
+        console.log(response.data.message, "message");
         setStatus({
           error: "",
           success: "Your email has been successfully verified! Redirecting...",
         });
         setTimeout(() => {
           navigate("/form");
-        }, 5000); 
-
-       
+        }, 5000);
       } catch (err) {
         setStatus({
           error: err.response?.data?.message || "Something went wrong!",
@@ -63,4 +61,3 @@ console.log(response.data.message,"message")
 };
 
 export default EmailVerification;
-

@@ -1,7 +1,12 @@
+
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { BASE_URL } from "../constant/constant";
 import { useNavigate } from "react-router-dom";
+import SecureLS from "secure-ls";
+
+const ls = new SecureLS({ encodingType: "aes", isCompression: false });
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -10,19 +15,18 @@ const Login = () => {
   const [bsgnumber, setBsgNumber] = useState("");
   const [parchmentNumber, setParchmentNumber] = useState("");
   const [message, setMessage] = useState("");
-  const [userData, setUserData] = useState(null); // User data will be initially null
-  const [userEmail, setUserEmail] = useState(""); // For new email input
-  const [loading, setLoading] = useState(false); // For login loading
-  const [emailUpdating, setEmailUpdating] = useState(false); // For email update loading
-  const [bsgUpdating, setBsgUpdating] = useState(false); // For BSG number update loading
-  const [verifyingEmail, setVerifyingEmail] = useState(false); // For email verification loading
-  const [emailVerified, setEmailVerified] = useState(false); // Track email verification status
+  const [userData, setUserData] = useState(null);
+  const [userEmail, setUserEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [emailUpdating, setEmailUpdating] = useState(false);
+  const [bsgUpdating, setBsgUpdating] = useState(false);
+  const [verifyingEmail, setVerifyingEmail] = useState(false);
+  const [emailVerified, setEmailVerified] = useState(false);
   const navigate = useNavigate();
 
-  // Effect to check if the email is already verified
   useEffect(() => {
     if (userData && userData.email !== "NA") {
-      setEmailVerified(userData.emailVerified || false); // Assuming userData has emailVerified field
+      setEmailVerified(userData.emailVerified || false);
     }
   }, [userData]);
 
@@ -30,7 +34,6 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
 
-    // Validation for LT/ALT or HWB
     if (selectedCourse === "LT" || selectedCourse === "ALT") {
       if (!honourableNumber) {
         setMessage("Please enter the Honourable Number.");
@@ -57,31 +60,44 @@ const Login = () => {
 
     try {
       const response = await axios.post(`${BASE_URL}/api/v2/login`, loginData);
-      console.log(response.data,"response")
       if (response.data) {
-        console.log(response.data,"course")
         const sectionq = response.data.user.course;
-        localStorage.setItem("sectionq", sectionq);
+        ls.set("sectionq", sectionq);
         const kyttoken = response.data.token;
-        const _id= response.data._id;
-        const id = JSON.stringify(_id);
-        console.log(kyttoken,"kyttoken")
-        localStorage.setItem("kyttoken", kyttoken);
-        localStorage.setItem("_id", id);
+        const _id = response.data._id;
+        ls.set("kyttoken", kyttoken);
+        ls.set("_id", _id);
 
-        const userDetails = response.data.ltuser; // Assuming user details come here
+        const userDetails =
+          response.data.ltuser ||
+          response.data.altuser ||
+          response.data.hwbuser;
         if (userDetails) {
+          const name = userDetails.name;
+          const email = userDetails.email;
+          const bsgnumber = userDetails.bsgUid;
+
+          ls.set("name", name);
+          ls.set("email", email);
+          ls.set("bsgnumber", bsgnumber);
+
           setUserData(userDetails);
           setMessage("Login successful! Please verify your email to proceed.");
         } else {
           setMessage("No user data found. Please check your credentials.");
         }
       } else {
-        setMessage("Invalid credentials or data mismatch. Please check your details.");
+        setMessage(
+          "Invalid credentials or data mismatch. Please check your details."
+        );
       }
     } catch (error) {
-      console.error("Error during login:", error);
-      setMessage("Error during login. Please try again.");
+      if (
+        error.response.data.message ===
+        "No related data found for the given details"
+      ) {
+        setMessage("No related data found for the given details");
+      }
     } finally {
       setLoading(false);
     }
@@ -90,14 +106,19 @@ const Login = () => {
   const handleVerifyEmail = async (email) => {
     setVerifyingEmail(true);
     try {
-      const response = await axios.post(`${BASE_URL}/api/v2/verify-email`, { email });
-      if (response.data.message === "Verification email sent! Please check your inbox.") {
+      const response = await axios.post(`${BASE_URL}/api/v2/verify-email`, {
+        email,
+      });
+      if (
+        response.data.message ===
+        "Verification email sent! Please check your inbox."
+      ) {
         setMessage("Verification email sent! Please check your inbox.");
       }
     } catch (error) {
       if (error.response.data.message === "Email is already verified.") {
         setMessage("Email is already verified.");
-        setEmailVerified(true); // Set the email as verified in the state
+        setEmailVerified(true);
       } else {
         console.error("Error during email verification:", error);
         setMessage("Error during email verification. Please try again.");
@@ -115,7 +136,9 @@ const Login = () => {
 
     setEmailUpdating(true);
     try {
-      const response = await axios.put(`${BASE_URL}/api/v2/ltuser/${userId}`, { email: userEmail });
+      const response = await axios.put(`${BASE_URL}/api/v2/ltuser/${userId}`, {
+        email: userEmail,
+      });
       setMessage("Email updated successfully.");
       setUserData((prevData) => ({ ...prevData, email: userEmail }));
     } catch (error) {
@@ -133,7 +156,9 @@ const Login = () => {
 
     setBsgUpdating(true);
     try {
-      const response = await axios.put(`${BASE_URL}/api/v2/ltuser/${userId}`, { bsgNumber: bsgnumber });
+      const response = await axios.put(`${BASE_URL}/api/v2/ltuser/${userId}`, {
+        bsgNumber: bsgnumber,
+      });
       setMessage("BSG Number updated successfully.");
       setUserData((prevData) => ({ ...prevData, bsgUid: bsgnumber }));
     } catch (error) {
@@ -145,10 +170,16 @@ const Login = () => {
 
   return (
     <div className="p-4 max-w-md mx-auto border rounded shadow-md mt-32">
-      <h1 className="text-2xl font-bold mb-4 uppercase text-center text-[#1D56A5]">The Bharat Scouts and Guides</h1>
-      <h2 className="text-xl font-bold mb-4 uppercase text-center text-[#1D56A5]">Trainer's Portal-Know Your Trainer's</h2>
+      <h1 className="text-2xl font-bold mb-4 uppercase text-center text-[#1D56A5]">
+        The Bharat Scouts and Guides
+      </h1>
+      <h2 className="text-xl font-bold mb-4 uppercase text-center text-[#1D56A5]">
+        Trainer's Portal-Know Your Trainer's
+      </h2>
       <div className="mb-4">
-        <label htmlFor="course" className="block mb-2 font-medium">You Are:</label>
+        <label htmlFor="course" className="block mb-2 font-medium">
+          You Are:
+        </label>
         <select
           id="course"
           value={selectedCourse}
@@ -160,13 +191,12 @@ const Login = () => {
           }}
           className="w-full border rounded px-3 py-2"
         >
-          <option value="" disabled>You Are</option>
+          <option value="You Are">You Are</option>
           <option value="LT">LT</option>
           <option value="ALT">ALT</option>
           <option value="HWB">HWB</option>
         </select>
       </div>
-
 
       {(selectedCourse === "LT" || selectedCourse === "ALT") && (
         <div className="mb-4">
@@ -200,7 +230,6 @@ const Login = () => {
         </div>
       )}
 
-      {/* Other form elements for Honourable Number, Parchment Number, etc. */}
       <button
         onClick={handleSubmit}
         disabled={loading}
@@ -210,25 +239,42 @@ const Login = () => {
       </button>
 
       {message && (
-        <div className={`mt-4 p-3 rounded ${message.includes("successful") ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
+        <div
+          className={`mt-4 p-3 rounded ${
+            message.includes("successful")
+              ? "bg-green-100 text-green-800"
+              : "bg-red-100 text-red-800"
+          }`}
+        >
           {message}
         </div>
       )}
 
-      {/* User Data Display */}
       {userData && (
         <div className="mt-4 p-4 border rounded shadow">
           <h3 className="text-lg font-bold mb-2">User Details:</h3>
-          <p><strong>Name:</strong> {userData.name}</p>
-          <p><strong>State:</strong> {userData.STATE}</p>
-          <p><strong>Honourable Charge No:</strong> {userData.HONOURABLE_CHARGE_NO || "N/A"}</p>
-          <p><strong>BSG UID:</strong> {userData.bsgUid}</p>
-          <p><strong>Email:</strong> {userData.email}</p>
+          <p>
+            <strong>Name:</strong> {userData.name}
+          </p>
+          <p>
+            <strong>State:</strong> {userData.STATE}
+          </p>
+          <p>
+            <strong>Honourable Charge No:</strong>{" "}
+            {userData.HONOURABLE_CHARGE_NO || "N/A"}
+          </p>
+          <p>
+            <strong>BSG UID:</strong> {userData.bsgUid}
+          </p>
+          <p>
+            <strong>Email:</strong> {userData.email}
+          </p>
 
-          {/* Email Update Section */}
           {userData.email === "NA" && (
             <div className="mb-4">
-              <label htmlFor="userEmail" className="block mb-2 font-medium">Enter New Email for Verification:</label>
+              <label htmlFor="userEmail" className="block mb-2 font-medium">
+                Enter New Email for Verification:
+              </label>
               <input
                 type="email"
                 id="userEmail"
@@ -247,10 +293,11 @@ const Login = () => {
             </div>
           )}
 
-          {/* BSG Number Update Section */}
           {userData.bsgUid === "NA" && (
             <div className="mb-4">
-              <label htmlFor="bsgnumber" className="block mb-2 font-medium">Enter BSGUID Number:</label>
+              <label htmlFor="bsgnumber" className="block mb-2 font-medium">
+                Enter BSGUID Number:
+              </label>
               <input
                 type="text"
                 id="bsgnumber"
@@ -269,8 +316,7 @@ const Login = () => {
             </div>
           )}
 
-          {/* Verify Email Button or Proceed Button */}
-          {userData.email !== "NA" && (
+          {userData.email !== "NA" && userData.bsgnumber !== "NA" && (
             <div className="mt-4">
               {!emailVerified ? (
                 <button
