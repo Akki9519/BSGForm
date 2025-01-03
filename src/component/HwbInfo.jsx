@@ -26,6 +26,7 @@ const HwbForm = () => {
   ]);
   const [fetchedData, setFetchedData] = useState([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const[loading,setLoading]=useState(false)
   const [subWingOptions, setSubWingOptions] = useState({
     Scout: ["HWB-Cub", "HWB-Scout", "HWB-Rover"],
     Guide: ["HWB-Bulbul", "HWB-Guide", "HWB-Ranger"],
@@ -85,6 +86,27 @@ const HwbForm = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    for (let i = 0; i < courses.length; i++) {
+      const course = courses[i];
+      const requiredFields = [
+        course.wing,
+        course.subwing,
+        course.fromDate,
+        course.toDate,
+        course.certificateNumber,
+        course.certificateDate,
+        course.parchmentNumber,
+        course.parchmentDate,
+      ];
+  
+      if (requiredFields.includes("") || requiredFields.includes(false)) {
+        toast.error(`Please fill out all fields  before submitting.`);
+        setLoading(false); // Stop loading
+        return;
+      }
+    }
+
+
     try {
       const userId = ls.get("_id");
       // const userId = JSON.parse(storedIdString);
@@ -128,7 +150,7 @@ const HwbForm = () => {
         // ls.setItem("id", responseMessage1);
       }
 
-      toast.success("Form Submitted Successfully");
+      toast.success("Hwb Form Submitted Successfully");
 
       // Reset only the new courses after submission
       setCourses((prevCourses) =>
@@ -266,7 +288,7 @@ const HwbForm = () => {
             ))}
           </div>
         ) : (
-          <div onSubmit={handleSubmit} className="mt-8 space-y-6">
+          <div  className="mt-8 space-y-6">
             {courses.map((course, index) => (
               <div
                 key={course.id}
@@ -533,7 +555,7 @@ const HwbForm = () => {
               className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 ml-5"
               onClick={handleSubmit}
             >
-              Submit
+               {loading ? "Submitting..." : "Submit"}
             </button>
           </div>
         )}

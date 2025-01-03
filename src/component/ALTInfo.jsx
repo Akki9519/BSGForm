@@ -8,6 +8,7 @@ import SecureLS from "secure-ls";
 const ls = new SecureLS({ encodingType: "aes", isCompression: false });
 const ALTInfo = () => {
   const [selectedWing, setSelectedWing] = useState("");
+  const [loading, setLoading] = useState(false);
   const [selectedSubWings, setSelectedSubWings] = useState([]);
   const [selectType, setSelectType] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -21,6 +22,8 @@ const ALTInfo = () => {
     courseToDate: "",
     certificateNumber: "",
     certificateDate: "",
+    honourableChargeNo: "",
+    issuedDate: ""
   });
 
   useEffect(() => {
@@ -59,23 +62,48 @@ const ALTInfo = () => {
     setSelectType(e.target.value);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
     const userId = ls.get("_id");
-    // const userId = storedIdString ? JSON.parse(storedIdString) : null;
+    const requiredFields = [
+      selectedWing,
+      selectedSubWings.length > 0,
+      selectType,
+      formData.courseDate,
+      formData.place,
+      formData.participants,
+      formData.courseFromDate,
+      formData.courseToDate,
+      formData.certificateNumber,
+      formData.certificateDate,
+      formData.honourableChargeNo,
+      formData.issuedDate
+    ];
+  
+    if (requiredFields.includes("") || requiredFields.includes(false)) {
+      toast.error("Please fill out all fields before submitting.");
+      setLoading(false);
+      return;
+    }
+  
 
     const data = {
       selectedWing,
       selectedSubWings,
       selectType,
+
+      
       ...formData,
     };
-
+console.log(data,"data")
     try {
       const response = await axios.post(
         `${BASE_URL}/api/v2/altinfo/${userId}`,
         data
       );
-      toast.success("Form submitted successfully!");
+      toast.success("ALT Form submitted successfully!");
+      setLoading(false)
       console.log(response.data);
     } catch (error) {
       toast.error("An error occurred while submitting the form.");
@@ -135,6 +163,13 @@ const ALTInfo = () => {
                   <div>
                     <strong>Section:</strong>{" "}
                     {course.selectedSubWings?.join(", ")}
+                  </div>
+
+                  <div>
+                    <strong>Honourable No:</strong> {course.honourableChargeNo}
+                  </div>
+                  <div>
+                    <strong>Issue Date:</strong> {functionDate(course.issuedDate)}
                   </div>
                   <div>
                     <strong>Training Type:</strong> {course.selectType}
@@ -210,6 +245,37 @@ const ALTInfo = () => {
                 ))}
             </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+  <div className="mb-2">
+    <label className="block mb-2 font-bold text-black">
+      Honourable Charge No
+    </label>
+    <input
+      type="text"
+      name="honourableChargeNo"
+      value={formData.honourableChargeNo}
+      onChange={handleInputChange}
+      placeholder="Honourable Charge No"
+      className="border border-gray-300 rounded px-3 py-2 w-full"
+    />
+  </div>
+
+  <div className="mb-2">
+    <label className="block mb-2 font-bold text-black">
+      Issued Date
+    </label>
+    <input
+      type="date"
+      name="issuedDate"
+      value={formData.issuedDate}
+      onChange={handleInputChange}
+      className="border border-gray-300 rounded px-3 py-2 w-full"
+    />
+  </div>
+</div>
+
+
+
             {/* Training Details */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
               <div className="mb-2">
@@ -273,6 +339,8 @@ const ALTInfo = () => {
                 <input
                   type="number"
                   name="participants"
+                  value={formData.participants}
+                  onChange={handleInputChange}
                   placeholder="No. of Participants"
                   className="border border-gray-300 rounded px-3 py-2 w-full"
                 />
@@ -367,7 +435,7 @@ const ALTInfo = () => {
                 className="bg-[#1D56A5] rounded-md flex justify-center items-center py-1 text-white font-medium my-5 cursor-pointer"
                 onClick={handleSubmit}
               >
-                Submit
+                   {loading ? "Submitting..." : "Submit"}
               </div>
             </div>
           </div>

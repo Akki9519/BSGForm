@@ -10,6 +10,7 @@ const ls = new SecureLS({ encodingType: "aes", isCompression: false });
 const PersonalInformation = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
   const [dob, setDob] = useState("");
   const [bsgUid, setBsgUid] = useState("");
   const [state, setState] = useState("");
@@ -24,6 +25,7 @@ const PersonalInformation = () => {
   const [revenueState1, setRevenueState1] = useState([]);
   const [revenueDistrict, setRevenueDistrict] = useState("");
   const [revenueDistrict1, setRevenueDistrict1] = useState([]);
+  const [isSameAddress, setIsSameAddress] = useState(false);
   const [revenuePincode, setRevenuePincode] = useState("");
   const [uploadPhoto, setUploadPhoto] = useState(null);
   const [uploadPhoto1, setUploadPhoto1] = useState(null);
@@ -67,8 +69,19 @@ const PersonalInformation = () => {
     return `${day}-${month}-${year}`;
   };
 
+
+  const handleSameAddressChange = (e) => {
+    setIsSameAddress(e.target.checked);
+    if (e.target.checked) {
+      setPermanentAddress(currentAddress); // Set permanent address to current address
+    } else {
+      setPermanentAddress(""); // Clear permanent address if unchecked
+    }
+  };
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     if (
       name === "" ||
@@ -96,6 +109,7 @@ const PersonalInformation = () => {
       toDate1 === ""
     ) {
       toast.error("Please fill out all fields before submitting.");
+      setLoading(false);
       return;
     }
     const formData = new FormData();
@@ -136,10 +150,7 @@ const PersonalInformation = () => {
       const userId = ls.get("_id"); // Use secure-ls to get the user ID
       // const userId = JSON.parse(storedIdString);
 
-      if (status) {
-        toast("Form is already submitted");
-        return;
-      }
+
 
       const response = await axios.post(
         `${BASE_URL}/api/v1/personaldetails/${userId}`,
@@ -153,9 +164,10 @@ const PersonalInformation = () => {
 
       const responseMessage1 = response.data._id;
       ls.set("id", responseMessage1); // Store the ID securely
-
+   
       toast.success("Form Submitted Successfully");
-      getData();
+      setLoading(false);
+      // getData();
     } catch (error) {
       console.error("Error:", error);
       toast("An error occurred during registration");
@@ -480,7 +492,7 @@ const PersonalInformation = () => {
                   />
                 </div>
 
-                <div className="flex flex-col mb-4">
+                {/* <div className="flex flex-col mb-4">
                   <label className="mb-1 font-medium text-black">
                     Current Address
                   </label>
@@ -506,7 +518,51 @@ const PersonalInformation = () => {
                     placeholder="Enter the Permanent Address"
                     className="outline-none bg-white rounded-md px-3 py-1 border border-gray-300 focus:border-indigo-500"
                   />
-                </div>
+                </div> */}
+{/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 lg:gap-10"> */}
+      <div className="flex flex-col mb-4">
+        <label className="mb-1 font-medium text-black">
+          Current Address
+        </label>
+        <textarea
+          type="text"
+          value={currentAddress}
+          disabled={courseDisable.length}
+          onChange={(e) => setCurrentAddress(e.target.value)}
+          placeholder="Enter the Current Address"
+className="outline-none bg-white rounded-md px-3 py-1 border border-gray-300 focus:border-indigo-500"
+        />
+      </div>
+
+      <div className="flex flex-col mb-4">
+        <label className="mb-1 font-medium text-black">
+          Permanent Address
+        </label>
+        <textarea
+          type="text"
+          value={permanentAddress}
+          disabled={courseDisable.length}
+          onChange={(e) => setPermanentAddress(e.target.value)}
+          placeholder="Enter the Permanent Address"
+className="outline-none bg-white rounded-md px-3 py-1 border border-gray-300 focus:border-indigo-500"
+        />
+
+        
+      <div className="flex items-center mb-4">
+        <input
+          type="checkbox"
+          checked={isSameAddress}
+          onChange={handleSameAddressChange}
+          className="mr-2"
+        />
+        <label className="font-medium text-black">
+          Same as Current Address
+        </label>
+      </div>
+      </div>
+
+  
+
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 lg:gap-10">
@@ -768,8 +824,9 @@ const PersonalInformation = () => {
                 className="bg-[#1D56A5] rounded-md flex justify-center items-center  py-1 text-white font-medium my-5 cursor-pointer"
                 onClick={handleSubmit}
               >
+                  {loading ? "Submitting..." : "Submit"}
                 <ToastContainer />
-                Submit
+           
               </div>
             </div>
           </div>

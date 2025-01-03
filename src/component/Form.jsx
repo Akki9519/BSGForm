@@ -34,54 +34,56 @@ const Form = () => {
     }));
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const userId = ls.get("_id");
+//   const handleSubmit = async (event) => {
+//     event.preventDefault();
+//     const userId = ls.get("_id");
 
-    if (!userId) {
-      toast.error("User ID not found. Please log in again.");
-      return;
-    }
+//     if (!userId) {
+//       toast.error("User ID not found. Please log in again.");
+//       return;
+//     }
 
-    try {
-      const apiEndpoints = [
-        `${BASE_URL}/api/v1/advancedDetails`,
-        `${BASE_URL}/api/v1/basicDetails`,
-        `${BASE_URL}/api/v2/altinfo`,
-        `${BASE_URL}/api/v2/ltinfo`,
-      ];
+//     try {
+//       const apiEndpoints = [
+//         `${BASE_URL}/api/v1/advancedDetails`,
+//         `${BASE_URL}/api/v1/basicDetails`,
+//         `${BASE_URL}/api/v2/altinfo`,
+//         `${BASE_URL}/api/v2/ltinfo`,
+//       ];
 
-      const responses = await Promise.all(
-        apiEndpoints.map((endpoint) =>
-          axios.get(`${endpoint}/${userId}`).then((res) => res.data)
-        )
-      );
+//       const responses = await Promise.all(
+//         apiEndpoints.map((endpoint) =>
+//           axios.get(`${endpoint}/${userId}`).then((res) => res.data)
+//         )
+//       );
+// console.log(responses,"responses")
+//       const personalResponse = await axios.get(
+//         `${BASE_URL}/api/v1/personaldetails/${userId}`
+//       );
+//       const personalDetails = personalResponse.data;
 
-      const personalResponse = await axios.get(
-        `${BASE_URL}/api/v1/personaldetails/${userId}`
-      );
-      const personalDetails = personalResponse.data;
+//       const allSubmitted = responses
+//         .flat()
+//         .every((data) => data?.isSubmitted === true);
+//       const personalStatus = personalDetails?.status;
 
-      const allSubmitted = responses
-        .flat()
-        .every((data) => data?.isSubmitted === true);
-      const personalStatus = personalDetails?.status;
+//       console.log(personalStatus,allSubmitted,"qwertyu")
+//       if (allSubmitted && personalStatus) {
 
-      if (allSubmitted && personalStatus) {
+//           toast.success("Form Submitted successfully!", {
+//             autoClose: 2000, // Optional: Customize auto-close timing
+//             style: {
+//               backgroundColor: "#28a745", // Green background for success
+//               color: "#fff", // White text color
+//             },
+//           });
 
-          toast.success("Form Submitted successfully!", {
-            autoClose: 2000, // Optional: Customize auto-close timing
-            style: {
-              backgroundColor: "#28a745", // Green background for success
-              color: "#fff", // White text color
-            },
-          });
       
-          // Delay navigation to allow the toast to be visible
-          setTimeout(() => {
-            ls.clear(); // Clear local storage
-            navigate("/"); // Navigate after toast
-          }, 5000); // Matches the autoClose timing of the toast
+//           // Delay navigation to allow the toast to be visible
+//           setTimeout(() => {
+//             ls.clear(); // Clear local storage
+//             navigate("/"); // Navigate after toast
+//           }, 5000); // Matches the autoClose timing of the toast
         
       
 
@@ -90,15 +92,164 @@ const Form = () => {
 
 
 
-      } else {
-        toast.error("Please ensure all form fields are completed.");
-      }
-    } catch (error) {
-      console.error("Error fetching API data:", error);
-      toast.error("An error occurred while fetching API data.");
-    }
-  };
+//       } else {
+//         toast.error("Please ensure all form fields are completed.");
+//       }
+//     } catch (error) {
+//       console.error("Error fetching API data:", error);
+//       toast.error("An error occurred while fetching API data.");
+//     }
+//   };
 
+// const handleSubmit = async (event) => {
+//   event.preventDefault();
+//   const userId = ls.get("_id");
+
+//   if (!userId) {
+//     toast.error("User  ID not found. Please log in again.");
+//     return;
+//   }
+
+//   try {
+//     const apiEndpoints = [
+//       `${BASE_URL}/api/v1/advancedDetails`,
+//       `${BASE_URL}/api/v1/basicDetails`,
+//       `${BASE_URL}/api/v2/altinfo`,
+//       `${BASE_URL}/api/v2/ltinfo`,
+//     ];
+
+//     const responses = await Promise.all(
+//       apiEndpoints.map((endpoint) =>
+//         axios.get(`${endpoint}/${userId}`).then((res) => res.data)
+//       )
+//     );
+
+
+
+//     console.log(responses, "responses");
+
+//     const personalResponse = await axios.get(
+//       `${BASE_URL}/api/v1/personaldetails/${userId}`
+//     );
+//     const personalDetails = personalResponse.data;
+
+//     // Check if personalDetails is empty or if the required fields are missing
+//     if (!personalDetails || !personalDetails.status) {
+//       toast.error("Personal details are incomplete. Please fill in all required fields.");
+//       return;
+//     }
+
+//     // Check if all responses have isSubmitted set to true
+//     const allSubmitted = responses
+//       .flat()
+//       .every((data) => data?.isSubmitted === true);
+
+//     console.log( allSubmitted, "qwertyu");
+
+
+
+//     if (allSubmitted) {
+//       toast.success("Form Submitted successfully!", {
+//         autoClose: 2000, // Optional: Customize auto-close timing
+//         style: {
+//           backgroundColor: "#28a745", // Green background for success
+//           color: "#fff", // White text color
+//         },
+//       });
+
+//       // Delay navigation to allow the toast to be visible
+//       setTimeout(() => {
+//         ls.clear(); // Clear local storage
+//         navigate("/"); // Navigate after toast
+//       }, 5000); // Matches the autoClose timing of the toast
+//     } else {
+//       toast.error("Please ensure all form fields are completed.");
+//     }
+//   } catch (error) {
+//     console.error("Error fetching API data:", error);
+//     toast.error("An error occurred while fetching API data.");
+//   }
+// };
+
+const handleSubmit = async (event) => {
+  event.preventDefault();
+  const userId = ls.get("_id");
+
+  if (!userId) {
+    toast.error("User  ID not found. Please log in again.");
+    return;
+  }
+
+  try {
+    const apiEndpoints = [
+      `${BASE_URL}/api/v1/advancedDetails`,
+      `${BASE_URL}/api/v1/basicDetails`,
+      `${BASE_URL}/api/v2/altinfo`,
+      `${BASE_URL}/api/v2/ltinfo`,
+    ];
+
+    const responses = await Promise.all(
+      apiEndpoints.map((endpoint) =>
+        axios.get(`${endpoint}/${userId}`).then((res) => res.data)
+      )
+    );
+
+    console.log(responses, "responses");
+
+    // Check if any response array is empty
+    const isAnyArrayEmpty = responses.some((responseArray) => responseArray.length === 0);
+    console.log(isAnyArrayEmpty,"isAnyArray")
+    if (isAnyArrayEmpty) {
+      toast.error("Please check One or more Form are empty.");
+      return;
+    }
+
+
+    const personalResponse = await axios.get(
+      `${BASE_URL}/api/v1/personaldetails/${userId}`
+    );
+    const personalDetails = personalResponse.data;
+
+    // Check if personalDetails is empty or if the required fields are missing
+    if (!personalDetails || !personalDetails.status) {
+      toast.error("Personal details are incomplete. Please fill in all required fields.");
+      return;
+    }
+
+    // Check if all responses have isSubmitted set to true for each array
+    const allSubmitted = responses.map((responseArray) => {
+      // Check if the array is not empty and then check isSubmitted
+      return responseArray.length > 0 && responseArray.every((data) => data?.isSubmitted === true);
+    });
+
+    console.log(allSubmitted, "qwertyu");
+
+    // Check if all arrays are true
+    const allArraysSubmitted = allSubmitted.every((submitted) => submitted === true);
+    console.log(allArraysSubmitted, "allArraysSubmitted");
+
+    if (allArraysSubmitted) {
+      toast.success("Form Submitted successfully!", {
+        autoClose: 2000, // Optional: Customize auto-close timing
+        style: {
+          backgroundColor: "#28a745", // Green background for success
+          color: "#fff", // White text color
+        },
+      });
+
+      // Delay navigation to allow the toast to be visible
+      setTimeout(() => {
+        ls.clear(); // Clear local storage
+        navigate("/"); // Navigate after toast
+      }, 5000); // Matches the autoClose timing of the toast
+    } else {
+      toast.error("Please ensure all form fields are completed.");
+    }
+  } catch (error) {
+    console.error("Error fetching API data:", error);
+    toast.error("An error occurred while fetching API data.");
+  }
+};
   const renderStep = () => {
     switch (location.pathname) {
       case "/form":

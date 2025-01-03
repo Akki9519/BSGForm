@@ -9,6 +9,7 @@ const ls = new SecureLS({ encodingType: "aes", isCompression: false });
 console.log(ls, "ls");
 const LTInfo = () => {
   const [selectedWing, setSelectedWing] = useState("");
+  const [loading, setLoading] = useState(false);
   const [selectedSubWings, setSelectedSubWings] = useState([]);
   const [selectType, setSelectType] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -23,6 +24,8 @@ const LTInfo = () => {
     certificateDate: "",
     courseLeader: "",
     coursePlace: "",
+    honourableChargeNo: "", // New field
+    issuedDate: "", // New field
   });
   const [fetchedData, setFetchedData] = useState([]);
 
@@ -57,7 +60,34 @@ const LTInfo = () => {
     setSelectType(e.target.value);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+
+    const requiredFields = [
+      selectedWing,
+      selectedSubWings.length > 0,
+      selectType,
+      formData.courseDate,
+      formData.place,
+      selectType !== "conducted" ? formData.leader : true, // Only check leader if not conducted
+      formData.participants,
+      formData.courseFromDate,
+      formData.courseToDate,
+      formData.certificateNumber,
+      formData.certificateDate,
+      formData.courseLeader,
+      formData.coursePlace,
+      formData.honourableChargeNo,
+      formData.issuedDate
+    ];
+  
+    if (requiredFields.includes("") || requiredFields.includes(false)) {
+      toast.error("Please fill out all fields before submitting.");
+      setLoading(false);
+      return;
+    }
     const data = {
       wing: selectedWing,
       subWing: selectedSubWings,
@@ -73,9 +103,12 @@ const LTInfo = () => {
         certificateDate: formData.certificateDate,
         courseLeader: formData.courseLeader,
         coursePlace: formData.coursePlace,
+        honourableChargeNo: formData.honourableChargeNo, // New field
+    issuedDate: formData.issuedDate, // New field
+
       },
     };
-
+console.log(data,"data")
     if (!data.wing || !data.subWing.length) {
       toast.error("Please select a wing and at least one sub-wing.");
       return;
@@ -94,7 +127,8 @@ const LTInfo = () => {
         `${BASE_URL}/api/v2/ltinfo/${userId}`,
         data
       );
-      toast.success("Form submitted successfully!");
+      toast.success("LT Form submitted successfully!");
+      setLoading(false)
       console.log("Response:", response.data);
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -184,6 +218,13 @@ const LTInfo = () => {
                     <strong>Section:</strong> {course.subWing?.join(", ")}
                   </div>
                   <div>
+                    <strong>Honourable No:</strong> {course.courseDetails?.honourableChargeNo}
+                  </div>
+                  <div>
+                    <strong>Issue Date:</strong> {functionDate(course.courseDetails.issuedDate)}
+                  </div>
+
+                  <div>
                     <strong>Training Type:</strong> {course.trainingType}
                   </div>
                   <div>
@@ -253,6 +294,36 @@ const LTInfo = () => {
                   ))}
               </div>
             </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+  <div className="mb-2">
+    <label className="block mb-2 font-bold text-black">
+      Honourable Charge No
+    </label>
+    <input
+      type="text"
+      name="honourableChargeNo"
+      value={formData.honourableChargeNo}
+      onChange={handleInputChange}
+      placeholder="Honourable Charge No"
+      className="border border-gray-300 rounded px-3 py-2 w-full"
+    />
+  </div>
+
+  <div className="mb-2">
+    <label className="block mb-2 font-bold text-black">
+      Issued Date
+    </label>
+    <input
+      type="date"
+      name="issuedDate"
+      value={formData.issuedDate}
+      onChange={handleInputChange}
+      className="border border-gray-300 rounded px-3 py-2 w-full"
+    />
+  </div>
+</div>
+
 
             <h2 className="font-bold text-black text-lg mb-2">
               Training Courses Assisted/Conducted in Last Year
@@ -424,7 +495,7 @@ const LTInfo = () => {
               className="bg-[#1D56A5] rounded-md flex justify-center items-center py-1 text-white font-medium my-5 cursor-pointer"
               onClick={handleSubmit}
             >
-              Submit
+               {loading ? "Submitting..." : "Submit"}
             </div>
           </div>
         )}

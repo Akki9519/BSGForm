@@ -25,18 +25,21 @@ const ProtectedRoute = (props) => {
         } else {
           // Token has expired
           console.error("Token has expired.");
-          ls.remove('token'); // Optional: Clear expired token
-          navigate('/login');
+          ls.remove('token'); 
+          ls.clear(); // Optional: Clear expired token
+          navigate('/');
         }
       } catch (error) {
         console.error("Error decoding token:", error);
-        ls.remove('token'); // Optional: Clear invalid token
-        navigate('/login');
+        ls.remove('token');
+        ls.clear(); // Optional: Clear invalid token
+        navigate('/');
       }
     } else {
       // Token not found
       console.warn("No token found.");
-      navigate('/login');
+
+      navigate('/');
     }
   }, [navigate]);
 

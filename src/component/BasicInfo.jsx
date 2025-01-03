@@ -30,6 +30,7 @@ const BasicForm = () => {
     Guide: ["Bulbul", "Guide", "Ranger"],
   });
   const [selectedSubWings, setSelectedSubWings] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [courseDisable, setCourseDisable] = useState([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -85,9 +86,10 @@ const BasicForm = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
+setLoading(true)
     if (!validateForm()) {
       toast.error("Please fill out all fields before submitting.");
+      setLoading(false)
       return;
     }
 
@@ -109,8 +111,9 @@ const BasicForm = () => {
               },
             }
           );
-          ls.setItem("id", response.data._id);
+          // ls.setItem("id", response.data._id);
           toast.success("Basic Form Submitted Successfully");
+          setLoading(false)
         } catch (error) {
           console.log(error, i, "data");
         }
@@ -208,7 +211,7 @@ const BasicForm = () => {
             ))}
           </div>
         ) : (
-          <div onSubmit={handleSubmit} className="mt-8 space-y-6">
+          <div  className="mt-8 space-y-6">
             {courses.map((course, index) => (
               <div
                 key={course.id}
@@ -403,7 +406,7 @@ const BasicForm = () => {
               className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 ml-5"
               onClick={handleSubmit}
             >
-              Submit
+                 {loading ? "Submitting..." : "Submit"}
             </button>
           </div>
         )}
