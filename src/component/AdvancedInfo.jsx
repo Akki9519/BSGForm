@@ -122,6 +122,8 @@ const BasicForm = () => {
           // ls.setItem("id", response.data._id);
           toast.success("Advance Form Submitted Successfully");
           setLoading(true)
+          fetchData();
+          
         } catch (error) {
           console.log(error, i, "data");
         }
@@ -133,27 +135,29 @@ const BasicForm = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const userId = ls.get("_id");
-        // const userId = JSON.parse(storedIdString);
 
-        const response = await axios.get(
-          `${BASE_URL}/api/v1/advancedDetails/${userId}`
-        );
-        if (response.data.some((item) => item.isSubmitted === true)) {
-          setIsSubmitted(true);
-        }
+  const fetchData = async () => {
+    try {
+      const userId = ls.get("_id");
+      // const userId = JSON.parse(storedIdString);
 
-        if (response.data && response.data.length > 0) {
-          setCourses(response.data);
-          setCourseDisable(new Array(response.data.length).fill(true));
-        }
-      } catch (error) {
-        console.error("Error fetching personal details:", error);
+      const response = await axios.get(
+        `${BASE_URL}/api/v1/advancedDetails/${userId}`
+      );
+      if (response.data.some((item) => item.isSubmitted === true)) {
+        setIsSubmitted(true);
       }
-    };
+
+      if (response.data && response.data.length > 0) {
+        setCourses(response.data);
+        setCourseDisable(new Array(response.data.length).fill(true));
+      }
+    } catch (error) {
+      console.error("Error fetching personal details:", error);
+    }
+  };
+  useEffect(() => {
+ 
 
     fetchData();
   }, []);
@@ -162,7 +166,7 @@ const BasicForm = () => {
     <>
       <div className="max-w-5xl mx-auto">
         <ToastContainer />
-        <div className="text-center font-bold  text-2xl text-yellow-500">
+        <div className="text-center font-bold  text-2xl text-red-500">
           ADVANCE COURSE
         </div>
         {isSubmitted ? (
@@ -287,7 +291,7 @@ const BasicForm = () => {
                   )}
                   <div>
                     <label className="block text-sm font-bold text-black">
-                      From Date
+                      Course From Date
                     </label>
                     <input
                       type="date"
@@ -303,7 +307,7 @@ const BasicForm = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-black">
-                      To Date
+                      Course To Date
                     </label>
                     <input
                       type="date"
@@ -390,16 +394,16 @@ const BasicForm = () => {
             <button
               type="button"
               onClick={addCourse}
-              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+              className="px-4 py-2 uppercase bg-green-500 text-white rounded hover:bg-green-600"
             >
               Add Course
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 ml-5"
+              className="px-4 py-2 bg-blue-500 uppercase text-white rounded hover:bg-blue-600 ml-5"
               onClick={handleSubmit}
             >
-                 {loading ? "Submitting..." : "Submit"}
+                 {loading ? "Submitting..." : "Submit ADVANCED DETAILS"}
             </button>
           </div>
         )}

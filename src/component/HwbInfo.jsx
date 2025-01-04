@@ -150,8 +150,8 @@ const HwbForm = () => {
         // ls.setItem("id", responseMessage1);
       }
 
-      toast.success("Hwb Form Submitted Successfully");
-
+      toast.success("Hwb Form Submitted Successfully!,Now Click Next To Proceed");
+fetchedData()
       // Reset only the new courses after submission
       setCourses((prevCourses) =>
         prevCourses.map((course) =>
@@ -240,7 +240,7 @@ const HwbForm = () => {
     <>
       <div className="max-w-5xl mx-auto">
         <ToastContainer />
-        <div className="text-center font-bold  text-2xl text-yellow-500">
+        <div className="text-center font-bold  text-2xl text-red-500">
           HWB COURSE
         </div>
 
@@ -351,7 +351,7 @@ const HwbForm = () => {
                         }
                         className="outline-none bg-white rounded-md px-3 py-1 border border-gray-300 focus:border-indigo-500"
                       >
-                        <option value="">Select Sub-Wing</option>
+                        <option value="">Select Section</option>
                         {subWingOptions[course.wing].map((option) => (
                           <option
                             key={option}
@@ -373,7 +373,7 @@ const HwbForm = () => {
 
                   <div>
                     <label className="block text-sm font-bold text-black">
-                      From Date
+                      Course From Date
                     </label>
                     <input
                       type="date"
@@ -389,7 +389,7 @@ const HwbForm = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-black">
-                      To Date
+                      Course To Date
                     </label>
                     <input
                       type="date"
@@ -546,16 +546,16 @@ const HwbForm = () => {
             <button
               type="button"
               onClick={addCourse}
-              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 "
+              className="px-4 py-2 uppercase bg-green-500 text-white rounded hover:bg-green-600 "
             >
               Add Course
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 ml-5"
+              className="px-4 py-2 bg-blue-500 uppercase text-white rounded hover:bg-blue-600 ml-5"
               onClick={handleSubmit}
             >
-               {loading ? "Submitting..." : "Submit"}
+               {loading ? "Submitting..." : "Submit hwb details"}
             </button>
           </div>
         )}

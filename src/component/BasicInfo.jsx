@@ -111,9 +111,14 @@ setLoading(true)
               },
             }
           );
+
+         
           // ls.setItem("id", response.data._id);
-          toast.success("Basic Form Submitted Successfully");
-          setLoading(false)
+          toast.success("Basic Form Submitted Successfully!,Now Click Next To Proceed");
+
+          setLoading(false);
+      fetchData();
+          
         } catch (error) {
           console.log(error, i, "data");
         }
@@ -133,34 +138,36 @@ setLoading(true)
     return `${day}-${month}-${year}`;
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const userId = ls.get("_id");
-        // const userId = JSON.parse(storedIdString);
 
-        const response = await axios.get(
-          `${BASE_URL}/api/v1/basicDetails/${userId}`
-        );
-        console.log(response, "response");
-        // if (response.data.some((item) => item.isSubmitted === true)) {
-        //   setIsSubmitted(true);
-        // }
-        if (response.data.some((item) => item.isSubmitted === true)) {
-          setIsSubmitted(true);
-          console.log("isSubmitted set to:", true);
-        } else {
-          console.log("isSubmitted remains:", false);
-        }
+  const fetchData = async () => {
+    try {
+      const userId = ls.get("_id");
+      // const userId = JSON.parse(storedIdString);
 
-        if (response.data && response.data.length > 0) {
-          setCourses(response.data);
-          setCourseDisable(new Array(response.data.length).fill(true));
-        }
-      } catch (error) {
-        console.error("Error fetching personal details:", error);
+      const response = await axios.get(
+        `${BASE_URL}/api/v1/basicDetails/${userId}`
+      );
+      console.log(response, "response");
+      // if (response.data.some((item) => item.isSubmitted === true)) {
+      //   setIsSubmitted(true);
+      // }
+      if (response.data.some((item) => item.isSubmitted === true)) {
+        setIsSubmitted(true);
+        console.log("isSubmitted set to:", true);
+      } else {
+        console.log("isSubmitted remains:", false);
       }
-    };
+
+      if (response.data && response.data.length > 0) {
+        setCourses(response.data);
+        setCourseDisable(new Array(response.data.length).fill(true));
+      }
+    } catch (error) {
+      console.error("Error fetching personal details:", error);
+    }
+  };
+  useEffect(() => {
+
 
     fetchData();
   }, []);
@@ -169,7 +176,7 @@ setLoading(true)
     <>
       <div className="max-w-5xl mx-auto">
         <ToastContainer />
-        <div className="text-center font-bold  text-2xl text-yellow-500">
+        <div className="text-center font-bold  text-2xl text-red-500">
           BASIC COURSE
         </div>
         {isSubmitted ? (
@@ -294,7 +301,7 @@ setLoading(true)
                   )}
                   <div>
                     <label className="block text-sm font-bold text-black">
-                      From Date
+                      Course From Date
                     </label>
                     <input
                       type="date"
@@ -310,7 +317,7 @@ setLoading(true)
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-black">
-                      To Date
+                      Course To Date
                     </label>
                     <input
                       type="date"
@@ -397,16 +404,16 @@ setLoading(true)
             <button
               type="button"
               onClick={addCourse}
-              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 "
+              className="px-4 py-2 uppercase bg-green-500 text-white rounded hover:bg-green-600 "
             >
               Add Course
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 ml-5"
+              className="px-4 py-2 bg-blue-500 uppercase text-white rounded hover:bg-blue-600 ml-5"
               onClick={handleSubmit}
             >
-                 {loading ? "Submitting..." : "Submit"}
+                 {loading ? "Submitting..." : "Submit BASIC DETAILS"}
             </button>
           </div>
         )}

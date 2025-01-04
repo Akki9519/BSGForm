@@ -15,6 +15,7 @@ const ALTInfo = () => {
   const [fetchedData, setFetchedData] = useState([]);
   const [formData, setFormData] = useState({
     courseDate: "",
+    trainToDate:"",
     place: "",
     leader: "",
     participants: "",
@@ -102,8 +103,9 @@ console.log(data,"data")
         `${BASE_URL}/api/v2/altinfo/${userId}`,
         data
       );
-      toast.success("ALT Form submitted successfully!");
+      toast.success("ALT Form submitted successfully!,Now Click Next To Proceed");
       setLoading(false)
+      fetchedData();
       console.log(response.data);
     } catch (error) {
       toast.error("An error occurred while submitting the form.");
@@ -141,11 +143,36 @@ console.log(data,"data")
     fetchData();
   }, []);
 
+
+  const getLocal = async () => {
+    const honourableChargeNo = ls.get("honourableNumber");
+    const course =ls.get("sectionq") // Use secure-ls to get the honourable number
+    console.log(honourableChargeNo, "hhhhhhhhhhhhh");
+  
+    // Update formData with the retrieved honourableChargeNo
+    if (honourableChargeNo && course== "ALT") {
+      setFormData((prevData) => ({
+        ...prevData,
+        honourableChargeNo: honourableChargeNo,
+      }));
+    }
+    else {
+      setFormData((prevData) => ({
+        ...prevData,
+        honourableChargeNo: "", // Set to empty if no value
+      }));
+    }
+    
+  };
+  
+  useEffect(() => {
+    getLocal();
+  }, []);
   return (
     <>
       <div>
         <ToastContainer />
-        <h2 className="text-2xl font-bold text-center text-yellow-500 mb-2 uppercase">
+        <h2 className="text-2xl font-bold text-center text-red-500 mb-2 uppercase">
           ALT Form
         </h2>
 
@@ -157,13 +184,13 @@ console.log(data,"data")
                 className="p-4 border border-gray-300 rounded mb-2"
               >
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-20 gap-y-5">
-                  <div>
+                  {/* <div>
                     <strong>Wing:</strong> {course.selectedWing}
                   </div>
                   <div>
                     <strong>Section:</strong>{" "}
                     {course.selectedSubWings?.join(", ")}
-                  </div>
+                  </div> */}
 
                   <div>
                     <strong>Honourable No:</strong> {course.honourableChargeNo}
@@ -174,6 +201,16 @@ console.log(data,"data")
                   <div>
                     <strong>Training Type:</strong> {course.selectType}
                   </div>
+                  <div>
+                    <strong>Training Course From Date:</strong>{" "}
+                    {functionDate(course.courseDate)}
+                  </div>
+
+                  <div>
+                    <strong>Training Course To Date:</strong>
+                    {functionDate(course.trainToDate)}
+                  </div>
+
                   <div>
                     <strong>From Date:</strong>{" "}
                     {functionDate(course.courseFromDate)}
@@ -208,7 +245,7 @@ console.log(data,"data")
         ) : (
           <div className="border p-4 rounded">
             {/* Wing Selection */}
-            <div className="mb-2">
+            {/* <div className="mb-2">
               <label className="block mb-2 font-bold text-black">
                 Select Wing
               </label>
@@ -221,12 +258,12 @@ console.log(data,"data")
                 <option value="Scout">Scout</option>
                 <option value="Guide">Guide</option>
               </select>
-            </div>
+            </div> */}
 
             {/* Sub-Wing Selection */}
-            <div className="mb-2">
+            {/* <div className="mb-2">
               <label className="block mb-2 font-bold text-black">
-                Select Sub-Wing
+                Select Section
               </label>
               {selectedWing &&
                 subWingOptions[selectedWing]?.map((subWing) => (
@@ -243,7 +280,7 @@ console.log(data,"data")
                     </label>
                   </div>
                 ))}
-            </div>
+            </div> */}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
   <div className="mb-2">
@@ -255,6 +292,7 @@ console.log(data,"data")
       name="honourableChargeNo"
       value={formData.honourableChargeNo}
       onChange={handleInputChange}
+      disabled={formData.honourableChargeNo !== ""}
       placeholder="Honourable Charge No"
       className="border border-gray-300 rounded px-3 py-2 w-full"
     />
@@ -274,7 +312,9 @@ console.log(data,"data")
   </div>
 </div>
 
-
+<h2 className="font-bold text-black text-lg mb-2">
+              Training Courses Assisted/Conducted in Last Year
+            </h2>
 
             {/* Training Details */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
@@ -308,6 +348,18 @@ console.log(data,"data")
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+            <div className="mb-2">
+                <label className="block mb-2 font-bold text-black">
+                  Course To Date
+                </label>
+                <input
+                  type="date"
+                  name="trainToDate"
+                  value={formData.trainToDate}
+                  onChange={handleInputChange}
+                  className="border border-gray-300 rounded px-3 py-2 w-full"
+                />
+              </div>
               <div className="mb-2">
                 <label className="block mb-2 font-bold text-black">Place</label>
                 <input
@@ -432,10 +484,10 @@ console.log(data,"data")
               </div>
 
               <div
-                className="bg-[#1D56A5] rounded-md flex justify-center items-center py-1 text-white font-medium my-5 cursor-pointer"
+                className="bg-[#1D56A5] uppercase rounded-md flex justify-center items-center py-1 text-white font-medium my-5 cursor-pointer"
                 onClick={handleSubmit}
               >
-                   {loading ? "Submitting..." : "Submit"}
+                   {loading ? "Submitting..." : "Submit ALT DETAILS"}
               </div>
             </div>
           </div>

@@ -73,14 +73,18 @@ console.log(loginData,"loginDatasdsfgh")
           response.data.ltuser ||
           response.data.altuser ||
           response.data.hwbuser;
+          console.log(userDetails,"userDetails")
         if (userDetails) {
           const name = userDetails.name;
           const email = userDetails.email;
           const bsgnumber = userDetails.bsgUid;
+          const honourableNumber=userDetails.HONOURABLE_CHARGE_NO;
+
 
           ls.set("name", name);
           ls.set("email", email);
           ls.set("bsgnumber", bsgnumber);
+          ls.set("honourableNumber", honourableNumber);
 
           setUserData(userDetails);
           setMessage("Login successful! Please verify your email to proceed.");
