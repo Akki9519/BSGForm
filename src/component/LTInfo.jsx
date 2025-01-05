@@ -55,66 +55,12 @@ const LTInfo = () => {
     });
   };
 
-  // const handleSelectTypeChange = (e) => {
-  //   setSelectType(e.target.value);
-  // };
+  
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   setLoading(true);
-
-  //   const data = {
-  //     wing: selectedWing,
-  //     subWing: selectedSubWings,
-  //     trainingType: selectType,
-  //     courseDate: formData.courseDate,
-  //     courseToDate: formData.courseToDate,
-  //     place: formData.place,
-  //     leader: selectType !== "conducted" ? formData.leader : undefined,
-  //     participants: formData.participants,
-  //     courseDetails: {
-  //       fromDate: formData.courseFromDate,
-  //       toDate: formData.courseToDate,
-  //       certificateNumber: formData.certificateNumber,
-  //       certificateDate: formData.certificateDate,
-  //       courseLeader: formData.courseLeader,
-  //       coursePlace: formData.coursePlace,
-  //       honourableChargeNo: formData.honourableChargeNo, // New field
-  //       issuedDate: formData.issuedDate, // New field
-  //     },
-  //   };
-  //   console.log(data, "data");
-
-  //   const userId = ls.get("_id"); // Corrected usage
-  //   console.log(userId, "userId");
-
-  //   if (!userId) {
-  //     toast.error("User  ID not found. Please log in again.");
-  //     return;
-  //   }
-
-  //   try {
-  //     const response = await axios.post(
-  //       `${BASE_URL}/api/v2/ltinfo/${userId}`,
-  //       data
-  //     );
-  //     toast.success(
-  //       "LT Form submitted successfully!,Now Click Next To Proceed"
-  //     );
-  //     setLoading(false);
-  //     fetchData();
-  //     console.log("Response:", response.data);
-  //   } catch (error) {
-  //     console.error("Error submitting form:", error);
-  //     toast.error(
-  //       "An error occurred while submitting the form. Please try again."
-  //     );
-  //   }
-  // };
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-  
+
     // Prepare the data to be sent to the server
     const data = {
       wing: selectedWing,
@@ -135,39 +81,46 @@ const LTInfo = () => {
         honourableChargeNo: formData.honourableChargeNo, // New field
         issuedDate: formData.issuedDate, // New field
       },
-      courses: courses.map(course => ({
+      courses: courses.map((course) => ({
         selectType: course.selectType,
         courseDate: course.formData.courseDate,
         courseToDate: course.formData.courseToDate,
         place: course.formData.place,
-        leader: course.selectType !== "conducted" ? course.formData.leader : undefined,
+        leader:
+          course.selectType !== "conducted"
+            ? course.formData.leader
+            : undefined,
         participants: course.formData.participants,
       })),
     };
-  
+
     console.log(data, "data");
-  
+
     const userId = ls.get("_id"); // Corrected usage
     console.log(userId, "userId");
-  
+
     if (!userId) {
       toast.error("User  ID not found. Please log in again.");
       setLoading(false);
       return;
     }
-  
+
     try {
       const response = await axios.post(
         `${BASE_URL}/api/v2/ltinfo/${userId}`,
         data
       );
-      toast.success("LT Form submitted successfully! Now Click Next To Proceed");
+      toast.success(
+        "LT Form submitted successfully! Now Click Next To Proceed"
+      );
       setLoading(false);
       fetchData();
       console.log("Response:", response.data);
     } catch (error) {
       console.error("Error submitting form:", error);
-      toast.error("An error occurred while submitting the form. Please try again.");
+      toast.error(
+        "An error occurred while submitting the form. Please try again."
+      );
       setLoading(false);
     }
   };
@@ -275,49 +228,87 @@ const LTInfo = () => {
                 className="p-4 border border-gray-300 rounded mb-2"
               >
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-20 gap-y-5">
+                  {/* Honourable Charge Number */}
                   <div>
                     <strong>Honourable No:</strong>{" "}
                     {course.courseDetails?.honourableChargeNo}
                   </div>
+
+                  {/* Issue Date */}
                   <div>
                     <strong>Issue Date:</strong>{" "}
-                    {functionDate(course.courseDetails.issuedDate)}
+                    {functionDate(course.courseDetails?.issuedDate)}
                   </div>
 
                   <div>
-                    <strong>Training Type:</strong> {course.trainingType}
-                  </div>
-                  <div>
-                    <strong> Training Course From Date:</strong>{" "}
-                    {functionDate(course.courseDate)}
-                  </div>
-                  <div>
-                    <strong>Training Course To Date:</strong>{" "}
-                    {functionDate(course.courseToDate)}
-                  </div>
-
-                  <div>
-                    <strong> ROT From Date:</strong>{" "}
+                    <strong>ROT From Date:</strong>{" "}
                     {functionDate(course.courseDetails?.fromDate)}
                   </div>
                   <div>
                     <strong>ROT To Date:</strong>{" "}
                     {functionDate(course.courseDetails?.toDate)}
                   </div>
+
                   <div>
-                    <strong>Venue:</strong> {course.place}
+                    <strong>Certificate Date:</strong>{" "}
+                    {functionDate(course.courseDetails.certificateDate)}
                   </div>
-                  <div>
-                    <strong>Leader:</strong>{" "}
-                    {course.courseDetails?.courseLeader}
-                  </div>
+
                   <div>
                     <strong>Certificate Number:</strong>{" "}
-                    {course.courseDetails?.certificateNumber}
+                    {course.courseDetails.certificateNumber}
                   </div>
                   <div>
-                    <strong>Participants:</strong> {course.participants}
+                    <strong>Leader:</strong> {course.courseDetails.courseLeader}
                   </div>
+                  <div>
+                    <strong>Venue:</strong> {course.courseDetails?.coursePlace}
+                  </div>
+
+                  {/* Training Type: Iterate through each course */}
+                  {course.courses?.map((subCourse, subIndex) => (
+                    <div key={subIndex}>
+                      <div>
+                        <strong>Training Type {subIndex + 1}:</strong>{" "}
+                        {subCourse.selectType}
+                      </div>
+
+                      {/* Training Course Date Range */}
+                      <div>
+                        <strong>Training Course From Date:</strong>{" "}
+                        {functionDate(subCourse.courseDate)}
+                      </div>
+                      <div>
+                        <strong>Training Course To Date:</strong>{" "}
+                        {functionDate(subCourse.courseToDate)}
+                      </div>
+
+                      {/* ROT Date Range */}
+
+                      {/* Venue and Place */}
+                      <div>
+                        <strong>Venue:</strong> {subCourse.place}
+                      </div>
+
+                      {/* Leader (only for "assisted" training type) */}
+                      {subCourse.leader && (
+                        <div>
+                          <strong>Leader:</strong> {subCourse.leader}
+                        </div>
+                      )}
+
+                      {/* Certificate Number */}
+                      <div>
+                        <strong>Certificate Number:</strong>{" "}
+                        {course.courseDetails?.certificateNumber}
+                      </div>
+
+                      {/* Participants */}
+                      <div>
+                        <strong>Participants:</strong> {subCourse.participants}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             ))}
@@ -463,7 +454,7 @@ const LTInfo = () => {
               <button
                 type="button"
                 onClick={addCourse}
-                className="bg-blue-500 text-white rounded px-4 py-2 mt-4"
+                className="bg-[#1D56A5] text-white rounded px-4 py-2 "
               >
                 Add Course
               </button>
