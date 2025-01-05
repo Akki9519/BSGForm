@@ -591,3 +591,394 @@ const ALTInfo = () => {
 
 export default ALTInfo;
 
+
+
+// import React, { useState, useEffect } from "react";
+// import { ToastContainer, toast } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
+// import axios from "axios";
+// import { BASE_URL } from "../constant/constant";
+// import SecureLS from "secure-ls";
+
+// const ls = new SecureLS({ encodingType: "aes", isCompression: false });
+
+// const ALTInfo = () => {
+//   const [selectedWing, setSelectedWing] = useState("");
+//   const [loading, setLoading] = useState(false);
+//   const [selectedSubWings, setSelectedSubWings] = useState([]);
+//   const [selectType, setSelectType] = useState("");
+//   const [isSubmitted, setIsSubmitted] = useState(false);
+//   const [formData, setFormData] = useState({
+//     courseDate: "",
+//     courseToDate: "",
+//     place: "",
+//     leader: "",
+//     participants: "",
+//     courseFromDate: "",
+//     certificateNumber: "",
+//     certificateDate: "",
+//     courseLeader: "",
+//     coursePlace: "",
+//     honourableChargeNo: "",
+//     issuedDate: "",
+//   });
+//   const [fetchedData, setFetchedData] = useState([]);
+//   const [courses, setCourses] = useState([{ id: Date.now(), formData: {}, selectType: "" }]);
+//   const [errors, setErrors] = useState({}); // Error state
+
+//   const functionDate = (dateString) => {
+//     const date = new Date(dateString);
+//     const day = String(date.getDate()).padStart(2, "0");
+//     const month = String(date.getMonth() + 1).padStart(2, "0");
+//     const year = date.getFullYear();
+//     return `${day}-${month}-${year}`;
+//   };
+
+//   const handleInputChange1 = (e) => {
+//     const { name, value } = e.target;
+//     setFormData({ ...formData, [name]: value });
+//     setErrors({ ...errors, [name]: "" }); // Clear error on change
+//   };
+
+//     const addCourse = () => {
+//     setCourses([...courses, { id: Date.now(), formData: {}, selectType: "" }]);
+//   };
+
+//   const removeCourse = (index) => {
+//     const updatedCourses = courses.filter((_, i) => i !== index);
+//     setCourses(updatedCourses);
+//   };
+//   const handleInputChange = (index, e) => {
+//     const { name, value } = e.target;
+//     const updatedCourses = [...courses];
+//     updatedCourses[index].formData[name] = value;
+//     setCourses(updatedCourses);
+//     setErrors({ ...errors, [`course-${index}-${name}`]: "" }); // Clear error on change
+//   };
+
+//   const handleSelectTypeChange = (index, e) => {
+//     const value = e.target.value;
+//     const updatedCourses = [...courses];
+//     updatedCourses[index].selectType = value;
+//     setCourses(updatedCourses);
+//     setErrors({ ...errors, [`course-${index}-selectType`]: "" }); // Clear error on change
+//   };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     setLoading(true);
+//     setErrors({}); // Reset errors
+
+//     const requiredFields = [
+//       "courseToDate",
+//       "courseFromDate",
+      
+//       "certificateNumber",
+//       "certificateDate",
+//       "courseLeader",
+//       "coursePlace",
+//       "honourableChargeNo",
+//       "issuedDate",
+//     ];
+
+//     const newErrors = {};
+//     requiredFields.forEach((field) => {
+//       if (!formData[field]) {
+//         newErrors[field] = "This field is required.";
+//       }
+//     });
+
+//     // Check for course fields
+//     courses.forEach((course, index) => {
+//       if (!course.formData.courseDate) {
+//         newErrors[`course-${index}-courseDate`] = "This field is required.";
+//       }
+//       if (!course.formData.courseToDate) {
+//         newErrors[`course-${index}-courseToDate`] = "This field is required.";
+//       }
+//       if (!course.formData.place) {
+//         newErrors[`course-${index}-place`] = "This field is required.";
+//       }
+//       if (course.selectType !== "conducted" && !course.formData.leader) {
+//         newErrors[`course-${index}-leader`] = "This field is required.";
+//       }
+//       if (!course.formData.participants) {
+//         newErrors[`course-${index}-participants`] = "This field is required.";
+//       }
+//     });
+
+//     if (Object.keys(newErrors).length > 0) {
+//       setErrors(newErrors);
+//       toast.error("Please fill out all fields before submitting.");
+//       setLoading(false);
+//       return;
+//     }
+
+//     // Prepare the data to be sent to the server
+//     const data = {
+//       wing: selectedWing,
+//       subWing: selectedSubWings,
+//       trainingType: selectType,
+//       courseDate: formData.courseDate,
+//       courseToDate: formData.courseToDate,
+//       place: formData.place,
+//       leader: selectType !== "conducted" ? formData.leader : undefined,
+//       participants: formData.participants,
+//       courseDetails: {
+//         fromDate: formData.courseFromDate,
+//         toDate: formData.courseToDate,
+//         certificateNumber: formData.certificateNumber,
+//         certificateDate: formData.certificateDate,
+//         courseLeader: formData.courseLeader,
+//         coursePlace: formData.coursePlace,
+//         honourableChargeNo: formData.honourableChargeNo,
+//         issuedDate: formData.issuedDate,
+//       },
+//       courses: courses.map(course => ({
+//         selectType: course.selectType,
+//         courseDate: course.formData.courseDate,
+//         courseToDate: course.formData.courseToDate,
+//         place: course.formData.place,
+//         leader: course.selectType !== "conducted" ? course.formData.leader : undefined,
+//         participants: course.formData.participants,
+//       })),
+//     };
+
+//     const userId = ls.get("_id");
+//     if (!userId) {
+//       toast.error("User  ID not found. Please log in again.");
+//       setLoading(false);
+//       return;
+//     }
+
+//     try {
+//       const response = await axios.post(`${BASE_URL}/api/v2/altinfo/${userId}`, data);
+//       toast.success("LT Form submitted successfully! Now Click Next To Proceed");
+//       setLoading(false);
+//       // fetchData();
+//     } catch (error) {
+//       toast.error("An error occurred while submitting the form. Please try again.");
+//       setLoading(false);
+//     }
+//   };
+
+//   return (
+//     <>
+//       <div>
+//         <h2 className="text-2xl font-bold text-center text-red-500 mb-2 uppercase">ALT Form</h2>
+//         <ToastContainer />
+//         <div className="border p-4 rounded">
+//           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+//             <div className="mb-2">
+//               <label className="block mb-2 font-bold text-black">Honourable Charge No</label>
+//               <input
+//                 type="text"
+//                 name="honourableChargeNo"
+//                 value={formData.honourableChargeNo}
+//                 onChange={handleInputChange1}
+//                 className={`border ${errors.honourableChargeNo ? 'border-red-500' : 'border-gray-300'} rounded px-3 py-2 w-full`}
+//               />
+//               {errors.honourableChargeNo && <p className="text-red-500">{errors.honourableChargeNo}</p>}
+//             </div>
+//             <div className="mb-2">
+//               <label className="block mb-2 font-bold text-black">Issued Date</label>
+//               <input
+//                 type="date"
+//                 name="issuedDate"
+//                 value={formData.issuedDate}
+//                 onChange={handleInputChange1}
+//                 className={`border ${errors.issuedDate ? 'border-red-500' : 'border-gray-300'} rounded px-3 py-2 w-full`}
+//               />
+//               {errors.issuedDate && <p className="text-red-500">{errors.issuedDate}</p>}
+//             </div>
+//           </div>
+//           {/* Additional form fields and courses handling */}
+
+//           <div className="space-y-4 mt-6">
+//         <div>Training Courses Assisted/Conducted in Last Year</div>
+//             {courses.map((course, index) => (
+//               <div key={course.id} className="mb-4 border p-4 rounded">
+//                 <div
+//                   className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+//                   <div className="mb-2">
+//                     <label className="block mb-2 font-bold text-black">Select Type</label>
+//                     <select
+//                       value={course.selectType}
+//                       onChange={(e) => handleSelectTypeChange(index, e)}
+//                       className={`border ${errors[`course-${index}-selectType`] ? 'border-red-500' : 'border-gray-300'} rounded px-3 py-2 w-full`}
+//                     >
+//                       <option value="">-- Select Type --</option>
+//                       <option value="conducted">Conducted</option>
+//                       <option value="assisted">Assisted</option>
+//                     </select>
+//                     {errors[`course-${index}-selectType`] && <p className="text-red-500">{errors[`course-${index}-selectType`]}</p>}
+//                   </div>
+//                   <div className="mb-2">
+//                     <label className="block mb-2 font-bold text-black">Course From Date</label>
+//                     <input
+//                       type="date"
+//                       name="courseDate"
+//                       value={course.formData.courseDate || ""}
+//                       onChange={(e) => handleInputChange(index, e)}
+//                       className={`border ${errors[`course-${index}-courseDate`] ? 'border-red-500' : 'border-gray-300'} rounded px-3 py-2 w-full`}
+//                     />
+//                     {errors[`course-${index}-courseDate`] && <p className="text-red-500">{errors[`course-${index}-courseDate`]}</p>}
+//                   </div>
+//                 </div>
+//                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+//                   <div className="mb-2">
+//                     <label className="block mb-2 font-bold text-black">Course To Date</label>
+//                     <input
+//                       type="date"
+//                       name="courseToDate"
+//                       value={course.formData.courseToDate || ""}
+//                       onChange={(e) => handleInputChange(index, e)}
+//                       className={`border ${errors[`course-${index}-courseToDate`] ? 'border-red-500' : 'border-gray-300'} rounded px-3 py-2 w-full`}
+//                     />
+//                     {errors[`course-${index}-courseToDate`] && <p className="text-red-500">{errors[`course-${index}-courseToDate`]}</p>}
+//                   </div>
+//                   <div className="mb-2">
+//                     <label className="block mb-2 font-bold text-black">Place</label>
+//                     <input
+//                       type="text"
+//                       name="place"
+//                       value={course.formData.place || ""}
+//                       onChange={(e) => handleInputChange(index, e)}
+//                       className={`border ${errors[`course-${index}-place`] ? 'border-red-500' : 'border-gray-300'} rounded px-3 py-2 w-full`}
+//                     />
+//                     {errors[`course-${index}-place`] && <p className="text-red-500">{errors[`course-${index}-place`]}</p>}
+//                   </div>
+//                   {course.selectType !== "conducted" && (
+//                     <div className="mb-2">
+//                       <label className="block mb-2 font-bold text-black">Leader of the Course</label>
+//                       <input
+//                         type="text"
+//                         name="leader"
+//                         value={course.formData.leader || ""}
+//                         onChange={(e) => handleInputChange(index, e)}
+//                         className={`border ${errors[`course-${index}-leader`] ? 'border-red-500' : 'border-gray-300'} rounded px-3 py-2 w-full`}
+//                       />
+//                       {errors[`course-${index}-leader`] && <p className="text-red-500">{errors[`course-${index}-leader`]}</p>}
+//                     </div>
+//                   )}
+//                 </div>
+//                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+//                   <div className="mb-2">
+//                     <label className="block mb-2 font-bold text-black">No. of Participants</label>
+//                     <input
+//                       type="number"
+//                       name="participants"
+//                       value={course.formData.participants || ""}
+//                       onChange={(e) => handleInputChange(index, e)}
+//                       className={`border ${errors[`course-${index}-participants`] ? 'border-red-500' : 'border-gray-300'} rounded px-3 py-2 w-full`}
+//                     />
+//                     {errors[`course-${index}-participants`] && <p className="text-red-500">{errors[`course-${index}-participants`]}</ p>}
+//                   </div>
+//                 </div>
+//                 {index > 0 && (
+//                   <button
+//                     type="button"
+//                     onClick={() => removeCourse(index)}
+//                     className="bg-red-500 text-white rounded px-4 py-2"
+//                   >
+//                     Close
+//                   </button>
+//                 )}
+//               </div>
+//             ))}
+//             <button
+//               type="button"
+//               onClick={addCourse}
+//               className="bg-[#1D56A5] text-white rounded px-4 py-2"
+//             >
+//               Add Course
+//             </button>
+//           </div>
+//           <div className="space-y-4 mt-6">
+//             <div className="font-bold text-black">Details of Last ROT Attended</div>
+//             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+//               <div>
+//                 <label className="block mb-2 font-bold text-black">Course From Date</label>
+//                 <input
+//                   type="date"
+//                   name="courseFromDate"
+//                   value={formData.courseFromDate}
+//                   onChange={handleInputChange1}
+//                   className={`border ${errors.courseFromDate ? 'border-red-500' : 'border-gray-300'} rounded px-3 py-2 w-full`}
+//                 />
+//                 {errors.courseFromDate && <p className="text-red-500">{errors.courseFromDate}</p>}
+//               </div>
+//               <div>
+//                 <label className="block mb-2 font-bold text-black">Course To Date</label>
+//                 <input
+//                   type="date"
+//                   name="courseToDate"
+//                   value={formData.courseToDate}
+//                   onChange={handleInputChange1}
+//                   className={`border ${errors.courseToDate ? 'border-red-500' : 'border-gray-300'} rounded px- 3 py-2 w-full`}
+//                 />
+//                 {errors.courseToDate && <p className="text-red-500">{errors.courseToDate}</p>}
+//               </div>
+//             </div>
+//             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+//               <div className="mb-2">
+//                 <label className="block mb-2 font-bold text-black">Certificate Number</label>
+//                 <input
+//                   type="text"
+//                   name="certificateNumber"
+//                   value={formData.certificateNumber}
+//                   onChange={handleInputChange1}
+//                   className={`border ${errors.certificateNumber ? 'border-red-500' : 'border-gray-300'} rounded px-3 py-2 w-full`}
+//                 />
+//                 {errors.certificateNumber && <p className="text-red-500">{errors.certificateNumber}</p>}
+//               </div>
+//               <div className="mb-2">
+//                 <label className="block mb-2 font-bold text-black">Certificate Date</label>
+//                 <input
+//                   type="date"
+//                   name="certificateDate"
+//                   value={formData.certificateDate}
+//                   onChange={handleInputChange1}
+//                   className={`border ${errors.certificateDate ? 'border-red-500' : 'border-gray-300'} rounded px-3 py-2 w-full`}
+//                 />
+//                 {errors.certificateDate && <p className="text-red-500">{errors.certificateDate}</p>}
+//               </div>
+//             </div>
+//             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+//               <div className="mb-2">
+//                 <label className="block mb-2 font-bold text-black">Leader of the Course</label>
+//                 <input
+//                   type="text"
+//                   name="courseLeader"
+//                   value={formData.courseLeader}
+//                   onChange={handleInputChange1}
+//                   className={`border ${errors.courseLeader ? 'border-red-500' : 'border-gray-300'} rounded px-3 py-2 w-full`}
+//                 />
+//                 {errors.courseLeader && <p className="text-red-500">{errors.courseLeader}</p>}
+//               </div>
+//               <div className="mb-2">
+//                 <label className="block mb-2 font-bold text-black">Place</label>
+//                 <input
+//                   type="text"
+//                   name="coursePlace"
+//                   value={formData.coursePlace}
+//                   onChange={handleInputChange1}
+//                   className={`border ${errors.coursePlace ? 'border-red-500' : 'border-gray-300'} rounded px-3 py-2 w-full`}
+//                 />
+//                 {errors.coursePlace && <p className="text-red-500">{errors.coursePlace}</p>}
+//               </div>
+//             </div>
+//             <div
+//               className="bg-[#1D56A5] uppercase rounded-md flex justify-center items-center py-1 text-white font-medium my-5 cursor-pointer"
+//               onClick={handleSubmit}
+//             >
+//               {loading ? "SUBMITTING..." : "Submit ALT DETAILS"}
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </>
+//   );
+// };
+
+// export default ALTInfo;
