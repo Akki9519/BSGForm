@@ -61,6 +61,25 @@ const LTInfo = () => {
     e.preventDefault();
     setLoading(true);
 
+
+    const requiredFields = [
+  
+      formData.courseToDate,
+      formData.certificateNumber,
+      formData.certificateDate,
+      formData.courseLeader,
+      formData.coursePlace,
+      formData.honourableChargeNo,
+      formData.issuedDate,
+    ];
+  console.log(requiredFields,"requiredfilled")
+    const allFieldsFilled = requiredFields.every(field => field !== "" && field !== undefined);
+  
+    if (!allFieldsFilled) {
+      toast.error("Please fill out all fields before submitting.");
+      setLoading(false);
+      return;
+    }
     // Prepare the data to be sent to the server
     const data = {
       wing: selectedWing,

@@ -1,3 +1,6 @@
+
+
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
@@ -6,6 +9,7 @@ import { BASE_URL } from "../constant/constant";
 import SecureLS from "secure-ls";
 
 const ls = new SecureLS({ encodingType: "aes", isCompression: false });
+
 const BasicForm = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -33,6 +37,7 @@ const BasicForm = () => {
   const [loading, setLoading] = useState(false);
   const [courseDisable, setCourseDisable] = useState([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [errors, setErrors] = useState({}); // State for error messages
 
   const addCourse = () => {
     const newCourse = {
@@ -65,37 +70,69 @@ const BasicForm = () => {
     updatedCourses[index][field] = value;
     setCourses(updatedCourses);
 
-    if (field === "subwing") {
-      setSelectedSubWings([...selectedSubWings, value]);
-    }
+    // Clear error for the specific field when user starts typing
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [index]: { ...prevErrors[index], [field]: "" },
+    }));
   };
 
   const validateForm = () => {
-    return courses.every(
-      (course) =>
-        course.wing &&
-        course.subwing &&
-        course.fromDate &&
-        course.toDate &&
-        course.venue &&
-        course.leader &&
-        course.certificateNumber &&
-        course.certificateDate
-    );
+    let isValid = true;
+    const newErrors = {};
+
+    courses.forEach((course, index) => {
+      newErrors[index] = {};
+      if (!course.wing) {
+        newErrors[index].wing = "Wing is required.";
+        isValid = false;
+      }
+      if (!course.subwing) {
+        newErrors[index].subwing = "Section is required.";
+        isValid = false;
+      }
+      if (!course.fromDate) {
+        newErrors[index].fromDate = "From Date is required.";
+        isValid = false;
+      }
+      if (!course.toDate) {
+        newErrors[index].toDate = "To Date is required.";
+        isValid = false;
+      }
+      if (!course.venue) {
+        newErrors[index].venue = "Venue is required.";
+        isValid = false;
+      }
+      if (!course.leader) {
+        newErrors[index].leader = "Leader is required.";
+        isValid = false;
+      }
+      if (!course.certificateNumber) {
+        newErrors[index].certificateNumber = "Certificate Number is required.";
+        isValid = false;
+      }
+      if (!course.certificateDate) {
+        newErrors[index].certificateDate = "Certificate Date is required.";
+        isValid = false;
+      }
+    });
+
+    setErrors(newErrors);
+    return isValid;
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-setLoading(true)
+    setLoading(true);
+
     if (!validateForm()) {
       toast.error("Please fill out all fields before submitting.");
-      setLoading(false)
+      setLoading(false);
       return;
     }
 
     try {
       const userId = ls.get("_id");
-      // const userId = storedIdString ? JSON.parse(storedIdString) : null;
 
       for (let i = 0; i < courses.length; i++) {
         if (courses[i]._id) {
@@ -112,13 +149,8 @@ setLoading(true)
             }
           );
 
-         
-          // ls.setItem("id", response.data._id);
-          toast.success("Basic Form Submitted Successfully!,Now Click Next To Proceed");
-
-          setLoading(false);
-      fetchData();
-          
+          toast.success("Basic Form Submitted Successfully! Now Click Next To Proceed");
+          fetchData();
         } catch (error) {
           console.log(error, i, "data");
         }
@@ -127,35 +159,29 @@ setLoading(true)
     } catch (error) {
       console.error("Error:", error);
       toast.error("An error occurred during registration");
+    } finally {
+      setLoading(false);
     }
   };
 
   const functionDate = (dateString) => {
     const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, "0"); // Ensure two digits
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
     return `${day}-${month}-${year}`;
   };
 
-
   const fetchData = async () => {
     try {
       const userId = ls.get("_id");
-      // const userId = JSON.parse(storedIdString);
 
       const response = await axios.get(
         `${BASE_URL}/api/v1/basicDetails/${userId}`
       );
-      console.log(response, "response");
-      // if (response.data.some((item) => item.isSubmitted === true)) {
-      //   setIsSubmitted(true);
-      // }
+
       if (response.data.some((item) => item.isSubmitted === true)) {
         setIsSubmitted(true);
-        console.log("isSubmitted set to:", true);
-      } else {
-        console.log("isSubmitted remains:", false);
       }
 
       if (response.data && response.data.length > 0) {
@@ -166,9 +192,8 @@ setLoading(true)
       console.error("Error fetching personal details:", error);
     }
   };
+
   useEffect(() => {
-
-
     fetchData();
   }, []);
 
@@ -176,7 +201,7 @@ setLoading(true)
     <>
       <div className="max-w-5xl mx-auto">
         <ToastContainer />
-        <div className="text-center font-bold  text-2xl text-red-500">
+        <div className="text-center font-bold text-2xl text-red-500">
           BASIC COURSE
         </div>
         {isSubmitted ? (
@@ -218,7 +243,7 @@ setLoading(true)
             ))}
           </div>
         ) : (
-          <div  className="mt-8 space-y-6">
+          <div className="mt-8 space-y-6">
             {courses.map((course, index) => (
               <div
                 key={course.id}
@@ -248,18 +273,14 @@ setLoading(true)
                   )}
                 </div>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-20 gap-y-5">
-                  {/* Form fields */}
-                  {/* Include Wing, Section, From Date, To Date, Venue, Leader, Certificate Number, Certificate Date */}
                   <div className="flex flex-col mb-4">
-                    <label className="mb-1 font-medium text-gray-700">
-                      Wing
-                    </label>
+                    <label className="mb-1 font-medium text-gray-700">Wing</label>
                     <select
                       value={course.wing}
                       disabled={
                         index < courseDisable.length && courseDisable[index]
                       }
-                      onChange={(e) =>
+                      on onChange={(e) =>
                         handleChange(index, "wing", e.target.value)
                       }
                       className="outline-none bg-white rounded-md px-3 py-1 border border-gray-300 focus:border-indigo-500"
@@ -268,12 +289,13 @@ setLoading(true)
                       <option value="Scout">Scout</option>
                       <option value="Guide">Guide</option>
                     </select>
+                    {errors[index]?.wing && (
+                      <span className="text-red-500 text-sm">{errors[index].wing}</span>
+                    )}
                   </div>
                   {course.wing && (
                     <div className="mt-2 flex flex-col">
-                      <label className="mb-1 font-medium text-gray-700">
-                        Section
-                      </label>
+                      <label className="mb-1 font-medium text-gray-700">Section</label>
                       <select
                         value={course.subwing}
                         disabled={
@@ -297,12 +319,13 @@ setLoading(true)
                           </option>
                         ))}
                       </select>
+                      {errors[index]?.subwing && (
+                        <span className="text-red-500 text-sm">{errors[index].subwing}</span>
+                      )}
                     </div>
                   )}
                   <div>
-                    <label className="block text-sm font-bold text-black">
-                      Course From Date
-                    </label>
+                    <label className="block text-sm font-bold text-black">Course From Date</label>
                     <input
                       type="date"
                       value={course.fromDate}
@@ -314,11 +337,12 @@ setLoading(true)
                       }
                       className="outline-none mt-1 py-2 bg-slate-200 px-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     />
+                    {errors[index]?.fromDate && (
+                      <span className="text-red-500 text-sm">{errors[index].fromDate}</span>
+                    )}
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-black">
-                      Course To Date
-                    </label>
+                    <label className="block text-sm font-bold text-black">Course To Date</label>
                     <input
                       type="date"
                       value={course.toDate}
@@ -330,11 +354,12 @@ setLoading(true)
                       }
                       className="outline-none mt-1 py-2 bg-slate-200 px-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     />
+                    {errors[index]?.toDate && (
+                      <span className="text-red-500 text-sm">{errors[index].toDate}</span>
+                    )}
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-black">
-                      Venue
-                    </label>
+                    <label className="block text-sm font-bold text-black">Venue</label>
                     <input
                       type="text"
                       placeholder="Enter the Venue"
@@ -347,11 +372,12 @@ setLoading(true)
                       }
                       className="mt-1 outline-none py-2 bg-slate-200 px-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     />
+                    {errors[index]?.venue && (
+                      <span className="text-red-500 text-sm">{errors[index].venue}</span>
+                    )}
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-black">
-                      Leader
-                    </label>
+                    <label className="block text-sm font-bold text-black">Leader</label>
                     <input
                       type="text"
                       placeholder="Enter the Leader"
@@ -364,11 +390,12 @@ setLoading(true)
                       }
                       className="mt-1 outline-none py-2 bg-slate-200 px-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     />
-                  </div>
+                    {errors[index]?.leader && (
+                      <span className="text-red-500 text-sm">{errors[index].leader}</span>
+                    )}
+                    </div>
                   <div>
-                    <label className="block text-sm font-bold text-black">
-                      Certificate Number
-                    </label>
+                    <label className="block text-sm font-bold text-black">Certificate Number</label>
                     <input
                       type="text"
                       placeholder="Enter the Certificate Number"
@@ -381,11 +408,12 @@ setLoading(true)
                       }
                       className="mt-1 py-2 outline-none bg-slate-200 px-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     />
+                    {errors[index]?.certificateNumber && (
+                      <span className="text-red-500 text-sm">{errors[index].certificateNumber}</span>
+                    )}
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-black">
-                      Certificate Date
-                    </label>
+                    <label className="block text-sm font-bold text-black">Certificate Date</label>
                     <input
                       type="date"
                       value={course.certificateDate}
@@ -397,6 +425,9 @@ setLoading(true)
                       }
                       className="mt-1 py-2 outline-none bg-slate-200 px-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     />
+                    {errors[index]?.certificateDate && (
+                      <span className="text-red-500 text-sm">{errors[index].certificateDate}</span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -404,7 +435,7 @@ setLoading(true)
             <button
               type="button"
               onClick={addCourse}
-              className="px-4 py-2 uppercase bg-green-500 text-white rounded hover:bg-green-600 "
+              className="px-4 py-2 uppercase bg-green-500 text-white rounded hover:bg-green-600"
             >
               Add Course
             </button>
@@ -413,7 +444,7 @@ setLoading(true)
               className="px-4 py-2 bg-blue-500 uppercase text-white rounded hover:bg-blue-600 ml-5"
               onClick={handleSubmit}
             >
-                 {loading ? "Submitting..." : "Submit BASIC DETAILS"}
+              {loading ? "Submitting..." : "Submit BASIC DETAILS"}
             </button>
           </div>
         )}

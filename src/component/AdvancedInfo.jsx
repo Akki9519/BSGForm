@@ -1,11 +1,15 @@
+
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { BASE_URL } from "../constant/constant";
 import SecureLS from "secure-ls";
+
 const ls = new SecureLS({ encodingType: "aes", isCompression: false });
-const BasicForm = () => {
+
+const AdvanceForm = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -32,6 +36,7 @@ const BasicForm = () => {
   const [courseDisable, setCourseDisable] = useState([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({}); // State for error messages
 
   const addCourse = () => {
     const newCourse = {
@@ -67,43 +72,78 @@ const BasicForm = () => {
     if (field === "subwing") {
       setSelectedSubWings([...selectedSubWings, value]);
     }
+
+    // Clear error for the specific field when user starts typing
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [index]: { ...prevErrors[index], [field]: "" },
+    }));
   };
 
   const functionDate = (dateString) => {
     const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, "0"); // Ensure two digits
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
     return `${day}-${month}-${year}`;
   };
 
   const validateForm = () => {
-    return courses.every(
-      (course) =>
-        course.wing &&
-        course.subwing &&
-        course.fromDate &&
-        course.toDate &&
-        course.venue &&
-        course.leader &&
-        course.certificateNumber &&
-        course.certificateDate
-    );
+    let isValid = true;
+    const newErrors = {};
+
+    courses.forEach((course, index) => {
+      newErrors[index] = {};
+      if (!course.wing) {
+        newErrors[index].wing = "Wing is required.";
+        isValid = false;
+      }
+      if (!course.subwing) {
+        newErrors[index].subwing = "Section is required.";
+        isValid = false;
+      }
+      if (!course.fromDate) {
+        newErrors[index].fromDate = "From Date is required.";
+        isValid = false;
+      }
+      if (!course.toDate) {
+        newErrors[index].toDate = "To Date is required.";
+        isValid = false;
+      }
+      if (!course.venue) {
+        newErrors[index].venue = "Venue is required.";
+        isValid = false;
+      }
+      if (!course.leader) {
+        newErrors[index].leader = "Leader is required.";
+        isValid = false;
+      }
+      if (!course.certificateNumber) {
+        newErrors[index].certificateNumber = "Certificate Number is required.";
+        isValid = false;
+      }
+      if (!course.certificateDate) {
+        newErrors[index].certificateDate = "Certificate Date is required.";
+        isValid = false;
+      }
+    });
+
+    setErrors(newErrors);
+    return isValid;
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setLoading(true)
+    setLoading(true);
 
     if (!validateForm()) {
       toast.error("Please fill out all fields before submitting.");
-      setLoading(false)
+      setLoading(false);
       return;
     }
 
     try {
       const userId = ls.get("_id");
-      // const userId = storedIdString ? JSON.parse(storedIdString) : null;
 
       for (let i = 0; i < courses.length; i++) {
         if (courses[i]._id) {
@@ -119,11 +159,8 @@ const BasicForm = () => {
               },
             }
           );
-          // ls.setItem("id", response.data._id);
           toast.success("Advance Form Submitted Successfully");
-          setLoading(true)
           fetchData();
-          
         } catch (error) {
           console.log(error, i, "data");
         }
@@ -132,14 +169,14 @@ const BasicForm = () => {
     } catch (error) {
       console.error("Error:", error);
       toast.error("An error occurred during registration");
+    } finally {
+      setLoading(false);
     }
   };
-
 
   const fetchData = async () => {
     try {
       const userId = ls.get("_id");
-      // const userId = JSON.parse(storedIdString);
 
       const response = await axios.get(
         `${BASE_URL}/api/v1/advancedDetails/${userId}`
@@ -156,9 +193,8 @@ const BasicForm = () => {
       console.error("Error fetching personal details:", error);
     }
   };
-  useEffect(() => {
- 
 
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -166,7 +202,7 @@ const BasicForm = () => {
     <>
       <div className="max-w-5xl mx-auto">
         <ToastContainer />
-        <div className="text-center font-bold  text-2xl text-red-500">
+        <div className="text-center font-bold text-2xl text-red-500">
           ADVANCE COURSE
         </div>
         {isSubmitted ? (
@@ -208,7 +244,7 @@ const BasicForm = () => {
             ))}
           </div>
         ) : (
-          <div  className="mt-8 space-y-6">
+          <div className="mt-8 space-y-6">
             {courses.map((course, index) => (
               <div
                 key={course.id}
@@ -238,12 +274,8 @@ const BasicForm = () => {
                   )}
                 </div>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-20 gap-y-5">
-                  {/* Form fields */}
-                  {/* Include Wing, Section, From Date, To Date, Venue, Leader, Certificate Number, Certificate Date */}
                   <div className="flex flex-col mb-4">
-                    <label className="mb-1 font-medium text-gray-700">
-                      Wing
-                    </label>
+                    <label className="mb-1 font-medium text-gray-700">Wing</label>
                     <select
                       value={course.wing}
                       disabled={
@@ -258,12 +290,13 @@ const BasicForm = () => {
                       <option value="Scout">Scout</option>
                       <option value="Guide">Guide</option>
                     </select>
+                    {errors[index]?.wing && (
+                      <span className="text-red-500 text-sm">{errors[index].wing}</span>
+                    )}
                   </div>
                   {course.wing && (
                     <div className="mt-2 flex flex-col">
-                      <label className="mb-1 font-medium text-gray-700">
-                        Section
-                      </label>
+                      <label className="mb-1 font-medium text-gray-700">Section</label>
                       <select
                         value={course.subwing}
                         disabled={
@@ -287,12 +320,13 @@ const BasicForm = () => {
                           </option>
                         ))}
                       </select>
+                      {errors[index]?.subwing && (
+                        <span className="text-red-500 text-sm">{errors[index].subwing}</span>
+                      )}
                     </div>
                   )}
                   <div>
-                    <label className="block text-sm font-bold text-black">
-                      Course From Date
-                    </label>
+                    <label className="block text-sm font-bold text-black">Course From Date</label>
                     <input
                       type="date"
                       value={course.fromDate}
@@ -304,11 +338,12 @@ const BasicForm = () => {
                       }
                       className="outline-none mt-1 py-2 bg-slate-200 px-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     />
+                    {errors[index]?.fromDate && (
+                      <span className="text-red-500 text-sm">{errors[index].fromDate}</span>
+                    )}
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-black">
-                      Course To Date
-                    </label>
+                    <label className="block text-sm font-bold text-black">Course To Date</label>
                     <input
                       type="date"
                       value={course.toDate}
@@ -320,11 +355,12 @@ const BasicForm = () => {
                       }
                       className="outline-none mt-1 py-2 bg-slate-200 px-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     />
+                    {errors[index]?.toDate && (
+                      <span className="text-red-500 text-sm">{errors[index].toDate}</span>
+                    )}
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-black">
-                      Venue
-                    </label>
+                    <label className="block text-sm font-bold text-black">Venue</label>
                     <input
                       type="text"
                       placeholder="Enter the Venue"
@@ -337,11 +373,12 @@ const BasicForm = () => {
                       }
                       className="mt-1 outline-none py-2 bg-slate-200 px-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     />
+                    {errors[index]?.venue && (
+                      <span className="text-red-500 text-sm">{errors[index].venue}</span>
+                    )}
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-black">
-                      Leader
-                    </label>
+                    <label className="block text-sm font-bold text-black">Leader</label>
                     <input
                       type="text"
                       placeholder="Enter the Leader"
@@ -352,13 +389,14 @@ const BasicForm = () => {
                       onChange={(e) =>
                         handleChange(index, "leader", e.target.value)
                       }
-                      className="mt-1 outline-none py-2 bg-slate-200 px-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      className="mt-1 outline-none py-2 bg-slate-200 px-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border -indigo-500 sm:text-sm"
                     />
+                    {errors[index]?.leader && (
+                      <span className="text-red-500 text-sm">{errors[index].leader}</span>
+                    )}
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-black">
-                      Certificate Number
-                    </label>
+                    <label className="block text-sm font-bold text-black">Certificate Number</label>
                     <input
                       type="text"
                       placeholder="Enter the Certificate Number"
@@ -371,11 +409,12 @@ const BasicForm = () => {
                       }
                       className="mt-1 py-2 outline-none bg-slate-200 px-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     />
+                    {errors[index]?.certificateNumber && (
+                      <span className="text-red-500 text-sm">{errors[index].certificateNumber}</span>
+                    )}
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-black">
-                      Certificate Date
-                    </label>
+                    <label className="block text-sm font-bold text-black">Certificate Date</label>
                     <input
                       type="date"
                       value={course.certificateDate}
@@ -387,6 +426,9 @@ const BasicForm = () => {
                       }
                       className="mt-1 py-2 outline-none bg-slate-200 px-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     />
+                    {errors[index]?.certificateDate && (
+                      <span className="text-red-500 text-sm">{errors[index].certificateDate}</span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -403,7 +445,7 @@ const BasicForm = () => {
               className="px-4 py-2 bg-blue-500 uppercase text-white rounded hover:bg-blue-600 ml-5"
               onClick={handleSubmit}
             >
-                 {loading ? "Submitting..." : "Submit ADVANCED DETAILS"}
+              {loading ? "Submitting..." : "Submit ADVANCED DETAILS"}
             </button>
           </div>
         )}
@@ -412,4 +454,4 @@ const BasicForm = () => {
   );
 };
 
-export default BasicForm;
+export default AdvanceForm;
