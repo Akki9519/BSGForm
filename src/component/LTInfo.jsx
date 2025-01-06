@@ -17,7 +17,7 @@ const LTInfo = () => {
   const [formData, setFormData] = useState([
     {
       courseDate: "",
-      courseToDate: "",
+      courseTooDate: "",
       place: "",
       leader: "",
       participants: "",
@@ -40,10 +40,10 @@ const LTInfo = () => {
     const year = date.getFullYear();
     return `${day}-${month}-${year}`;
   };
-  const handleInputChange1 = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
+  // const handleInputChange1 = (e) => {
+  //   const { name, value } = e.target;
+  //   setFormData({ ...formData, [name]: value });
+  // };
 
   const handleSubWingChange = (subWing) => {
     setSelectedSubWings((prev) => {
@@ -55,15 +55,126 @@ const LTInfo = () => {
     });
   };
 
-  
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setLoading(true);
 
+  //   const requiredFields = [
+  //     formData.courseToDate,
+  //     formData.certificateNumber,
+  //     formData.certificateDate,
+  //     formData.courseLeader,
+  //     formData.coursePlace,
+  //     formData.honourableChargeNo,
+  //     formData.issuedDate,
+  //   ];
+  //   console.log(requiredFields, "requiredfilled");
+  //   const allFieldsFilled = requiredFields.every(
+  //     (field) => field !== "" && field !== undefined
+  //   );
+
+  //   if (!allFieldsFilled) {
+  //     toast.error("Please fill out all fields before submitting.");
+  //     setLoading(false);
+  //     return;
+  //   }
+  //   // Prepare the data to be sent to the server
+  //   const data = {
+  //     wing: selectedWing,
+  //     subWing: selectedSubWings,
+  //     trainingType: selectType,
+  //     courseDate: formData.courseDate,
+  //     courseToDate: formData.courseToDate,
+  //     place: formData.place,
+  //     leader: selectType !== "conducted" ? formData.leader : undefined,
+  //     participants: formData.participants,
+  //     courseDetails: {
+  //       fromDate: formData.courseFromDate,
+  //       toDate: formData.courseToDate,
+  //       certificateNumber: formData.certificateNumber,
+  //       certificateDate: formData.certificateDate,
+  //       courseLeader: formData.courseLeader,
+  //       coursePlace: formData.coursePlace,
+  //       honourableChargeNo: formData.honourableChargeNo, // New field
+  //       issuedDate: formData.issuedDate, // New field
+  //     },
+  //     courses: courses.map((course) => ({
+  //       selectType: course.selectType,
+  //       courseDate: course.formData.courseDate,
+  //       courseToDate: course.formData.courseToDate,
+  //       place: course.formData.place,
+  //       leader:
+  //         course.selectType !== "conducted"
+  //           ? course.formData.leader
+  //           : undefined,
+  //       participants: course.formData.participants,
+  //     })),
+  //   };
+
+  //   console.log(data, "data");
+
+  //   const userId = ls.get("_id"); // Corrected usage
+  //   console.log(userId, "userId");
+
+  //   if (!userId) {
+  //     toast.error("User  ID not found. Please log in again.");
+  //     setLoading(false);
+  //     return;
+  //   }
+
+  //   try {
+  //     const response = await axios.post(
+  //       `${BASE_URL}/api/v2/ltinfo/${userId}`,
+  //       data
+  //     );
+  //     toast.success(
+  //       "LT Form submitted successfully! Now Click Next To Proceed"
+  //     );
+  //     setLoading(false);
+  //     fetchData();
+  //     console.log("Response:", response.data);
+  //   } catch (error) {
+  //     console.error("Error submitting form:", error);
+  //     toast.error(
+  //       "An error occurred while submitting the form. Please try again."
+  //     );
+  //     setLoading(false);
+  //   }
+  // };
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+  
 
+
+    // Validate date fields
+
+    const courseFromDate = new Date(formData.courseFromDate);
+    const courseToDate = new Date(formData.courseToDate);
+    const issuedDate = new Date(formData.issuedDate);
+    const certificateDate = new Date(formData.certificateDate);
+ 
+
+    if (courseFromDate > courseToDate) {
+      toast.error("The 'Course From Date' must be less than or equal to the 'Course To Date'.");
+      setLoading(false);
+      return;
+    }
+  
+    if (issuedDate >= new Date()) {
+      toast.error("The 'Issued Date' must be less than today's date.");
+      setLoading(false);
+      return;
+    }
+  
+    if (certificateDate <= courseToDate) {
+      toast.error("The 'Certificate Date' must be greater than the 'Course To Date'.");
+      setLoading(false);
+      return;
+    }
 
     const requiredFields = [
-  
       formData.courseToDate,
       formData.certificateNumber,
       formData.certificateDate,
@@ -72,14 +183,17 @@ const LTInfo = () => {
       formData.honourableChargeNo,
       formData.issuedDate,
     ];
-  console.log(requiredFields,"requiredfilled")
-    const allFieldsFilled = requiredFields.every(field => field !== "" && field !== undefined);
+  
+    const allFieldsFilled = requiredFields.every(
+      (field) => field !== "" && field !== undefined
+    );
   
     if (!allFieldsFilled) {
       toast.error("Please fill out all fields before submitting.");
       setLoading(false);
       return;
     }
+  
     // Prepare the data to be sent to the server
     const data = {
       wing: selectedWing,
@@ -97,50 +211,72 @@ const LTInfo = () => {
         certificateDate: formData.certificateDate,
         courseLeader: formData.courseLeader,
         coursePlace: formData.coursePlace,
-        honourableChargeNo: formData.honourableChargeNo, // New field
-        issuedDate: formData.issuedDate, // New field
+        honourableChargeNo: formData.honourableChargeNo,
+        issuedDate: formData.issuedDate,
       },
       courses: courses.map((course) => ({
         selectType: course.selectType,
         courseDate: course.formData.courseDate,
         courseToDate: course.formData.courseToDate,
         place: course.formData.place,
-        leader:
-          course.selectType !== "conducted"
-            ? course.formData.leader
-            : undefined,
+        leader: course.selectType !== "conducted" ? course.formData.leader : undefined,
         participants: course.formData.participants,
       })),
     };
-
-    console.log(data, "data");
-
-    const userId = ls.get("_id"); // Corrected usage
-    console.log(userId, "userId");
-
+  
+    const userId = ls.get("_id");
     if (!userId) {
       toast.error("User  ID not found. Please log in again.");
       setLoading(false);
       return;
     }
-
+  
     try {
       const response = await axios.post(
         `${BASE_URL}/api/v2/ltinfo/${userId}`,
         data
       );
-      toast.success(
-        "LT Form submitted successfully! Now Click Next To Proceed"
-      );
+      toast.success("LT Form submitted successfully! Now Click Next To Proceed");
       setLoading(false);
       fetchData();
-      console.log("Response:", response.data);
     } catch (error) {
       console.error("Error submitting form:", error);
-      toast.error(
-        "An error occurred while submitting the form. Please try again."
-      );
+      toast.error("An error occurred while submitting the form. Please try again.");
       setLoading(false);
+    }
+  };
+  
+  // Individual date input validation
+  const handleInputChange1 = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  
+    // Additional validation for specific fields
+    if (name === "courseFromDate" || name === "courseToDate") {
+      const courseFromDate = new Date(formData.courseFromDate);
+      const courseToDate = new Date(formData.courseToDate);
+  
+      if (courseFromDate > courseToDate) {
+        toast.error("The 'Course From Date' must be less than or equal to the 'Course To Date'.");
+      }
+    }
+  
+    if (name === "issuedDate") {
+      const selectedIssuedDate = new Date(value);
+      if (selectedIssuedDate >= new Date()) {
+        toast.error("The 'Issued Date' must be less than today's date.");
+      }
+    }
+  
+    if (name === "certificateDate") {
+      const selectedCertificateDate = new Date(value);
+      const courseToDate = new Date(formData.courseToDate);
+      if (selectedCertificateDate <= courseToDate) {
+        toast.error("The 'Certificate Date' must be greater than the 'Course To Date'.");
+      }
     }
   };
   useEffect(() => {
@@ -352,7 +488,7 @@ const LTInfo = () => {
                 />
               </div>
 
-              <div className="mb-2">
+              {/* <div className="mb-2">
                 <label className="block mb-2 font-bold text-black">
                   Issued Date
                 </label>
@@ -361,6 +497,32 @@ const LTInfo = () => {
                   name="issuedDate"
                   value={formData.issuedDate}
                   onChange={handleInputChange1}
+                  className="border border-gray-300 rounded px-3 py-2 w-full"
+                />
+              </div> */}
+              <div className="mb-2">
+                <label className="block mb-2 font-bold text-black">
+                  Issued Date
+                </label>
+                <input
+                  type="date"
+                  name="issuedDate"
+                  value={formData.issuedDate}
+                  onChange={(e) => {
+                    const selectedDate = new Date(e.target.value);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0); // Remove time component for accurate comparison
+
+                    if (selectedDate >= today) {
+                      alert(
+                        "The selected date must be less than today's date."
+                      );
+                      e.target.value = ""; // Reset the input value
+                    } else {
+                      handleInputChange1(e); // Update the form state
+                    }
+                  }}
+                  max={new Date().toISOString().split("T")[0]} // Sets today's date as the maximum
                   className="border border-gray-300 rounded px-3 py-2 w-full"
                 />
               </div>
@@ -388,7 +550,7 @@ const LTInfo = () => {
                       </select>
                     </div>
 
-                    <div className="mb-2">
+                    {/* <div className="mb-2">
                       <label className="block mb-2 font-bold text-black">
                         Course From Date
                       </label>
@@ -399,11 +561,37 @@ const LTInfo = () => {
                         onChange={(e) => handleInputChange(index, e)}
                         className="border border-gray-300 rounded px-3 py-2 w-full"
                       />
+                    </div> */}
+                    <div className="mb-2">
+                      <label className="block mb-2 font-bold text-black">
+                        Course From Date
+                      </label>
+                      <input
+                        type="date"
+                        name="courseDate"
+                        value={course.formData.courseDate || ""}
+                        onChange={(e) => {
+                          const selectedDate = new Date(e.target.value);
+                          const courseToDate = new Date(
+                            course.formData.courseToDate
+                          ); // Get courseToDate
+
+                          if (selectedDate <= courseToDate) {
+                            alert(
+                              "The 'Course From Date' must be greater than the 'Course To Date'."
+                            );
+                            e.target.value = ""; // Reset the input value
+                          } else {
+                            handleInputChange(index, e); // Update state with valid date
+                          }
+                        }}
+                        className="border border-gray-300 rounded px-3 py-2 w-full"
+                      />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
-                    <div className="mb-2">
+                    {/* <div className="mb-2">
                       <label className="block mb-2 font-bold text-black">
                         Course To Date
                       </label>
@@ -414,7 +602,34 @@ const LTInfo = () => {
                         onChange={(e) => handleInputChange(index, e)}
                         className="border border-gray-300 rounded px-3 py-2 w-full"
                       />
+                    </div> */}
+                    <div className="mb-2">
+                      <label className="block mb-2 font-bold text-black">
+                        Course To Date
+                      </label>
+                      <input
+                        type="date"
+                        name="courseToDate"
+                        value={course.formData.courseToDate || ""}
+                        onChange={(e) => {
+                          const selectedDate = new Date(e.target.value);
+                          const courseDate = new Date(
+                            course.formData.courseDate
+                          ); // Get courseDate
+
+                          if (selectedDate <= courseDate) {
+                            toast.error(
+                              "The 'Course To Date' must be greater than the 'Course Date'."
+                            );
+                            e.target.value = ""; // Reset the input value
+                          } else {
+                            handleInputChange(index, e); // Update state with valid date
+                          }
+                        }}
+                        className="border border-gray-300 rounded px-3 py-2 w-full"
+                      />
                     </div>
+
                     <div className="mb-2">
                       <label className="block mb-2 font-bold text-black">
                         Place
@@ -493,7 +708,19 @@ const LTInfo = () => {
                     type="date"
                     name="courseFromDate"
                     value={formData.courseFromDate}
-                    onChange={handleInputChange1}
+                    onChange={(e) => {
+                      const selectedFromDate = new Date(e.target.value);
+                      const courseToDate = new Date(formData.courseToDate);
+
+                      if (courseToDate && selectedFromDate > courseToDate) {
+                        toast.error(
+                          "The 'Course From Date' must be less than or equal to the 'Course To Date'."
+                        );
+                        e.target.value = ""; // Reset the input
+                      } else {
+                        handleInputChange1(e); // Update the form data with valid date
+                      }
+                    }}
                     className="border border-gray-300 rounded px-3 py-2 w-full"
                   />
                 </div>
@@ -506,7 +733,19 @@ const LTInfo = () => {
                     type="date"
                     name="courseToDate"
                     value={formData.courseToDate}
-                    onChange={handleInputChange1}
+                    onChange={(e) => {
+                      const selectedToDate = new Date(e.target.value);
+                      const courseFromDate = new Date(formData.courseFromDate);
+
+                      if (courseFromDate && selectedToDate <= courseFromDate) {
+                        toast.error(
+                          "The 'Course To Date' must be greater than the 'Course From Date'."
+                        );
+                        e.target.value = ""; // Reset the input value
+                      } else {
+                        handleInputChange1(e); // Update state with valid date
+                      }
+                    }}
                     className="border border-gray-300 rounded px-3 py-2 w-full"
                   />
                 </div>
@@ -527,7 +766,7 @@ const LTInfo = () => {
                   />
                 </div>
 
-                <div className="mb-2">
+                {/* <div className="mb-2">
                   <label className="block mb-2 font-bold text-black">
                     Certificate Date
                   </label>
@@ -536,6 +775,30 @@ const LTInfo = () => {
                     name="certificateDate"
                     value={formData.certificateDate}
                     onChange={handleInputChange1}
+                    className="border border-gray-300 rounded px-3 py-2 w-full"
+                  />
+                </div> */}
+                <div className="mb-2">
+                  <label className="block mb-2 font-bold text-black">
+                    Certificate Date
+                  </label>
+                  <input
+                    type="date"
+                    name="certificateDate"
+                    value={formData.certificateDate}
+                    onChange={(e) => {
+                      const selectedCertificateDate = new Date(e.target.value);
+                      const courseToDate = new Date(formData.courseToDate);
+
+                      if (selectedCertificateDate <= courseToDate) {
+                        toast.error(
+                          "The 'Certificate Date' must be greater than the 'Course To Date'."
+                        );
+                        e.target.value = ""; // Reset the input value
+                      } else {
+                        handleInputChange1(e); // Update state with valid date
+                      }
+                    }}
                     className="border border-gray-300 rounded px-3 py-2 w-full"
                   />
                 </div>

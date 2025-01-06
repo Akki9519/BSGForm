@@ -88,10 +88,54 @@ const AdvanceForm = () => {
     return `${day}-${month}-${year}`;
   };
 
+  // const validateForm = () => {
+  //   let isValid = true;
+  //   const newErrors = {};
+
+  //   courses.forEach((course, index) => {
+  //     newErrors[index] = {};
+  //     if (!course.wing) {
+  //       newErrors[index].wing = "Wing is required.";
+  //       isValid = false;
+  //     }
+  //     if (!course.subwing) {
+  //       newErrors[index].subwing = "Section is required.";
+  //       isValid = false;
+  //     }
+  //     if (!course.fromDate) {
+  //       newErrors[index].fromDate = "From Date is required.";
+  //       isValid = false;
+  //     }
+  //     if (!course.toDate) {
+  //       newErrors[index].toDate = "To Date is required.";
+  //       isValid = false;
+  //     }
+  //     if (!course.venue) {
+  //       newErrors[index].venue = "Venue is required.";
+  //       isValid = false;
+  //     }
+  //     if (!course.leader) {
+  //       newErrors[index].leader = "Leader is required.";
+  //       isValid = false;
+  //     }
+  //     if (!course.certificateNumber) {
+  //       newErrors[index].certificateNumber = "Certificate Number is required.";
+  //       isValid = false;
+  //     }
+  //     if (!course.certificateDate) {
+  //       newErrors[index].certificateDate = "Certificate Date is required.";
+  //       isValid = false;
+  //     }
+  //   });
+
+  //   setErrors(newErrors);
+  //   return isValid;
+  // };
+
   const validateForm = () => {
     let isValid = true;
     const newErrors = {};
-
+  
     courses.forEach((course, index) => {
       newErrors[index] = {};
       if (!course.wing) {
@@ -126,12 +170,32 @@ const AdvanceForm = () => {
         newErrors[index].certificateDate = "Certificate Date is required.";
         isValid = false;
       }
+  
+      // Check if the toDate is greater than fromDate
+      if (course.fromDate && course.toDate) {
+        const fromDate = new Date(course.fromDate);
+        const toDate = new Date(course.toDate);
+        if (toDate <= fromDate) {
+          newErrors[index].toDate = "To Date must be greater than From Date.";
+          isValid = false;
+        }
+      }
+  
+      // Check if the certificateDate is greater than toDate
+      if (course.toDate && course.certificateDate) {
+        const toDate = new Date(course.toDate);
+        const certificateDate = new Date(course.certificateDate);
+        if (certificateDate <= toDate) {
+          newErrors[index].certificateDate = "Certificate Date must be greater than To Date.";
+          isValid = false;
+        }
+      }
     });
-
+  
     setErrors(newErrors);
     return isValid;
   };
-
+  
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);

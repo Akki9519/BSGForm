@@ -87,7 +87,7 @@ console.log(loginData,"loginDatasdsfgh")
           ls.set("honourableNumber", honourableNumber);
 
           setUserData(userDetails);
-          setMessage("Login successful! Please verify your email to proceed.");
+          setMessage("Verification successful, Please proceed.");
         } else {
           setMessage("No user data found. Please check your credentials.");
         }

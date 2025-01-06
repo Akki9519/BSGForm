@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -57,19 +56,36 @@ const ALTInfo = () => {
     });
   };
 
-  
- 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    const requiredFields = [
-    
-    
-      formData.courseToDate,
-     
+    const courseFromDate = new Date(formData.courseFromDate);
+    const courseToDate = new Date(formData.courseToDate);
+    const issuedDate = new Date(formData.issuedDate);
+    const certificateDate = new Date(formData.certificateDate);
+ 
+
+    if (courseFromDate > courseToDate) {
+      toast.error("The 'Course From Date' must be less than or equal to the 'Course To Date'.");
+      setLoading(false);
+      return;
+    }
   
-   
+    if (issuedDate >= new Date()) {
+      toast.error("The 'Issued Date' must be less than today's date.");
+      setLoading(false);
+      return;
+    }
+  
+    if (certificateDate <= courseToDate) {
+      toast.error("The 'Certificate Date' must be greater than the 'Course To Date'.");
+      setLoading(false);
+      return;
+    }
+    const requiredFields = [
+      formData.courseToDate,
+
       formData.certificateNumber,
       formData.certificateDate,
       formData.courseLeader,
@@ -77,15 +93,17 @@ const ALTInfo = () => {
       formData.honourableChargeNo,
       formData.issuedDate,
     ];
-  console.log(requiredFields,"requiredfilled")
-    const allFieldsFilled = requiredFields.every(field => field !== "" && field !== undefined);
-  
+    console.log(requiredFields, "requiredfilled");
+    const allFieldsFilled = requiredFields.every(
+      (field) => field !== "" && field !== undefined
+    );
+
     if (!allFieldsFilled) {
       toast.error("Please fill out all fields before submitting.");
       setLoading(false);
       return;
     }
-  
+
     // Prepare the data to be sent to the server
     const data = {
       wing: selectedWing,
@@ -106,39 +124,46 @@ const ALTInfo = () => {
         honourableChargeNo: formData.honourableChargeNo, // New field
         issuedDate: formData.issuedDate, // New field
       },
-      courses: courses.map(course => ({
+      courses: courses.map((course) => ({
         selectType: course.selectType,
         courseDate: course.formData.courseDate,
         courseToDate: course.formData.courseToDate,
         place: course.formData.place,
-        leader: course.selectType !== "conducted" ? course.formData.leader : undefined,
+        leader:
+          course.selectType !== "conducted"
+            ? course.formData.leader
+            : undefined,
         participants: course.formData.participants,
       })),
     };
-  
+
     console.log(data, "data");
-  
+
     const userId = ls.get("_id"); // Corrected usage
     console.log(userId, "userId");
-  
+
     if (!userId) {
       toast.error("User  ID not found. Please log in again.");
       setLoading(false);
       return;
     }
-  
+
     try {
       const response = await axios.post(
         `${BASE_URL}/api/v2/altinfo/${userId}`,
         data
       );
-      toast.success("LT Form submitted successfully! Now Click Next To Proceed");
+      toast.success(
+        "LT Form submitted successfully! Now Click Next To Proceed"
+      );
       setLoading(false);
       fetchData();
       console.log("Response:", response.data);
     } catch (error) {
       console.error("Error submitting form:", error);
-      toast.error("An error occurred while submitting the form. Please try again.");
+      toast.error(
+        "An error occurred while submitting the form. Please try again."
+      );
       setLoading(false);
     }
   };
@@ -187,26 +212,24 @@ const ALTInfo = () => {
 
   const getLocal = async () => {
     const honourableChargeNo = ls.get("honourableNumber");
-    const course =ls.get("sectionq") // Use secure-ls to get the honourable number
+    const course = ls.get("sectionq"); // Use secure-ls to get the honourable number
     console.log(honourableChargeNo, "hhhhhhhhhhhhh");
-  
+
     // Update formData with the retrieved honourableChargeNo
-    if (honourableChargeNo && course== "ALT") {
+    if (honourableChargeNo && course == "ALT") {
       setFormData((prevData) => ({
         ...prevData,
         honourableChargeNo: honourableChargeNo,
       }));
       setCourse(course);
-    }
-    else {
+    } else {
       setFormData((prevData) => ({
         ...prevData,
         honourableChargeNo: "", // Set to empty if no value
       }));
     }
-    
   };
-  
+
   useEffect(() => {
     getLocal();
   }, []);
@@ -247,93 +270,97 @@ const ALTInfo = () => {
 
         {isSubmitted ? (
           <div className="mt-8 space-y-6">
-          {fetchedData.map((course, index) => (
-            <div key={index} className="p-4 border border-gray-300 rounded mb-2">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-20 gap-y-5">
-        
-                {/* Honourable Charge Number */}
-                <div>
-                  <strong>Honourable No:</strong> {course.courseDetails?.honourableChargeNo}
-                </div>
-        
-                {/* Issue Date */}
-                <div>
-                  <strong>Issue Date:</strong> {functionDate(course.courseDetails?.issuedDate)}
-                </div>
-
-                <div>
-                      <strong>ROT From Date:</strong> {functionDate(course.courseDetails?.fromDate)}
-                    </div>
-                    <div>
-                      <strong>ROT To Date:</strong> {functionDate(course.courseDetails?.toDate)}
-                    </div>
-
-                    <div>
-                      <strong>Certificate Date:</strong> {functionDate(course.courseDetails
-.certificateDate)}
-                    </div>
-
-                    <div>
-                      <strong>Certificate Number:</strong> {course.courseDetails
-.certificateNumber}
-                    </div>
-                    <div>
-                      <strong>Leader:</strong> {course.courseDetails
-.courseLeader}
-                    </div>
-                    <div>
-                      <strong>Venue:</strong> {course.courseDetails?.coursePlace}
-                    </div>
-
-        
-                {/* Training Type: Iterate through each course */}
-                {course.courses?.map((subCourse, subIndex) => (
-                  <div key={subIndex}>
-                    <div>
-                      <strong>Training Type {subIndex + 1}:</strong> {subCourse.selectType}
-                    </div>
-                    
-                    {/* Training Course Date Range */}
-                    <div>
-                      <strong>Training Course From Date:</strong> {functionDate(subCourse.courseDate)}
-                    </div>
-                    <div>
-                      <strong>Training Course To Date:</strong> {functionDate(subCourse.courseToDate)}
-                    </div>
-        
-                    {/* ROT Date Range */}
-                    
-        
-                    {/* Venue and Place */}
-                    <div>
-                      <strong>Venue:</strong> {subCourse.place}
-                    </div>
-        
-                    {/* Leader (only for "assisted" training type) */}
-                    {subCourse.leader && (
-                      <div>
-                        <strong>Leader:</strong> {subCourse.leader}
-                      </div>
-                    )}
-        
-                    {/* Certificate Number */}
-                    <div>
-                      <strong>Certificate Number:</strong> {course.courseDetails?.certificateNumber}
-                    </div>
-        
-                    {/* Participants */}
-                    <div>
-                      <strong>Participants:</strong> {subCourse.participants}
-                    </div>
+            {fetchedData.map((course, index) => (
+              <div
+                key={index}
+                className="p-4 border border-gray-300 rounded mb-2"
+              >
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-20 gap-y-5">
+                  {/* Honourable Charge Number */}
+                  <div>
+                    <strong>Honourable No:</strong>{" "}
+                    {course.courseDetails?.honourableChargeNo}
                   </div>
-                ))}
-        
-              </div>
-            </div>
-          ))}
-        </div>
-        
 
+                  {/* Issue Date */}
+                  <div>
+                    <strong>Issue Date:</strong>{" "}
+                    {functionDate(course.courseDetails?.issuedDate)}
+                  </div>
+
+                  <div>
+                    <strong>ROT From Date:</strong>{" "}
+                    {functionDate(course.courseDetails?.fromDate)}
+                  </div>
+                  <div>
+                    <strong>ROT To Date:</strong>{" "}
+                    {functionDate(course.courseDetails?.toDate)}
+                  </div>
+
+                  <div>
+                    <strong>Certificate Date:</strong>{" "}
+                    {functionDate(course.courseDetails.certificateDate)}
+                  </div>
+
+                  <div>
+                    <strong>Certificate Number:</strong>{" "}
+                    {course.courseDetails.certificateNumber}
+                  </div>
+                  <div>
+                    <strong>Leader:</strong> {course.courseDetails.courseLeader}
+                  </div>
+                  <div>
+                    <strong>Venue:</strong> {course.courseDetails?.coursePlace}
+                  </div>
+
+                  {/* Training Type: Iterate through each course */}
+                  {course.courses?.map((subCourse, subIndex) => (
+                    <div key={subIndex}>
+                      <div>
+                        <strong>Training Type {subIndex + 1}:</strong>{" "}
+                        {subCourse.selectType}
+                      </div>
+
+                      {/* Training Course Date Range */}
+                      <div>
+                        <strong>Training Course From Date:</strong>{" "}
+                        {functionDate(subCourse.courseDate)}
+                      </div>
+                      <div>
+                        <strong>Training Course To Date:</strong>{" "}
+                        {functionDate(subCourse.courseToDate)}
+                      </div>
+
+                      {/* ROT Date Range */}
+
+                      {/* Venue and Place */}
+                      <div>
+                        <strong>Venue:</strong> {subCourse.place}
+                      </div>
+
+                      {/* Leader (only for "assisted" training type) */}
+                      {subCourse.leader && (
+                        <div>
+                          <strong>Leader:</strong> {subCourse.leader}
+                        </div>
+                      )}
+
+                      {/* Certificate Number */}
+                      <div>
+                        <strong>Certificate Number:</strong>{" "}
+                        {course.courseDetails?.certificateNumber}
+                      </div>
+
+                      {/* Participants */}
+                      <div>
+                        <strong>Participants:</strong> {subCourse.participants}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
         ) : (
           <div className="border p-4 rounded">
             <ToastContainer />
@@ -349,13 +376,12 @@ const ALTInfo = () => {
                   value={formData.honourableChargeNo}
                   onChange={handleInputChange1}
                   // disabled={formData.honourableChargeNo !== ""}
-                  disabled={formData.honourableChargeNo && course } // Disable when both are available
-
+                  disabled={formData.honourableChargeNo && course} // Disable when both are available
                   placeholder="Honourable Charge No"
                   className="border border-gray-300 rounded px-3 py-2 w-full"
                 />
               </div>
-
+              {/* 
               <div className="mb-2">
                 <label className="block mb-2 font-bold text-black">
                   Issued Date
@@ -365,6 +391,32 @@ const ALTInfo = () => {
                   name="issuedDate"
                   value={formData.issuedDate}
                   onChange={handleInputChange1}
+                  className="border border-gray-300 rounded px-3 py-2 w-full"
+                />
+              </div> */}
+              <div className="mb-2">
+                <label className="block mb-2 font-bold text-black">
+                  Issued Date
+                </label>
+                <input
+                  type="date"
+                  name="issuedDate"
+                  value={formData.issuedDate}
+                  onChange={(e) => {
+                    const selectedDate = new Date(e.target.value);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0); // Remove time component for accurate comparison
+
+                    if (selectedDate >= today) {
+                      alert(
+                        "The selected date must be less than today's date."
+                      );
+                      e.target.value = ""; // Reset the input value
+                    } else {
+                      handleInputChange1(e); // Update the form state
+                    }
+                  }}
+                  max={new Date().toISOString().split("T")[0]} // Sets today's date as the maximum
                   className="border border-gray-300 rounded px-3 py-2 w-full"
                 />
               </div>
@@ -392,7 +444,7 @@ const ALTInfo = () => {
                       </select>
                     </div>
 
-                    <div className="mb-2">
+                    {/* <div className="mb-2">
                       <label className="block mb-2 font-bold text-black">
                         Course From Date
                       </label>
@@ -401,6 +453,32 @@ const ALTInfo = () => {
                         name="courseDate"
                         value={course.formData.courseDate || ""}
                         onChange={(e) => handleInputChange(index, e)}
+                        className="border border-gray-300 rounded px-3 py-2 w-full"
+                      />
+                    </div> */}
+                    <div className="mb-2">
+                      <label className="block mb-2 font-bold text-black">
+                        Course From Date
+                      </label>
+                      <input
+                        type="date"
+                        name="courseDate"
+                        value={course.formData.courseDate || ""}
+                        onChange={(e) => {
+                          const selectedDate = new Date(e.target.value);
+                          const courseToDate = new Date(
+                            course.formData.courseToDate
+                          ); // Get courseToDate
+
+                          if (selectedDate <= courseToDate) {
+                            alert(
+                              "The 'Course From Date' must be greater than the 'Course To Date'."
+                            );
+                            e.target.value = ""; // Reset the input value
+                          } else {
+                            handleInputChange(index, e); // Update state with valid date
+                          }
+                        }}
                         className="border border-gray-300 rounded px-3 py-2 w-full"
                       />
                     </div>
@@ -415,7 +493,21 @@ const ALTInfo = () => {
                         type="date"
                         name="courseToDate"
                         value={course.formData.courseToDate || ""}
-                        onChange={(e) => handleInputChange(index, e)}
+                        onChange={(e) => {
+                          const selectedDate = new Date(e.target.value);
+                          const courseDate = new Date(
+                            course.formData.courseDate
+                          ); // Get courseDate
+
+                          if (selectedDate <= courseDate) {
+                            toast.error(
+                              "The 'Course To Date' must be greater than the 'Course Date'."
+                            );
+                            e.target.value = ""; // Reset the input value
+                          } else {
+                            handleInputChange(index, e); // Update state with valid date
+                          }
+                        }}
                         className="border border-gray-300 rounded px-3 py-2 w-full"
                       />
                     </div>
@@ -448,7 +540,6 @@ const ALTInfo = () => {
                         />
                       </div>
                     )}
-                    
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
                     <div className="mb-2">
@@ -499,7 +590,19 @@ const ALTInfo = () => {
                     type="date"
                     name="courseFromDate"
                     value={formData.courseFromDate}
-                    onChange={handleInputChange1}
+                    onChange={(e) => {
+                      const selectedFromDate = new Date(e.target.value);
+                      const courseToDate = new Date(formData.courseToDate);
+
+                      if (courseToDate && selectedFromDate > courseToDate) {
+                        toast.error(
+                          "The 'Course From Date' must be less than or equal to the 'Course To Date'."
+                        );
+                        e.target.value = ""; // Reset the input
+                      } else {
+                        handleInputChange1(e); // Update the form data with valid date
+                      }
+                    }}
                     className="border border-gray-300 rounded px-3 py-2 w-full"
                   />
                 </div>
@@ -512,7 +615,19 @@ const ALTInfo = () => {
                     type="date"
                     name="courseToDate"
                     value={formData.courseToDate}
-                    onChange={handleInputChange1}
+                    onChange={(e) => {
+                      const selectedToDate = new Date(e.target.value);
+                      const courseFromDate = new Date(formData.courseFromDate);
+
+                      if (courseFromDate && selectedToDate <= courseFromDate) {
+                        toast.error(
+                          "The 'Course To Date' must be greater than the 'Course From Date'."
+                        );
+                        e.target.value = ""; // Reset the input value
+                      } else {
+                        handleInputChange1(e); // Update state with valid date
+                      }
+                    }}
                     className="border border-gray-300 rounded px-3 py-2 w-full"
                   />
                 </div>
@@ -533,7 +648,7 @@ const ALTInfo = () => {
                   />
                 </div>
 
-                <div className="mb-2">
+                {/* <div className="mb-2">
                   <label className="block mb-2 font-bold text-black">
                     Certificate Date
                   </label>
@@ -542,6 +657,30 @@ const ALTInfo = () => {
                     name="certificateDate"
                     value={formData.certificateDate}
                     onChange={handleInputChange1}
+                    className="border border-gray-300 rounded px-3 py-2 w-full"
+                  />
+                </div> */}
+                <div className="mb-2">
+                  <label className="block mb-2 font-bold text-black">
+                    Certificate Date
+                  </label>
+                  <input
+                    type="date"
+                    name="certificateDate"
+                    value={formData.certificateDate}
+                    onChange={(e) => {
+                      const selectedCertificateDate = new Date(e.target.value);
+                      const courseToDate = new Date(formData.courseToDate);
+
+                      if (selectedCertificateDate <= courseToDate) {
+                        toast.error(
+                          "The 'Certificate Date' must be greater than the 'Course To Date'."
+                        );
+                        e.target.value = ""; // Reset the input value
+                      } else {
+                        handleInputChange1(e); // Update state with valid date
+                      }
+                    }}
                     className="border border-gray-300 rounded px-3 py-2 w-full"
                   />
                 </div>
@@ -590,8 +729,6 @@ const ALTInfo = () => {
 };
 
 export default ALTInfo;
-
-
 
 // import React, { useState, useEffect } from "react";
 // import { ToastContainer, toast } from "react-toastify";
@@ -672,7 +809,7 @@ export default ALTInfo;
 //     const requiredFields = [
 //       "courseToDate",
 //       "courseFromDate",
-      
+
 //       "certificateNumber",
 //       "certificateDate",
 //       "courseLeader",
