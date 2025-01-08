@@ -53,7 +53,10 @@ const PersonalInformation = () => {
 
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [fetchedData, setFetchedData] = useState("");
+  // const [showInput, setShowInput] = useState(false);
 
+  const [showInput, setShowInput] = useState(""); // Tracks the selected option ("yes" or "no")
+  const [inputValue, setInputValue] = useState("");
   // Error state
   const [errors, setErrors] = useState({
     name: "",
@@ -124,13 +127,13 @@ const PersonalInformation = () => {
 
     if (!uploadPhoto)
       newErrors.uploadPhoto =
-        "Upload Photo is required!,File Size must be Greater than 200 KB";
+        "Upload Photo is required!,File Size must be less than 200 KB";
     if (!uploadWarrant)
       newErrors.uploadWarrant =
-        "Upload Warrant is required!,File Size must be Greater than 200 KB";
+        "Upload Warrant is required!,File Size must be less than 200 KB";
     if (!highestqualification)
       newErrors.highestqualification =
-        "Highest Qualification is required!,,File Size must be Greater than 200 KB";
+        "Highest Qualification is required!,,File Size must be less than 200 KB";
     if (name === "") newErrors.name = "Name is required.";
     if (email === "") newErrors.email = "Email is required.";
     if (dob === "") newErrors.dob = "Date of Birth is required.";
@@ -761,39 +764,58 @@ const PersonalInformation = () => {
                 </div>
               </div>
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 lg:gap-10">
-                <div className="flex flex-col mb-4">
-                  <label className="mb-1 font-medium text-black">
-                    Warrant Number
-                  </label>
-                  <input
-                    type="text"
-                    value={warrantNumber}
-                    onChange={(e) => setWarrantNumber(e.target.value)}
-                    placeholder="Enter the Warrant Number"
-                    className="outline-none bg-white rounded-md px-3 py-1 border border-gray-300 focus:border-indigo-500"
-                  />
+              <div className="flex flex-col mb-4">
+      <label className="mb-1 font-medium text-black">
+        Are you a District/State/National professional?
+      </label>
+      <label className="mr-2">
+        <input
+          type="radio"
+          name="warrantOption"
+          value="yes"
+          onChange={() => setShowInput("yes")}
+          className="mr-1"
+        />
+        Yes
+      </label>
+      <label>
+        <input
+          type="radio"
+          name="warrantOption"
+          value="no"
+          onChange={() => setShowInput("no")}
+          className="mr-1"
+        />
+        No
+      </label>
+
+      {/* Common input field shown for both options */}
+      {showInput && (
+        <input
+          type="text"
+          value={warrantNumber}
+          onChange={(e) => setWarrantNumber(e.target.value)}
+          placeholder={
+            showInput === "yes"
+              ? "Enter the ID Number"
+              : "Enter the Warrant Number"
+          }
+          className="outline-none bg-white rounded-md px-3 py-1 border border-gray-300 focus:border-indigo-500 mt-2"
+        />
+      )}
+
+
+     
+
+
+
                   {errors.warrantNumber && (
                     <span className="text-red-500 text-sm">
                       {errors.warrantNumber}
                     </span>
                   )}
                 </div>
-                {/* <div className="flex flex-col mb-4">
-                  <label className="mb-1 font-medium text-black">
-                    Warrant Date
-                  </label>
-                  <input
-                    type="date"
-                    value={warrantDate}
-                    onChange={(e) => setWarrantDate(e.target.value)}
-                    className="outline-none bg-white rounded-md px-3 py-1 border border-gray-300 focus:border-indigo-500"
-                  />
-                  {errors.warrantNumber && (
-                    <span className="text-red-500 text-sm">
-                      {errors.warrantNumber}
-                    </span>
-                  )}
-                </div> */}
+
                 <div className="flex flex-col mb-4">
   <label className="mb-1 font-medium text-black">Warrant Date</label>
   <input
@@ -852,6 +874,7 @@ const PersonalInformation = () => {
 {errors.uploadWarrant && (
   <span className="text-red-500 text-sm">{errors.uploadWarrant}</span>
 )}
+    </div>
 
                 </div>
               </div>
@@ -882,7 +905,7 @@ const PersonalInformation = () => {
       const warrantDateObj = new Date(warrantDate);
 
       if (selectedDate <= warrantDateObj) {
-        toast.error("The 'Warrant Valid Till' date must be greater than the 'Warrant Date'.");
+        toast.error("The 'Warrant Valid Till' date must be less than the 'Warrant Date'.");
         e.target.value = ""; // Reset the input
       } else {
         setValidTill(e.target.value); // Update the valid date state
@@ -924,7 +947,7 @@ const PersonalInformation = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-black">
-                    Highest Qualification
+                    Highest Education Qualification
                   </label>
                   {highestqualification1 && (
                     <iframe
@@ -969,7 +992,7 @@ const PersonalInformation = () => {
               </div>
             </div>
           </div>
-        </div>
+        // </div>
       )}
     </>
   );

@@ -530,7 +530,7 @@ const LTInfo = () => {
 
             <div>
               <h2 className="font-bold text-black text-lg mb-2">
-                Training Courses Assisted/Conducted in Last Year
+                Training Courses Assisted/Conducted as LT
               </h2>
               {courses.map((course, index) => (
                 <div key={course.id} className="mb-4 border p-4 rounded">
