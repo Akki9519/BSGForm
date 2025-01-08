@@ -79,12 +79,14 @@ console.log(loginData,"loginDatasdsfgh")
           const email = userDetails.email;
           const bsgnumber = userDetails.bsgUid;
           const honourableNumber=userDetails.HONOURABLE_CHARGE_NO;
+          const parchmentNumber=userDetails.PARCHMENT_NO;
 
 
           ls.set("name", name);
           ls.set("email", email);
           ls.set("bsgnumber", bsgnumber);
           ls.set("honourableNumber", honourableNumber);
+          ls.set("parchmentNumber", parchmentNumber);
 
           setUserData(userDetails);
           setMessage("Verification successful, Please proceed.");
@@ -194,6 +196,8 @@ console.log(loginData,"loginDatasdsfgh")
           onChange={(e) => {
             setSelectedCourse(e.target.value);
             setMessage("");
+
+
             setHonourableNumber("");
             setParchmentNumber("");
           }}
@@ -268,8 +272,8 @@ console.log(loginData,"loginDatasdsfgh")
             <strong>State:</strong> {userData.STATE}
           </p>
           <p>
-            <strong>Honourable Charge No:</strong>{" "}
-            {userData.HONOURABLE_CHARGE_NO || "N/A"}
+            <strong>Honourable Charge No/Parchment No:</strong>{" "}
+            {userData.HONOURABLE_CHARGE_NO  ||userData.PARCHMENT_NO}
           </p>
           <p>
             <strong>BSG UID:</strong> {userData.bsgUid}
