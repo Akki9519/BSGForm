@@ -80,14 +80,19 @@ console.log(loginData,"loginDatasdsfgh")
           const bsgnumber = userDetails.bsgUid;
           const honourableNumber=userDetails.HONOURABLE_CHARGE_NO;
           const parchmentNumber=userDetails.PARCHMENT_NO;
-
-
+          const dob=userDetails.dob;
+          const MOBILE=userDetails.MOBILE;
+          const STATE=userDetails.STATE;
+          const AADHAR_NO=userDetails.AADHAR_NO;
+          ls.set("MOBILE", MOBILE);
           ls.set("name", name);
           ls.set("email", email);
           ls.set("bsgnumber", bsgnumber);
           ls.set("honourableNumber", honourableNumber);
           ls.set("parchmentNumber", parchmentNumber);
-
+          ls.set("dob", dob);
+          ls.set("STATE", STATE);
+          ls.set("AADHAR_NO",AADHAR_NO);
           setUserData(userDetails);
           setMessage("Verification successful, Please proceed.");
         } else {

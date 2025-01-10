@@ -628,6 +628,8 @@ const LTInfo = () => {
                         }}
                         className="border border-gray-300 rounded px-3 py-2 w-full"
                       />
+
+                      
                     </div>
 
                     <div className="mb-2">
@@ -658,8 +660,6 @@ const LTInfo = () => {
                         />
                       </div>
                     )}
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
                     <div className="mb-2">
                       <label className="block mb-2 font-bold text-black">
                         No. of Participants
@@ -670,10 +670,13 @@ const LTInfo = () => {
                         value={course.formData.participants || ""}
                         onChange={(e) => handleInputChange(index, e)}
                         placeholder="No. of Participants"
-                        class="border border-gray-300 rounded px-3 py-2 w-full"
+                        class="border border-gray-300 rounded px-3 py-2 w-96"
                       />
                     </div>
                   </div>
+            
+                    
+               
                   {index > 0 && (
                     <button
                       type="button"

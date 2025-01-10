@@ -16,6 +16,7 @@ const PersonalInformation = () => {
   const [state, setState] = useState("");
   const [state1, setState1] = useState([]);
   const [valid, setValidTill] = useState("");
+  const [idnumber, setIdNumber] = useState("");
   const [aadharNumber, setAadharNumber] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
   const [whatsappNumber, setWhatsAppNumber] = useState("");
@@ -76,6 +77,7 @@ const PersonalInformation = () => {
     occupation: "",
     qualification: "",
     highestqualification: "",
+   
   });
 
   const token = ls.get("kyttoken"); // Use secure-ls to get the token
@@ -128,10 +130,10 @@ const PersonalInformation = () => {
         "Upload Photo is required!,File Size must be less than 200 KB";
     if (!uploadWarrant)
       newErrors.uploadWarrant =
-        "Upload Warrant is required!,File Size must be less than 200 KB";
+        "Upload File is required!,File Size must be less than 200 KB";
     if (!highestqualification)
       newErrors.highestqualification =
-        "Highest Qualification is required!,,File Size must be less than 200 KB";
+        "Highest Qualification is required!,File Size must be less than 200 KB";
     if (name === "") newErrors.name = "Name is required.";
     if (email === "") newErrors.email = "Email is required.";
     if (dob === "") newErrors.dob = "Date of Birth is required.";
@@ -152,13 +154,14 @@ const PersonalInformation = () => {
       newErrors.revenuePincode = "Revenue Pincode is required.";
     if (revenueState === "")
       newErrors.revenueState = "Revenue State is required.";
-    if (valid === "") newErrors.valid = "Valid Till date is required.";
+    if (valid === "") newErrors.valid = " date is required.";
+    // if (idnumber === "") newErrors.idnumber = "Id number is required.";
     if (maritalStatus === "")
       newErrors.maritalStatus = "Marital Status is required.";
     if (gender === "") newErrors.gender = "Gender is required.";
     if (warrantDate === "") newErrors.warrantDate = "Warrant Date is required.";
     if (warrantNumber === "")
-      newErrors.warrantNumber = "Warrant Number is required.";
+      newErrors.warrantNumber = "Number is required.";
     if (occupation === "") newErrors.occupation = "Occupation is required.";
     if (qualification === "")
       newErrors.qualification = "Qualification is required.";
@@ -178,7 +181,6 @@ const PersonalInformation = () => {
     formData.append("dob", dob);
     formData.append("bsgUid", bsgUid);
     formData.append("state", state);
-    formData.append("showInput", showInput);
     formData.append("aadharNumber", aadharNumber);
     formData.append("mobileNumber", mobileNumber);
     formData.append("whatsappNumber", whatsappNumber);
@@ -206,10 +208,6 @@ const PersonalInformation = () => {
     formData.append("fromDate1", fromDate1);
     formData.append("toDate1", toDate1);
     formData.append("place", place);
-
-    for (let [key, value] of formData.entries()) {
-      console.log(`${key}: ${value}`);
-    }
 
     try {
       const userId = ls.get("_id"); // Use secure-ls to get the user ID
@@ -244,10 +242,19 @@ const PersonalInformation = () => {
     const storedName = ls.get("name"); // Use secure-ls to get the name
     const storedEmail = ls.get("email"); // Use secure-ls to get the email
     const storedBsgUid = ls.get("bsgnumber"); // Use secure-ls to get the BSG UID
-
+    const storedBsgdob = ls.get("dob");
+    console.log(storedBsgdob, "storedBsgdob");
+    const storedMobile = ls.get("MOBILE");
+    const storedAadhar = ls.get("AADHAR_NO");
+    const storedState = ls.get("STATE");
+    console.log(storedState, "statae");
     setName(storedName);
     setEmail(storedEmail);
     setBsgUid(storedBsgUid);
+    setDob(storedBsgdob);
+    setMobileNumber(storedMobile);
+    setAadharNumber(storedAadhar);
+    setState(storedState);
   };
 
   useEffect(() => {
@@ -380,7 +387,7 @@ const PersonalInformation = () => {
                 </a>
               </div>
               <div>
-                <strong>Upload Warrant:</strong>
+                <strong>Upload Warrant/ID:</strong>
                 <a
                   href={fetchedData.uploadWarrant}
                   target="_blank"
@@ -390,14 +397,14 @@ const PersonalInformation = () => {
                 </a>
               </div>
               <div>
-                <strong>Valid Till:</strong> {functionDate(fetchedData.valid)}
+                <strong>Warrant/ID Valid Till:</strong> {functionDate(fetchedData.valid)}
               </div>
               <div>
-                <strong>Warrant Date:</strong>{" "}
+                <strong>Warrant/ID Date:</strong>{" "}
                 {functionDate(fetchedData.warrantDate)}
               </div>
               <div>
-                <strong>Warrant Number:</strong> {fetchedData.warrantNumber}
+                <strong>Warrant/ID Number:</strong> {fetchedData.warrantNumber}
               </div>
               <div>
                 <strong>WhatsApp Number:</strong> {fetchedData.whatsappNumber}
@@ -409,7 +416,7 @@ const PersonalInformation = () => {
         <div className="flex justify-center items-center mb-8">
           <div className="pt-5 w-full rounded-lg shadow-md">
             <div className="px-8">
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-0 lg:gap-10">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 lg:gap-10">
                 <div className="flex flex-col mb-4">
                   <label className="mb-1 font-medium text-black">Name</label>
                   <input
@@ -455,36 +462,8 @@ const PersonalInformation = () => {
                     </span>
                   )}
                 </div>
-                <div className="flex flex-col mb-4">
-                  <label className="mb-1 font-medium text-black">DOB</label>
-                  <input
-                    type="date"
-                    value={dob}
-                    onChange={(e) => setDob(e.target.value)}
-                    className="outline-none bg-white rounded-md px-3 py-1 border border-gray-300 focus:border-indigo-500"
-                  />
-                  {errors.dob && (
-                    <span className="text-red-500 text-sm">{errors.dob}</span>
-                  )}
-                </div>
               </div>
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 lg:gap-10 ">
-                {/* <div className="flex flex-col mb-4">
-                  <label className="mb-1 font-medium text-black">BSG State</label>
-                  <select
-                    value={state}
-                    onChange={(e) => setState(e.target.value)}
-                    className="outline-none bg-white rounded-md px-3 py-1 border border-gray-300 focus:border-indigo-500"
-                  >
-                    <option value="">Select BSG State</option>
-                    {state1.map((item, index) => (
-                      <option key={index} value={item.state}>
-                        {item.state}
-                      </option>
-                    ))}
-                  </select>
-                  {errors.state && <span className="text-red-500 text-sm">{errors.state}</span>}
-                </div> */}
                 <div className="flex flex-col mb-4">
                   <label className="mb-1 font-medium text-black">
                     BSG State
@@ -504,6 +483,14 @@ const PersonalInformation = () => {
                         </option>
                       ))}
                   </select>
+
+                  <input
+                    type="text"
+                    value={state}
+                    disabled
+                    onChange={(e) => setState(e.target.value)}
+                    className="outline-none bg-red-300 rounded-md px-3 py-1 border border-gray-300 focus:border-indigo-500 my-3"
+                  />
                   {errors.state && (
                     <span className="text-red-500 text-sm">{errors.state}</span>
                   )}
@@ -612,6 +599,19 @@ const PersonalInformation = () => {
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 lg:gap-10">
+
+              <div className="flex flex-col mb-4">
+                  <label className="mb-1 font-medium text-black">DOB</label>
+                  <input
+                    type="date"
+                    value={dob}
+                    onChange={(e) => setDob(e.target.value)}
+                    className="outline-none bg-white rounded-md px-3 py-1 border border-gray-300 focus:border-indigo-500"
+                  />
+                  {errors.dob && (
+                    <span className="text-red-500 text-sm">{errors.dob}</span>
+                  )}
+                </div>
                 <div className="flex flex-col mb-4">
                   <label className="mb-1 font-medium text-black">
                     Revenue State
@@ -658,56 +658,7 @@ const PersonalInformation = () => {
                   )}
                 </div>
 
-                <div className="flex flex-col">
-                  <label className="mb-1 font-medium text-black">
-                    Uploaded Photo
-                  </label>
-                  {uploadPhoto1 && (
-                    <img
-                      src={uploadPhoto1}
-                      alt="photo"
-                      style={{ maxWidth: "100px", maxHeight: "100px" }}
-                    />
-                  )}
-                  {/* <input
-                    type="file"
-                    name="avatar"
-                    className="outline-none mb-3 mt-1 py-2 bg-slate-200 px-2 block w-full border-gray-300 rounded-md shadow-sm"
-                    onChange={(e) =>
-                      handleFileChange(e.target.files[0], setUploadPhoto)
-                    }
-                  /> */}
-                  <input
-                    type="file"
-                    name="avatar"
-                    accept="image/*" // Restricts file types to images only
-                    className="outline-none mb-3 mt-1 py-2 bg-slate-200 px-2 block w-full border-gray-300 rounded-md shadow-sm"
-                    onChange={(e) => {
-                      const file = e.target.files[0];
-                      if (file) {
-                        const validImageTypes = [
-                          "image/jpeg",
-                          "image/png",
-                          "image/gif",
-                        ]; // Add allowed MIME types
-                        if (!validImageTypes.includes(file.type)) {
-                          toast.error(
-                            "Only image files are allowed (JPEG, PNG, GIF)."
-                          );
-                          e.target.value = ""; // Reset the file input
-                        } else {
-                          handleFileChange(file, setUploadPhoto);
-                        }
-                      }
-                    }}
-                  />
-
-                  {errors.uploadPhoto && (
-                    <span className="text-red-500 text-sm">
-                      {errors.uploadPhoto}
-                    </span>
-                  )}
-                </div>
+             
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 lg:gap-10">
@@ -772,7 +723,122 @@ const PersonalInformation = () => {
                   )}
                 </div>
               </div>
+
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 lg:gap-10">
+
+              <div className="flex flex-col">
+                  <label className="mb-1 font-medium text-black">
+                    Uploaded Photo
+                  </label>
+                  {uploadPhoto1 && (
+                    <img
+                      src={uploadPhoto1}
+                      alt="photo"
+                      style={{ maxWidth: "100px", maxHeight: "100px" }}
+                    />
+                  )}
+
+                  <input
+                    type="file"
+                    name="avatar"
+                    accept="image/*" // Restricts file types to images only
+                    className="outline-none mb-3 mt-1 py-2 bg-slate-200 px-2 block w-full border-gray-300 rounded-md shadow-sm"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        const validImageTypes = [
+                          "image/jpeg",
+                          "image/png",
+                          "image/gif",
+                        ]; // Add allowed MIME types
+                        if (!validImageTypes.includes(file.type)) {
+                          toast.error(
+                            "Only image files are allowed (JPEG, PNG, GIF)."
+                          );
+                          e.target.value = ""; // Reset the file input
+                        } else {
+                          handleFileChange(file, setUploadPhoto);
+                        }
+                      }
+                    }}
+                  />
+
+                  {errors.uploadPhoto && (
+                    <span className="text-red-500 text-sm">
+                      {errors.uploadPhoto}
+                    </span>
+                  )}
+                </div>
+                
+
+                <div className="flex flex-col mb-4">
+                  <label className="mb-1 font-medium text-black">
+                    Qualification
+                  </label>
+                  <select
+                    value={qualification}
+                    onChange={(e) => setQualification(e.target.value)}
+                    className="outline-none bg-white rounded-md mb-3 px-3 py-1 border border-gray-300 focus:border-indigo-500"
+                  >
+                    <option value="">Select Qualification</option>
+                    <option value="Primary Education">Primary Education</option>
+                    <option value="Secondary Education">
+                      Secondary Education
+                    </option>
+                    <option value="High school">High school</option>
+                    <option value="Diploma">Diploma</option>
+                    <option value="Graduate">Graduate</option>
+                    <option value="Post Graduate">Post Graduate</option>
+                    <option value="Phd /Higher Education">
+                      Phd /Higher Education
+                    </option>
+                  </select>
+                  {errors.qualification && (
+                    <span className="text-red-500 text-sm">
+                      {errors.qualification}
+                    </span>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-black">
+                    Highest Education Qualification
+                  </label>
+                  {highestqualification1 && (
+                    <iframe
+                      src={highestqualification1}
+                      width="100%"
+                      height="150px"
+                      title="PDF Viewer"
+                    ></iframe>
+                  )}
+                  <input
+                    type="file"
+                    name="highestQualification"
+                    accept="application/pdf" // Restrict file types to PDF only
+                    className="outline-none mb-3 mt-1 py-2 bg-slate-200 px-2 block w-full border-gray-300 rounded-md shadow-sm"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        const validPdfTypes = ["application/pdf"]; // Allowed MIME type for PDF
+                        if (!validPdfTypes.includes(file.type)) {
+                          toast.error("Only PDF files are allowed.");
+                          e.target.value = ""; // Reset the file input
+                        } else {
+                          handleFileChange(file, setHighestQualification); // Handle valid file upload
+                        }
+                      }
+                    }}
+                  />
+
+                  {errors.highestqualification && (
+                    <span className="text-red-500 text-sm">
+                      {errors.highestqualification}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="">
                 <div className="flex flex-col mb-4">
                   <label className="mb-1 font-medium text-black">
                     Are you a District/State/National professional?
@@ -798,203 +864,264 @@ const PersonalInformation = () => {
                     No
                   </label>
 
-                  {/* Common input field shown for both options */}
-                  {showInput && (
-                    <input
-                      type="text"
-                      value={warrantNumber}
-                      onChange={(e) => setWarrantNumber(e.target.value)}
-                      placeholder={
-                        showInput === "yes"
-                          ? "Enter the ID Number"
-                          : "Enter the Warrant Number"
-                      }
-                      className="outline-none bg-white rounded-md px-3 py-1 border border-gray-300 focus:border-indigo-500 mt-2"
-                    />
+                  {/* Conditional rendering based on showInput */}
+                  {showInput === "yes" && (
+                    <>
+                      <div className=" grid grid-cols-1 lg:grid-cols-3 gap-5">
+                        <div className="flex flex-col mb-4">
+                          <div className="font-semibold">
+                            Enter the ID Number
+                          </div>
+                          <input
+                            type="text"
+                            value={warrantNumber}
+                            onChange={(e) => setWarrantNumber(e.target.value)}
+                            placeholder="Enter the ID Number"
+                            className="outline-none bg-white rounded-md px-3 py-1 border border-gray-300 focus:border-indigo-500 mt-2"
+                          />
+                                                    {errors.warrantNumber && (
+                            <span className="text-red-500 text-sm">
+                              {errors.warrantNumber}
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex flex-col mb-4">
+                          <label className="mb-1 font-medium text-black">
+                            Enter ID Date
+                          </label>
+                          <input
+                            type="date"
+                            value={warrantDate}
+                            onChange={(e) => {
+                              const selectedDate = new Date(e.target.value);
+                              const today = new Date();
+                              today.setHours(0, 0, 0, 0);
+
+                              if (selectedDate >= today) {
+                                toast.error(
+                                  "The selected date must be less than today's date."
+                                );
+                                e.target.value = ""; // Reset the input value
+                              } else {
+                                setWarrantDate(e.target.value);
+                              }
+                            }}
+                            className="outline-none bg-white rounded-md px-3 py-1 border border-gray-300 focus:border-indigo-500"
+                          />
+                                                    {errors.valid && (
+                            <span className="text-red-500 text-sm">
+                              {errors.valid}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="flex flex-col mb-4">
+                          <label className="mb-1 font-medium text-black">
+                            ID Valid Till
+                          </label>
+                          <input
+                            type="date"
+                            value={valid}
+                            className="outline-none mb-3 mt-1 py-2 bg-slate-200 px-2 block w-full border-gray-300 rounded-md shadow-sm"
+                            onChange={(e) => {
+                              const selectedDate = new Date(e.target.value);
+                              const warrantDateObj = new Date(warrantDate);
+
+                              if (selectedDate <= warrantDateObj) {
+                                toast.error(
+                                  "The 'Warrant Valid Till' date must be less than the 'Warrant Date'."
+                                );
+                                e.target.value = ""; // Reset the input
+                              } else {
+                                setValidTill(e.target.value); // Update the valid date state
+                              }
+                            }}
+                          />
+                          {errors.valid && (
+                            <span className="text-red-500 text-sm">
+                              {errors.valid}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="flex flex-col mb-4 -mt-10">
+                          <label className="mb-1 font-medium text-black">
+                            Upload ID
+                          </label>
+                          {uploadWarrant1 && (
+                            <iframe
+                              src={uploadWarrant1}
+                              width="100%"
+                              height="150px"
+                              title="PDF Viewer"
+                            ></iframe>
+                          )}
+                          <input
+                            type="file"
+                            name="avatar"
+                            accept="application/pdf" // Restricts file types to PDFs only
+                            className="outline-none mb-3 mt-1 py-2 px-2 block border-gray-300 w-32 rounded-md shadow-sm"
+                            style={{ width: "300px" }}
+                            onChange={(e) => {
+                              const file = e.target.files[0];
+                              if (file) {
+                                if (file.type !== "application/pdf") {
+                                  toast.error("Only PDF files are allowed.");
+                                  e.target.value = ""; // Reset the file input
+                                } else {
+                                  handleFileChange(
+                                    file,
+                                    setWarrantUpload,
+                                    "warrant"
+                                  ); // Handle valid PDF file upload
+                                }
+                              }
+                            }}
+                          />
+                          {errors.uploadWarrant && (
+                            <span className="text-red-500 text-sm">
+                              {errors.uploadWarrant}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </>
                   )}
 
-                  {errors.warrantNumber && (
-                    <span className="text-red-500 text-sm">
-                      {errors.warrantNumber}
-                    </span>
+                  {showInput === "no" && (
+                    <>
+                      <div className="grid grid-cols-1 lg:grid-cols-3  gap-0 lg:gap-10">
+                        <div className="flex flex-col mb-4">
+                          <div className="font-semibold">
+                            Enter the Warrant Number
+                          </div>
+                          <input
+                            type="text"
+                            value={warrantNumber}
+                            onChange={(e) => setWarrantNumber(e.target.value)}
+                            placeholder="Enter the ID Number"
+                            className="outline-none bg-white rounded-md px-3 py-1 border border-gray-300 focus:border-indigo-500 mt-2"
+                          />
+                                                    {errors.warrantNumber && (
+                            <span className="text-red-500 text-sm">
+                              {errors.warrantNumber}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="flex flex-col mb-4">
+                          <label className="mb-1 font-medium text-black">
+                            Enter Warrant Date
+                          </label>
+                          <input
+                            type="date"
+                            value={warrantDate}
+                            onChange={(e) => {
+                              const selectedDate = new Date(e.target.value);
+                              const today = new Date();
+                              today.setHours(0, 0, 0, 0);
+
+                              if (selectedDate >= today) {
+                                toast.error(
+                                  "The selected date must be less than today's date."
+                                );
+                                e.target.value = ""; // Reset the input value
+                              } else {
+                                setWarrantDate(e.target.value);
+                              }
+                            }}
+                            className="outline-none bg-white rounded-md px-3 py-1 border border-gray-300 focus:border-indigo-500"
+                          />
+                                                    {errors.warrantDate && (
+                            <span className="text-red-500 text-sm">
+                              {errors.warrantDate}
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex flex-col mb-4">
+                          <label className="mb-1 font-medium text-black">
+                            Warrant Valid Till
+                          </label>
+                          <input
+                            type="date"
+                            value={valid}
+                            className="outline-none mb-3 mt-1 py-2 bg-slate-200 px-2 block w-full border-gray-300 rounded-md shadow-sm"
+                            onChange={(e) => {
+                              const selectedDate = new Date(e.target.value);
+                              const warrantDateObj = new Date(warrantDate);
+
+                              if (selectedDate <= warrantDateObj) {
+                                toast.error(
+                                  "The 'Warrant Valid Till' date must be less than the 'Warrant Date'."
+                                );
+                                e.target.value = ""; // Reset the input
+                              } else {
+                                setValidTill(e.target.value); // Update the valid date state
+                              }
+                            }}
+                          />
+                          {errors.valid && (
+                            <span className="text-red-500 text-sm">
+                              {errors.valid}
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex flex-col -mt-10">
+                          <label className="mb-1 font-medium text-black">
+                            Upload Warrant
+                          </label>
+                          {uploadWarrant1 && (
+                            <iframe
+                              src={uploadWarrant1}
+                              width="100%"
+                              height="150px"
+                              title="PDF Viewer"
+                            ></iframe>
+                          )}
+                          <input
+                            type="file"
+                            name="avatar"
+                            accept="application/pdf" // Restricts file types to PDFs only
+                            className="outline-none mb-3 mt-1 py-2 px-2 block border-gray-300 w-32 rounded-md shadow-sm"
+                            style={{ width: "300px" }}
+                            onChange={(e) => {
+                              const file = e.target.files[0];
+                              if (file) {
+                                if (file.type !== "application/pdf") {
+                                  toast.error("Only PDF files are allowed.");
+                                  e.target.value = ""; // Reset the file input
+                                } else {
+                                  handleFileChange(
+                                    file,
+                                    setWarrantUpload,
+                                    "warrant"
+                                  ); // Handle valid PDF file upload
+                                }
+                              }
+                            }}
+                          />
+                          {errors.uploadWarrant && (
+                            <span className="text-red-500 text-sm">
+                              {errors.uploadWarrant}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </>
                   )}
                 </div>
-
-                <div className="flex flex-col mb-4">
-                  <label className="mb-1 font-medium text-black">
-                    Warrant /ID Date
-                  </label>
-                  <input
-                    type="date"
-                    value={warrantDate}
-                    onChange={(e) => {
-                      const selectedDate = new Date(e.target.value);
-                      const today = new Date();
-                      today.setHours(0, 0, 0, 0); // Remove time component for accurate comparison
-
-                      if (selectedDate >= today) {
-                        toast.error(
-                          "The selected date must be less than today's date."
-                        );
-                        e.target.value = ""; // Reset the input value
-                      } else {
-                        setWarrantDate(e.target.value); // Update the state with the valid date
-                      }
-                    }}
-                    className="outline-none bg-white rounded-md px-3 py-1 border border-gray-300 focus:border-indigo-500"
-                  />
-                  {errors.warrantDate && (
-                    <span className="text-red-500 text-sm">
-                      {errors.warrantDate}
-                    </span>
-                  )}
-                </div>
-
-                <div className="flex flex-col mb-4">
-                  <label className="mb-1 font-medium text-black">
-                    Upload ID/Warrant
-                  </label>
-                  {uploadWarrant1 && (
-                    <iframe
-                      src={uploadWarrant1}
-                      width="100%"
-                      height="150px"
-                      title="PDF Viewer"
-                    ></iframe>
-                  )}
-                  <input
-                    type="file"
-                    name="avatar"
-                    accept="application/pdf" // Restricts file types to PDFs only
-                    className="outline-none mb-3 mt-1 py-2 px-2 block border-gray-300 w-32 rounded-md shadow-sm"
-                    style={{ width: "300px" }}
-                    onChange={(e) => {
-                      const file = e.target.files[0];
-                      if (file) {
-                        if (file.type !== "application/pdf") {
-                          toast.error("Only PDF files are allowed.");
-                          e.target.value = ""; // Reset the file input
-                        } else {
-                          handleFileChange(file, setWarrantUpload, "warrant"); // Handle valid PDF file upload
-                        }
-                      }
-                    }}
-                  />
-                  {errors.uploadWarrant && (
-                    <span className="text-red-500 text-sm">
-                      {errors.uploadWarrant}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 lg:gap-10">
-             
-              <div className="flex flex-col mb-4">
-                <label className="mb-1 font-medium text-black">
-                  Warrant/ID Valid Till
-                </label>
-                <input
-                  type="date"
-                  value={valid}
-                  className="outline-none mb-3 mt-1 py-2 bg-slate-200 px-2 block w-full border-gray-300 rounded-md shadow-sm"
-                  onChange={(e) => {
-                    const selectedDate = new Date(e.target.value);
-                    const warrantDateObj = new Date(warrantDate);
-
-                    if (selectedDate <= warrantDateObj) {
-                      toast.error(
-                        "The 'Warrant Valid Till' date must be less than the 'Warrant Date'."
-                      );
-                      e.target.value = ""; // Reset the input
-                    } else {
-                      setValidTill(e.target.value); // Update the valid date state
-                    }
-                  }}
-                />
-                {errors.valid && (
-                  <span className="text-red-500 text-sm">{errors.valid}</span>
-                )}
               </div>
 
-              <div className="flex flex-col mb-4">
-                <label className="mb-1 font-medium text-black">
-                  Education Qualification
-                </label>
-                <select
-                  value={qualification}
-                  onChange={(e) => setQualification(e.target.value)}
-                  className="outline-none bg-white rounded-md mb-3 px-3 py-1 border border-gray-300 focus:border-indigo-500"
-                >
-                  <option value="">Select Qualification</option>
-                  <option value="Primary Education">Primary Education</option>
-                  <option value="Secondary Education">
-                    Secondary Education
-                  </option>
-                  <option value="High school">High school</option>
-                  <option value="Diploma">Diploma</option>
-                  <option value="Graduate">Graduate</option>
-                  <option value="Post Graduate">Post Graduate</option>
-                  <option value="Phd /Higher Education">
-                    Phd /Higher Education
-                  </option>
-                </select>
-                {errors.qualification && (
-                  <span className="text-red-500 text-sm">
-                    {errors.qualification}
-                  </span>
-                )}
+              <div
+                className="bg-[#1D56A5] rounded-md flex justify-center items-center py-1 text-white font-medium my-5 cursor-pointer"
+                onClick={handleSubmit}
+              >
+                {loading ? "Submitting..." : "Submit"}
+                <ToastContainer />
               </div>
-              <div>
-                <label className="block text-sm font-bold text-black">
-                  Highest Education Qualification
-                </label>
-                {highestqualification1 && (
-                  <iframe
-                    src={highestqualification1}
-                    width="100%"
-                    height="150px"
-                    title="PDF Viewer"
-                  ></iframe>
-                )}
-                <input
-                  type="file"
-                  name="highestQualification"
-                  accept="application/pdf" // Restrict file types to PDF only
-                  className="outline-none mb-3 mt-1 py-2 bg-slate-200 px-2 block w-full border-gray-300 rounded-md shadow-sm"
-                  onChange={(e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                      const validPdfTypes = ["application/pdf"]; // Allowed MIME type for PDF
-                      if (!validPdfTypes.includes(file.type)) {
-                        toast.error("Only PDF files are allowed.");
-                        e.target.value = ""; // Reset the file input
-                      } else {
-                        handleFileChange(file, setHighestQualification); // Handle valid file upload
-                      }
-                    }
-                  }}
-                />
-
-                {errors.highestqualification && (
-                  <span className="text-red-500 text-sm">
-                    {errors.highestqualification}
-                  </span>
-                )}
-              </div>
-            </div>
-
-            <div
-              className="bg-[#1D56A5] rounded-md flex justify-center items-center py-1 text-white font-medium my-5 cursor-pointer"
-              onClick={handleSubmit}
-            >
-              {loading ? "Submitting..." : "Submit"}
-              <ToastContainer />
             </div>
           </div>
         </div>
-        // </div>
       )}
     </>
   );
