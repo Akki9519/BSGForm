@@ -40,10 +40,7 @@ const LTInfo = () => {
     const year = date.getFullYear();
     return `${day}-${month}-${year}`;
   };
-  // const handleInputChange1 = (e) => {
-  //   const { name, value } = e.target;
-  //   setFormData({ ...formData, [name]: value });
-  // };
+
 
   const handleSubWingChange = (subWing) => {
     setSelectedSubWings((prev) => {
@@ -55,29 +52,180 @@ const LTInfo = () => {
     });
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const courseFromDate = new Date(formData.courseFromDate);
+    const courseToDate = new Date(formData.courseToDate);
+    const issuedDate = new Date(formData.issuedDate);
+    const certificateDate = new Date(formData.certificateDate);
+
+    if (courseFromDate > courseToDate) {
+        toast.error("The 'Course From Date' must be less than or equal to the 'Course To Date'.");
+        setLoading(false);
+        return;
+    }
+
+    if (issuedDate >= new Date()) {
+        toast.error("The 'Issued Date' must be less than today's date.");
+        setLoading(false);
+        return;
+    }
+
+    if (certificateDate <= courseToDate) {
+        toast.error("The 'Certificate Date' must be greater than the 'Course To Date'.");
+        setLoading(false);
+        return;
+    }
+
+    // Prepare the required fields for validation
+    const requiredFields = [
+        formData.courseFromDate,
+        formData.courseToDate,
+        formData.certificateNumber,
+        formData.certificateDate,
+        formData.courseLeader,
+        formData.coursePlace,
+        formData.issuedDate,
+    ];
+    console.log(requiredFields,"cfghujio")
+
+    // Validate each course's required fields
+    const allCoursesValid = courses.every((course) => {
+        const courseRequiredFields = [
+            course.selectType,
+            course.formData.courseDate,
+            course.formData.courseToDate,
+            course.formData.place,
+            course.selectType !== "conducted" ? course.formData.leader :"NA",
+            course.formData.participants,
+        ];
+        console.log(courseRequiredFields,"vghjklo")
+        return courseRequiredFields.every((field) => field !== "" && field !== undefined);
+    });
+
+    if (!allCoursesValid) {
+        toast.error("Please fill out all course fields before submitting.");
+        setLoading(false);
+        return;
+    }
+
+    // Check if all main form fields are filled
+    const allFieldsFilled = requiredFields.every(
+        (field) => field !== "" && field !== undefined
+    );
+    console.log(allFieldsFilled,"cvghjkop")
+
+    if (!allFieldsFilled) {
+        toast.error("Please fill out all fields before submitting.");
+        setLoading(false);
+        return;
+    }
+
+    // Prepare the data to be sent to the server
+    const data = {
+        wing: selectedWing,
+        subWing: selectedSubWings,
+        trainingType: selectType,
+        courseDate: formData.courseDate,
+        courseToDate: formData.courseToDate,
+        place: formData.place,
+        leader: selectType !== "conducted" ? formData.leader : undefined,
+        participants: formData.participants,
+        courseDetails: {
+            fromDate: formData.courseFromDate,
+            toDate: formData.courseToDate,
+            certificateNumber: formData.certificateNumber,
+            certificateDate: formData.certificateDate,
+            courseLeader: formData.courseLeader,
+            coursePlace: formData.coursePlace,
+            honourableChargeNo: formData.honourableChargeNo,
+            issuedDate: formData.issuedDate,
+        },
+        courses: courses.map((course) => ({
+            selectType: course.selectType,
+            courseDate: course.formData.courseDate,
+            courseToDate: course.formData.courseToDate,
+            place: course.formData.place,
+            leader: course.selectType !== "conducted" ? course.formData.leader : undefined,
+            participants: course.formData.participants,
+        })),
+    };
+
+    const userId = ls.get("_id");
+    if (!userId) {
+        toast.error("User  ID not found. Please log in again.");
+        setLoading(false);
+        return;
+    }
+
+    try {
+        const response = await axios.post(
+            `${BASE_URL}/api/v2/ltinfo/${userId}`,
+            data
+        );
+        toast.success("LT Form submitted successfully! Now Click Next To Proceed");
+        setLoading(false);
+        fetchData();
+    } catch (error) {
+        console.error("Error submitting form:", error);
+        toast.error("An error occurred while submitting the form. Please try again.");
+        setLoading(false);
+    }
+};
+  
   // const handleSubmit = async (e) => {
   //   e.preventDefault();
   //   setLoading(true);
 
+  //   const courseFromDate = new Date(formData.courseFromDate);
+  //   const courseToDate = new Date(formData.courseToDate);
+  //   const issuedDate = new Date(formData.issuedDate);
+  //   const certificateDate = new Date(formData.certificateDate);
+ 
+
+  //   if (courseFromDate > courseToDate) {
+  //     toast.error("The 'Course From Date' must be less than or equal to the 'Course To Date'.");
+  //     setLoading(false);
+  //     return;
+  //   }
+  
+  //   if (issuedDate >= new Date()) {
+  //     toast.error("The 'Issued Date' must be less than today's date.");
+  //     setLoading(false);
+  //     return;
+  //   }
+  
+  //   if (certificateDate <= courseToDate) {
+  //     toast.error("The 'Certificate Date' must be greater than the 'Course To Date'.");
+  //     setLoading(false);
+  //     return;
+  //   }
   //   const requiredFields = [
+  //     formData.courseFromDate,
   //     formData.courseToDate,
   //     formData.certificateNumber,
   //     formData.certificateDate,
   //     formData.courseLeader,
   //     formData.coursePlace,
   //     formData.honourableChargeNo,
-  //     formData.issuedDate,
+  //     formData.issuedDate
+      
+      
   //   ];
-  //   console.log(requiredFields, "requiredfilled");
+  //   console.log(requiredFields,"required")
+  
   //   const allFieldsFilled = requiredFields.every(
   //     (field) => field !== "" && field !== undefined
   //   );
-
+  
   //   if (!allFieldsFilled) {
   //     toast.error("Please fill out all fields before submitting.");
   //     setLoading(false);
   //     return;
   //   }
+  
   //   // Prepare the data to be sent to the server
   //   const data = {
   //     wing: selectedWing,
@@ -95,156 +243,40 @@ const LTInfo = () => {
   //       certificateDate: formData.certificateDate,
   //       courseLeader: formData.courseLeader,
   //       coursePlace: formData.coursePlace,
-  //       honourableChargeNo: formData.honourableChargeNo, // New field
-  //       issuedDate: formData.issuedDate, // New field
+  //       honourableChargeNo: formData.honourableChargeNo,
+  //       issuedDate: formData.issuedDate,
   //     },
   //     courses: courses.map((course) => ({
   //       selectType: course.selectType,
   //       courseDate: course.formData.courseDate,
   //       courseToDate: course.formData.courseToDate,
   //       place: course.formData.place,
-  //       leader:
-  //         course.selectType !== "conducted"
-  //           ? course.formData.leader
-  //           : undefined,
+  //       leader: course.selectType !== "conducted" ? course.formData.leader : undefined,
   //       participants: course.formData.participants,
   //     })),
   //   };
-
-  //   console.log(data, "data");
-
-  //   const userId = ls.get("_id"); // Corrected usage
-  //   console.log(userId, "userId");
-
+  
+  //   const userId = ls.get("_id");
   //   if (!userId) {
   //     toast.error("User  ID not found. Please log in again.");
   //     setLoading(false);
   //     return;
   //   }
-
+  
   //   try {
   //     const response = await axios.post(
   //       `${BASE_URL}/api/v2/ltinfo/${userId}`,
   //       data
   //     );
-  //     toast.success(
-  //       "LT Form submitted successfully! Now Click Next To Proceed"
-  //     );
+  //     toast.success("LT Form submitted successfully! Now Click Next To Proceed");
   //     setLoading(false);
   //     fetchData();
-  //     console.log("Response:", response.data);
   //   } catch (error) {
   //     console.error("Error submitting form:", error);
-  //     toast.error(
-  //       "An error occurred while submitting the form. Please try again."
-  //     );
+  //     toast.error("An error occurred while submitting the form. Please try again.");
   //     setLoading(false);
   //   }
   // };
-  
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-  
-
-
-    // Validate date fields
-
-    const courseFromDate = new Date(formData.courseFromDate);
-    const courseToDate = new Date(formData.courseToDate);
-    const issuedDate = new Date(formData.issuedDate);
-    const certificateDate = new Date(formData.certificateDate);
- 
-
-    if (courseFromDate > courseToDate) {
-      toast.error("The 'Course From Date' must be less than or equal to the 'Course To Date'.");
-      setLoading(false);
-      return;
-    }
-  
-    if (issuedDate >= new Date()) {
-      toast.error("The 'Issued Date' must be less than today's date.");
-      setLoading(false);
-      return;
-    }
-  
-    if (certificateDate <= courseToDate) {
-      toast.error("The 'Certificate Date' must be greater than the 'Course To Date'.");
-      setLoading(false);
-      return;
-    }
-
-    const requiredFields = [
-      formData.courseToDate,
-      formData.certificateNumber,
-      formData.certificateDate,
-      formData.courseLeader,
-      formData.coursePlace,
-      formData.honourableChargeNo,
-      formData.issuedDate,
-    ];
-  
-    const allFieldsFilled = requiredFields.every(
-      (field) => field !== "" && field !== undefined
-    );
-  
-    if (!allFieldsFilled) {
-      toast.error("Please fill out all fields before submitting.");
-      setLoading(false);
-      return;
-    }
-  
-    // Prepare the data to be sent to the server
-    const data = {
-      wing: selectedWing,
-      subWing: selectedSubWings,
-      trainingType: selectType,
-      courseDate: formData.courseDate,
-      courseToDate: formData.courseToDate,
-      place: formData.place,
-      leader: selectType !== "conducted" ? formData.leader : undefined,
-      participants: formData.participants,
-      courseDetails: {
-        fromDate: formData.courseFromDate,
-        toDate: formData.courseToDate,
-        certificateNumber: formData.certificateNumber,
-        certificateDate: formData.certificateDate,
-        courseLeader: formData.courseLeader,
-        coursePlace: formData.coursePlace,
-        honourableChargeNo: formData.honourableChargeNo,
-        issuedDate: formData.issuedDate,
-      },
-      courses: courses.map((course) => ({
-        selectType: course.selectType,
-        courseDate: course.formData.courseDate,
-        courseToDate: course.formData.courseToDate,
-        place: course.formData.place,
-        leader: course.selectType !== "conducted" ? course.formData.leader : undefined,
-        participants: course.formData.participants,
-      })),
-    };
-  
-    const userId = ls.get("_id");
-    if (!userId) {
-      toast.error("User  ID not found. Please log in again.");
-      setLoading(false);
-      return;
-    }
-  
-    try {
-      const response = await axios.post(
-        `${BASE_URL}/api/v2/ltinfo/${userId}`,
-        data
-      );
-      toast.success("LT Form submitted successfully! Now Click Next To Proceed");
-      setLoading(false);
-      fetchData();
-    } catch (error) {
-      console.error("Error submitting form:", error);
-      toast.error("An error occurred while submitting the form. Please try again.");
-      setLoading(false);
-    }
-  };
   
   // Individual date input validation
   const handleInputChange1 = (e) => {
@@ -475,7 +507,7 @@ const LTInfo = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
               <div className="mb-2">
                 <label className="block mb-2 font-bold text-black">
-                  Honourable Charge No
+                  Honourable Charge No<span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -502,7 +534,7 @@ const LTInfo = () => {
               </div> */}
               <div className="mb-2">
                 <label className="block mb-2 font-bold text-black">
-                  Issued Date
+                  Issued Date<span className="text-red-500">*</span>
                 </label>
                 <input
                   type="date"
@@ -537,7 +569,7 @@ const LTInfo = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
                     <div className="mb-2">
                       <label className="block mb-2 font-bold text-black">
-                        Select Type
+                        Select Type<span className="text-red-500">*</span>
                       </label>
                       <select
                         value={course.selectType}
@@ -564,7 +596,7 @@ const LTInfo = () => {
                     </div> */}
                     <div className="mb-2">
                       <label className="block mb-2 font-bold text-black">
-                        Course From Date
+                        Course From Date<span className="text-red-500">*</span>
                       </label>
                       <input
                         type="date"
@@ -605,7 +637,7 @@ const LTInfo = () => {
                     </div> */}
                     <div className="mb-2">
                       <label className="block mb-2 font-bold text-black">
-                        Course To Date
+                        Course To Date<span className="text-red-500">*</span>
                       </label>
                       <input
                         type="date"
@@ -634,7 +666,7 @@ const LTInfo = () => {
 
                     <div className="mb-2">
                       <label className="block mb-2 font-bold text-black">
-                        Place
+                        Place<span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
@@ -648,7 +680,7 @@ const LTInfo = () => {
                     {course.selectType !== "conducted" && (
                       <div className="mb-2">
                         <label className="block mb-2 font-bold text-black">
-                          Leader of the Course
+                          Leader of the Course<span className="text-red-500">*</span>
                         </label>
                         <input
                           type="text"
@@ -662,7 +694,7 @@ const LTInfo = () => {
                     )}
                     <div className="mb-2">
                       <label className="block mb-2 font-bold text-black">
-                        No. of Participants
+                        No. of Participants<span className="text-red-500">*</span>
                       </label>
                       <input
                         type="number"
@@ -705,7 +737,7 @@ const LTInfo = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
                 <div>
                   <label className="block mb-2 font-bold text-black">
-                    Course From Date
+                    Course From Date<span className="text-red-500">*</span>
                   </label>
                   <input
                     type="date"
@@ -730,7 +762,7 @@ const LTInfo = () => {
 
                 <div>
                   <label className="block mb-2 font-bold text-black">
-                    Course To Date
+                    Course To Date<span className="text-red-500">*</span>
                   </label>
                   <input
                     type="date"
@@ -757,7 +789,7 @@ const LTInfo = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
                 <div className="mb-2">
                   <label className="block mb-2 font-bold text-black">
-                    Certificate Number
+                    Certificate Number<span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -783,7 +815,7 @@ const LTInfo = () => {
                 </div> */}
                 <div className="mb-2">
                   <label className="block mb-2 font-bold text-black">
-                    Certificate Date
+                    Certificate Date<span className="text-red-500">*</span>
                   </label>
                   <input
                     type="date"
@@ -810,7 +842,7 @@ const LTInfo = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
                 <div className="mb-2">
                   <label className="block mb-2 font-bold text-black">
-                    Leader of the Course
+                    Leader of the Course<span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -823,7 +855,7 @@ const LTInfo = () => {
                 </div>
                 <div className="mb-2">
                   <label className="block mb-2 font-bold text-black">
-                    Place
+                    Place<span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"

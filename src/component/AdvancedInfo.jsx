@@ -339,7 +339,7 @@ const AdvanceForm = () => {
                 </div>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-20 gap-y-5">
                   <div className="flex flex-col mb-4">
-                    <label className="mb-1 font-medium text-gray-700">Wing</label>
+                    <label className="mb-1 font-medium text-gray-700">Wing<span className="text-red-500">*</span></label>
                     <select
                       value={course.wing}
                       disabled={
@@ -360,7 +360,7 @@ const AdvanceForm = () => {
                   </div>
                   {course.wing && (
                     <div className="mt-2 flex flex-col">
-                      <label className="mb-1 font-medium text-gray-700">Section</label>
+                      <label className="mb-1 font-medium text-gray-700">Section<span className="text-red-500">*</span></label>
                       <select
                         value={course.subwing}
                         disabled={
@@ -390,7 +390,7 @@ const AdvanceForm = () => {
                     </div>
                   )}
                   <div>
-                    <label className="block text-sm font-bold text-black">Course From Date</label>
+                    <label className="block text-sm font-bold text-black">Course From Date<span className="text-red-500">*</span></label>
                     <input
                       type="date"
                       value={course.fromDate}
@@ -407,7 +407,7 @@ const AdvanceForm = () => {
                     )}
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-black">Course To Date</label>
+                    <label className="block text-sm font-bold text-black">Course To Date<span className="text-red-500">*</span></label>
                     <input
                       type="date"
                       value={course.toDate}
@@ -424,7 +424,7 @@ const AdvanceForm = () => {
                     )}
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-black">Venue</label>
+                    <label className="block text-sm font-bold text-black">Venue<span className="text-red-500">*</span></label>
                     <input
                       type="text"
                       placeholder="Enter the Venue"
@@ -442,7 +442,7 @@ const AdvanceForm = () => {
                     )}
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-black">Leader</label>
+                    <label className="block text-sm font-bold text-black">Leader<span className="text-red-500">*</span></label>
                     <input
                       type="text"
                       placeholder="Enter the Leader"
@@ -460,7 +460,7 @@ const AdvanceForm = () => {
                     )}
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-black">Certificate Number</label>
+                    <label className="block text-sm font-bold text-black">Certificate Number<span className="text-red-500">*</span></label>
                     <input
                       type="text"
                       placeholder="Enter the Certificate Number"
@@ -478,7 +478,7 @@ const AdvanceForm = () => {
                     )}
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-black">Certificate Date</label>
+                    <label className="block text-sm font-bold text-black">Certificate Date<span className="text-red-500">*</span></label>
                     <input
                       type="date"
                       value={course.certificateDate}

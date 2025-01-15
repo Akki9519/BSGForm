@@ -84,13 +84,12 @@ const ALTInfo = () => {
       return;
     }
     const requiredFields = [
+      formData.courseFromDate,
       formData.courseToDate,
-
       formData.certificateNumber,
       formData.certificateDate,
       formData.courseLeader,
       formData.coursePlace,
-      formData.honourableChargeNo,
       formData.issuedDate,
     ];
     console.log(requiredFields, "requiredfilled");
@@ -154,7 +153,7 @@ const ALTInfo = () => {
         data
       );
       toast.success(
-        "LT Form submitted successfully! Now Click Next To Proceed"
+        "ALT Form submitted successfully! Now Click Next To Proceed"
       );
       setLoading(false);
       fetchData();
@@ -368,7 +367,7 @@ const ALTInfo = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
               <div className="mb-2">
                 <label className="block mb-2 font-bold text-black">
-                  Honourable Charge No
+                  Honourable Charge No<span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -396,7 +395,7 @@ const ALTInfo = () => {
               </div> */}
               <div className="mb-2">
                 <label className="block mb-2 font-bold text-black">
-                  Issued Date
+                  Issued Date<span className="text-red-500">*</span>
                 </label>
                 <input
                   type="date"
@@ -585,7 +584,7 @@ const ALTInfo = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
                 <div>
                   <label className="block mb-2 font-bold text-black">
-                    Course From Date
+                    Course From Date<span className="text-red-500">*</span>
                   </label>
                   <input
                     type="date"
@@ -610,7 +609,7 @@ const ALTInfo = () => {
 
                 <div>
                   <label className="block mb-2 font-bold text-black">
-                    Course To Date
+                    Course To Date<span className="text-red-500">*</span>
                   </label>
                   <input
                     type="date"
@@ -637,7 +636,7 @@ const ALTInfo = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
                 <div className="mb-2">
                   <label className="block mb-2 font-bold text-black">
-                    Certificate Number
+                    Certificate Number<span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -663,7 +662,7 @@ const ALTInfo = () => {
                 </div> */}
                 <div className="mb-2">
                   <label className="block mb-2 font-bold text-black">
-                    Certificate Date
+                    Certificate Date<span className="text-red-500">*</span>
                   </label>
                   <input
                     type="date"
@@ -690,7 +689,7 @@ const ALTInfo = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
                 <div className="mb-2">
                   <label className="block mb-2 font-bold text-black">
-                    Leader of the Course
+                    Leader of the Course<span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -703,7 +702,7 @@ const ALTInfo = () => {
                 </div>
                 <div className="mb-2">
                   <label className="block mb-2 font-bold text-black">
-                    Place
+                    Place<span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"

@@ -418,7 +418,7 @@ const PersonalInformation = () => {
             <div className="px-8">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 lg:gap-10">
                 <div className="flex flex-col mb-4">
-                  <label className="mb-1 font-medium text-black">Name</label>
+                  <label className="mb-1 font-medium text-black">Name<span className="text-red-500">*</span></label>
                   <input
                     type="text"
                     value={name}
@@ -432,7 +432,7 @@ const PersonalInformation = () => {
                   )}
                 </div>
                 <div className="flex flex-col">
-                  <label className="mb-1 font-medium text-black">Email</label>
+                  <label className="mb-1 font-medium text-black">Email<span className="text-red-500">*</span></label>
                   <input
                     type="text"
                     value={email}
@@ -447,7 +447,7 @@ const PersonalInformation = () => {
                 </div>
 
                 <div className="flex flex-col mb-4">
-                  <label className="mb-1 font-medium text-black">BSGUID </label>
+                  <label className="mb-1 font-medium text-black">BSGUID<span className="text-red-500">*</span> </label>
                   <input
                     type="text"
                     value={bsgUid}
@@ -466,7 +466,7 @@ const PersonalInformation = () => {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 lg:gap-10 ">
                 <div className="flex flex-col mb-4">
                   <label className="mb-1 font-medium text-black">
-                    BSG State
+                    BSG State<span className="text-red-500">*</span>
                   </label>
                   <select
                     value={state}
@@ -499,7 +499,7 @@ const PersonalInformation = () => {
                 {/* <div className ></div> */}
                 <div className="flex flex-col mb-4">
                   <label className="mb-1 font-medium text-black">
-                    Aadhar Number
+                    Aadhar Number<span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -517,7 +517,7 @@ const PersonalInformation = () => {
 
                 <div className="flex flex-col mb-4">
                   <label className="mb-1 font-medium text-black">
-                    Mobile Number
+                    Mobile Number<span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -536,7 +536,7 @@ const PersonalInformation = () => {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 lg:gap-10">
                 <div className="flex flex-col mb-4">
                   <label className="mb-1 font-medium text-black">
-                    Whatsapp Number
+                    Whatsapp Number<span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -554,7 +554,7 @@ const PersonalInformation = () => {
 
                 <div className="flex flex-col mb-4">
                   <label className="mb-1 font-medium text-black">
-                    Current Address
+                    Current Address<span className="text-red-500">*</span>
                   </label>
                   <textarea
                     value={currentAddress}
@@ -571,7 +571,7 @@ const PersonalInformation = () => {
 
                 <div className="flex flex-col mb-4">
                   <label className="mb-1 font-medium text-black">
-                    Permanent Address
+                    Permanent Address<span className="text-red-500">*</span>
                   </label>
                   <textarea
                     value={permanentAddress}
@@ -587,7 +587,7 @@ const PersonalInformation = () => {
                       className="mr-2"
                     />
                     <label className="font-medium text-black">
-                      Same as Current Address
+                      Same as Current Address<span className="text-red-500">*</span>
                     </label>
                   </div>
                   {errors.permanentAddress && (
@@ -601,7 +601,7 @@ const PersonalInformation = () => {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 lg:gap-10">
 
               <div className="flex flex-col mb-4">
-                  <label className="mb-1 font-medium text-black">DOB</label>
+                  <label className="mb-1 font-medium text-black">DOB<span className="text-red-500">*</span></label>
                   <input
                     type="date"
                     value={dob}
@@ -614,7 +614,7 @@ const PersonalInformation = () => {
                 </div>
                 <div className="flex flex-col mb-4">
                   <label className="mb-1 font-medium text-black">
-                    Revenue State
+                    Revenue State<span className="text-red-500">*</span>
                   </label>
                   <select
                     value={revenueState}
@@ -642,7 +642,7 @@ const PersonalInformation = () => {
 
                 <div className="flex flex-col mb-4">
                   <label className="mb-1 font-medium text-black">
-                    Revenue Pincode
+                    Revenue Pincode<span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -664,7 +664,7 @@ const PersonalInformation = () => {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 lg:gap-10">
                 <div className="flex flex-col mb-4">
                   <label className="mb-1 font-medium text-black">
-                    Marital Status
+                    Marital Status<span className="text-red-500">*</span>
                   </label>
                   <select
                     value={maritalStatus}
@@ -684,7 +684,7 @@ const PersonalInformation = () => {
                 </div>
 
                 <div className="flex flex-col mb-4">
-                  <label className="mb-1 font-medium text-black">Gender</label>
+                  <label className="mb-1 font-medium text-black">Gender<span className="text-red-500">*</span></label>
                   <select
                     value={gender}
                     onChange={(e) => setGender(e.target.value)}
@@ -704,7 +704,7 @@ const PersonalInformation = () => {
 
                 <div className="flex flex-col mb-4">
                   <label className="mb-1 font-medium text-black">
-                    Occupation
+                    Occupation<span className="text-red-500">*</span>
                   </label>
                   <select
                     value={occupation}
@@ -728,7 +728,7 @@ const PersonalInformation = () => {
 
               <div className="flex flex-col">
                   <label className="mb-1 font-medium text-black">
-                    Uploaded Photo
+                    Uploaded Photo<span className="text-red-500">*</span>
                   </label>
                   {uploadPhoto1 && (
                     <img
@@ -773,7 +773,7 @@ const PersonalInformation = () => {
 
                 <div className="flex flex-col mb-4">
                   <label className="mb-1 font-medium text-black">
-                    Qualification
+                    Qualification<span className="text-red-500">*</span>
                   </label>
                   <select
                     value={qualification}
@@ -801,7 +801,7 @@ const PersonalInformation = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-black">
-                    Highest Education Qualification
+                    Highest Education Qualification<span className="text-red-500">*</span>
                   </label>
                   {highestqualification1 && (
                     <iframe
@@ -841,7 +841,7 @@ const PersonalInformation = () => {
               <div className="">
                 <div className="flex flex-col mb-4">
                   <label className="mb-1 font-medium text-black">
-                    Are you a District/State/National professional?
+                    Are you a District/State/National professional?<span className="text-red-500">*</span>
                   </label>
                   <label className="mr-2">
                     <input
@@ -870,7 +870,7 @@ const PersonalInformation = () => {
                       <div className=" grid grid-cols-1 lg:grid-cols-3 gap-5">
                         <div className="flex flex-col mb-4">
                           <div className="font-semibold">
-                            Enter the ID Number
+                            Enter the ID Number<span className="text-red-500">*</span>
                           </div>
                           <input
                             type="text"
@@ -887,7 +887,7 @@ const PersonalInformation = () => {
                         </div>
                         <div className="flex flex-col mb-4">
                           <label className="mb-1 font-medium text-black">
-                            Enter ID Date
+                            Enter ID Date<span className="text-red-500">*</span>
                           </label>
                           <input
                             type="date"
@@ -917,7 +917,7 @@ const PersonalInformation = () => {
 
                         <div className="flex flex-col mb-4">
                           <label className="mb-1 font-medium text-black">
-                            ID Valid Till
+                            ID Valid Till<span className="text-red-500">*</span>
                           </label>
                           <input
                             type="date"
@@ -929,7 +929,7 @@ const PersonalInformation = () => {
 
                               if (selectedDate <= warrantDateObj) {
                                 toast.error(
-                                  "The 'Warrant Valid Till' date must be less than the 'Warrant Date'."
+                                  "The 'Id Valid Till' date must be less than the 'id Date'."
                                 );
                                 e.target.value = ""; // Reset the input
                               } else {
@@ -946,7 +946,7 @@ const PersonalInformation = () => {
 
                         <div className="flex flex-col mb-4 -mt-10">
                           <label className="mb-1 font-medium text-black">
-                            Upload ID
+                            Upload ID<span className="text-red-500">*</span>
                           </label>
                           {uploadWarrant1 && (
                             <iframe
@@ -993,7 +993,7 @@ const PersonalInformation = () => {
                       <div className="grid grid-cols-1 lg:grid-cols-3  gap-0 lg:gap-10">
                         <div className="flex flex-col mb-4">
                           <div className="font-semibold">
-                            Enter the Warrant Number
+                            Enter the Warrant Number<span className="text-red-500">*</span>
                           </div>
                           <input
                             type="text"
@@ -1011,7 +1011,7 @@ const PersonalInformation = () => {
 
                         <div className="flex flex-col mb-4">
                           <label className="mb-1 font-medium text-black">
-                            Enter Warrant Date
+                            Enter Warrant Date<span className="text-red-500">*</span>
                           </label>
                           <input
                             type="date"
@@ -1040,7 +1040,7 @@ const PersonalInformation = () => {
                         </div>
                         <div className="flex flex-col mb-4">
                           <label className="mb-1 font-medium text-black">
-                            Warrant Valid Till
+                            Warrant Valid Till<span className="text-red-500">*</span>
                           </label>
                           <input
                             type="date"
@@ -1068,7 +1068,7 @@ const PersonalInformation = () => {
                         </div>
                         <div className="flex flex-col -mt-10">
                           <label className="mb-1 font-medium text-black">
-                            Upload Warrant
+                            Upload Warrant<span className="text-red-500">*</span>
                           </label>
                           {uploadWarrant1 && (
                             <iframe

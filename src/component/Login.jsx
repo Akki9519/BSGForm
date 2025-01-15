@@ -218,7 +218,7 @@ console.log(loginData,"loginDatasdsfgh")
       {(selectedCourse === "LT" || selectedCourse === "ALT") && (
         <div className="mb-4">
           <label htmlFor="honourableNumber" className="block mb-2 font-medium">
-            Honourable Number:
+            Honourable Charge Number:
           </label>
           <input
             type="text"

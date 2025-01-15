@@ -949,7 +949,7 @@ const HwbForm = () => {
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-20 gap-y-5">
                   <div className="flex flex-col mb-4">
-                    <label className="mb-1 font-medium text-black">Wing</label>
+                    <label className="mb-1 font-medium text-black">Wing<span className="text-red-500">*</span></label>
                     <select
                       value={cours.wing}
                       onChange={(e) =>
@@ -967,7 +967,7 @@ const HwbForm = () => {
                   </div>
                   {cours.wing && (
                     <div className="mt-2 flex flex-col">
-                      <label className="mb-1 font-medium text-black">Sub-Wing</label>
+                      <label className="mb-1 font-medium text-black">Section<span className="text-red-500">*</span></label>
                       <select
                         value={cours.subwing}
                         onChange={(e) =>
@@ -998,7 +998,7 @@ const HwbForm = () => {
                   )}
 
                   <div>
-                    <label className="block text-sm font-bold text-black">Course From Date</label>
+                    <label className="block text-sm font-bold text-black">Course From Date<span className="text-red-500">*</span></label>
                     <input
                       type="date"
                       value={cours.fromDate}
@@ -1012,7 +1012,7 @@ const HwbForm = () => {
                     )}
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-black">Course To Date</label>
+                    <label className="block text-sm font-bold text-black">Course To Date<span className="text-red-500">*</span></label>
                     <input
                       type="date"
                       value={cours.toDate}
@@ -1027,7 +1027,7 @@ const HwbForm = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-bold text-black">Venue</label>
+                    <label className="block text-sm font-bold text-black">Venue<span className="text-red-500">*</span></label>
                     <input
                       type="text"
                       value={cours.venue}
@@ -1043,7 +1043,7 @@ const HwbForm = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-bold text-black">Certificate Number</label>
+                    <label className="block text-sm font-bold text-black">Certificate Number<span className="text-red-500">*</span></label>
                     <input
                       type="text"
                       value={cours.certificateNumber}
@@ -1058,7 +1058,7 @@ const HwbForm = () => {
                     )}
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-black">Certificate Date</label>
+                    <label className="block text-sm font-bold text-black">Certificate Date<span className="text-red-500">*</span></label>
                     <input
                       type="date"
                       value={cours.certificateDate}
@@ -1073,7 +1073,7 @@ const HwbForm = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-bold text-black">Parchment Number</label>
+                    <label className="block text-sm font-bold text-black">Parchment Number<span className="text-red-500">*</span></label>
                     <input
                       type="text"
                       value={cours.parchmentNumber}
@@ -1090,7 +1090,7 @@ const HwbForm = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-bold text-black">Parchment Date</label>
+                    <label className="block text-sm font-bold text-black">Parchment Date<span className="text-red-500">*</span></label>
                     <input
                       type="date"
                       value={cours.parchmentDate}
