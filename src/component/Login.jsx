@@ -6,6 +6,18 @@ import SecureLS from "secure-ls";
 
 const ls = new SecureLS({ encodingType: "aes", isCompression: false });
 
+const convertDateFormat = (dateString) => {
+  const parts = dateString.split("-");
+  if (parts.length === 3) {
+    const day = parts[0];
+    const month = parts[1];
+    const year = parts[2];
+    return `${year}-${month}-${day}`; // Return in YYYY-MM-DD format
+  }
+  return dateString; // Return original if format is incorrect
+};
+// console.log(convertDateFormat,"convertDateFormat")
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [selectedCourse, setSelectedCourse] = useState("");
@@ -16,11 +28,15 @@ const Login = () => {
   const [userData, setUserData] = useState(null);
   const [userEmail, setUserEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [loading1, setLoading1] = useState(false);
   const [emailUpdating, setEmailUpdating] = useState(false);
   const [bsgUpdating, setBsgUpdating] = useState(false);
   const [verifyingEmail, setVerifyingEmail] = useState(false);
   const [emailVerified, setEmailVerified] = useState(false);
   const [uidInput, setUidInput] = useState("");
+  const [dob, setDob] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const navigate = useNavigate();
 
@@ -29,124 +45,6 @@ const Login = () => {
       setEmailVerified(userData.emailVerified || false);
     }
   }, [userData]);
-
-  const handleCombinedSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage("");
-
-    // Validate input based on selected course
-    if (selectedCourse === "LT" || selectedCourse === "ALT") {
-      if (!honourableNumber) {
-        setMessage("Please enter the Honourable Number.");
-        setLoading(false);
-        return;
-      }
-    }
-
-    if (selectedCourse === "HWB") {
-      if (!parchmentNumber) {
-        setMessage("Please enter the Parchment Number.");
-        setLoading(false);
-        return;
-      }
-    }
-
-    const loginData = {
-      email,
-      bsgNumber: bsgnumber,
-      course: selectedCourse,
-      honourableNumber: selectedCourse !== "HWB" ? honourableNumber : undefined,
-      parchmentNumber: selectedCourse === "HWB" ? parchmentNumber : undefined,
-    };
-
-    try {
-      // First API call for login
-      const loginResponse = await axios.post(
-        `${BASE_URL}/api/v2/login`,
-        loginData
-      );
-      if (loginResponse.data) {
-        const sectionq = loginResponse.data.user.course;
-        ls.set("sectionq", sectionq);
-        const kyttoken = loginResponse.data.token;
-        const _id = loginResponse.data._id;
-        ls.set("kyttoken", kyttoken);
-        ls.set("_id", _id);
-
-        const userDetails =
-          loginResponse.data.ltuser ||
-          loginResponse.data.altuser ||
-          loginResponse.data.hwbuser;
-        if (userDetails) {
-          const name = userDetails.name;
-          const email = userDetails.email;
-          const bsgnumber = userDetails.bsgUid;
-          const honourableNumber = userDetails.HONOURABLE_CHARGE_NO;
-          const parchmentNumber = userDetails.PARCHMENT_NO;
-          const dob = userDetails.dob;
-          const MOBILE = userDetails.MOBILE;
-          const STATE = userDetails.STATE;
-          const AADHAR_NO = userDetails.AADHAR_NO;
-          ls.set("MOBILE", MOBILE);
-          ls.set("name", name);
-          ls.set("email", email);
-          ls.set("bsgnumber", bsgnumber);
-          ls.set("honourableNumber", honourableNumber);
-          ls.set("parchmentNumber", parchmentNumber);
-          ls.set("dob", dob);
-          ls.set("STATE", STATE);
-          ls.set("AADHAR_NO", AADHAR_NO);
-          // setUserData(userDetails);
-
-          // Only proceed to fetch UID if login is successful
-          const uidData = {
-            UID: uidInput, // Ensure 'uid' is sent in the request
-          };
-
-          try {
-            const uidResponse = await axios.post(
-              "https://oymsapi.bsgindia.org/get-uid",
-              uidData,
-              {
-                headers: {
-                  "x-api-key": "aba92403-4435-46ce-bb47-9b04941134b3",
-                },
-              }
-            );
-            console.log(uidResponse, "UIDrESPONSE");
-            if (uidResponse.data) {
-              setUserData(uidResponse.data);
-              setMessage(uidResponse.data.msg);
-            } else {
-              setMessage("No user data found for the given UID.");
-            }
-          } catch (error) {
-            console.error(
-              "Error fetching UID data:",
-              error.response ? error.response.data : error.message
-            );
-            setMessage("Error fetching UID data. Please try again.");
-          }
-        } else {
-          setMessage("No user data found. Please check your credentials.");
-        }
-      } else {
-        setMessage(
-          "Invalid credentials or data mismatch. Please check your details."
-        );
-      }
-    } catch (error) {
-      setMessage(
-        error.response
-          ? error.response.data.message ||
-              "An error occurred. Please try again."
-          : "An error occurred. Please try again."
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleVerifyEmail = async (email) => {
     setVerifyingEmail(true);
@@ -177,7 +75,10 @@ const Login = () => {
 
   const handleUpdateEmail = async (userId) => {
     if (!userEmail) {
-      setMessage("Please enter a valid email to update.");
+      setErrors((prev) => ({
+        ...prev,
+        userEmail: "Please enter a valid email to update.",
+      }));
       return;
     }
     setEmailUpdating(true);
@@ -186,7 +87,6 @@ const Login = () => {
         email: userEmail,
         userId: userId,
       });
-      console.log(response, "response");
       setMessage("Email updated successfully.");
       setUserData((prevData) => ({ ...prevData, email: userEmail }));
     } catch (error) {
@@ -198,7 +98,10 @@ const Login = () => {
 
   const handleUpdateBsgNumber = async (userId) => {
     if (!bsgnumber) {
-      setMessage("Please enter a valid BSG Number.");
+      setErrors((prev) => ({
+        ...prev,
+        bsgnumber: "Please enter a valid BSG Number.",
+      }));
       return;
     }
 
@@ -217,6 +120,184 @@ const Login = () => {
     }
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true); // Start loading
+    setErrors({}); // Reset errors
+    setMessage(""); // Reset message
+
+    // Validate input based on selected course
+    if (selectedCourse === "LT" || selectedCourse === "ALT") {
+      if (!honourableNumber) {
+        setErrors((prev) => ({
+          ...prev,
+          honourableNumber: "Please enter the Honourable Number.",
+        }));
+        setLoading(false);
+        return;
+      }
+    }
+
+    if (selectedCourse === "HWB") {
+      if (!parchmentNumber) {
+        setErrors((prev) => ({
+          ...prev,
+          parchmentNumber: "Please enter the Parchment Number.",
+        }));
+        setLoading(false);
+        return;
+      }
+    }
+
+    // Prepare login data
+    const loginData = {
+      email,
+      bsgNumber: bsgnumber,
+      course: selectedCourse,
+      ...(selectedCourse !== "HWB" && { honourableNumber }), // Only include if not HWB
+      ...(selectedCourse === "HWB" && { parchmentNumber }), // Only include if HWB
+    };
+
+    try {
+      const loginResponse = await axios.post(
+        `${BASE_URL}/api/v2/login`,
+        loginData
+      );
+console.log(loginResponse,"loginResponse")
+      if (loginResponse.data) {
+        setSubmitted(true);
+        const { user, token, _id } = loginResponse.data;
+        const sectionq = user.course;
+
+        // Store tokens and IDs in local storage
+        ls.set("sectionq", sectionq);
+        ls.set("kyttoken", token);
+        ls.set("_id", _id);
+
+        const userDetails =
+          loginResponse.data.ltuser ||
+          loginResponse.data.altuser ||
+          loginResponse.data.hwbuser;
+console.log(userDetails,"userDetails");
+        if (userDetails) {
+          const {
+            name,
+            email,
+            bsgUid,
+            HONOURABLE_CHARGE_NO,
+            PARCHMENT_NO,
+            dob,
+            MOBILE,
+            STATE,
+            AADHAR_NO,
+          } = userDetails;
+          console.log(userDetails.dob,"userDetailsDob");
+          setUidInput(userDetails.bsgUid)
+
+          const formattedDob = convertDateFormat(userDetails.dob);
+        console.log(formattedDob,"formatted")
+          setDob(formattedDob);
+
+          // Store user details in local storage
+          ls.set("MOBILE", MOBILE);
+          ls.set("name", name);
+          ls.set("email", email);
+          ls.set("bsgnumber", bsgUid);
+          ls.set("honourableNumber", HONOURABLE_CHARGE_NO);
+          ls.set("parchmentNumber", PARCHMENT_NO);
+          ls.set("dob", dob);
+          ls.set("STATE", STATE);
+          ls.set("AADHAR_NO", AADHAR_NO);
+
+          setMessage("Login successful!"); 
+        }
+      } else {
+        setErrors((prev) => ({
+          ...prev,
+          login: "No data returned from the server.",
+        }));
+      }
+    } catch (error) {
+      console.error("Error during login:", error);
+      if(error.response.data.message ==="No related data found for the given details"){
+        setMessage("No related data found for the given details")
+      }
+  
+    } finally {
+      setLoading(false); // Ensure loading is stopped
+    }
+  };
+
+  const handleCombinedSubmit = async (e) => {
+    e.preventDefault();
+    setLoading1(true);
+    setMessage(""); // Reset message
+    setErrors({}); // Reset errors
+
+    const formattedDob = convertDateFormat(dob);
+
+
+    if (!uidInput) {
+      setErrors((prev) => ({ ...prev, uidInput: "Please enter your BsgUid." }));
+      setLoading1(false);
+      return;
+    }
+
+    // Validate the formatted DOB
+    if (!formattedDob) {
+      setErrors("Please enter your date of birth.");
+      setLoading1(false);
+      return;
+    }
+
+    // Additional validation to check if DOB is a valid date
+    const dobDate = new Date(formattedDob);
+    const today = new Date();
+    if (dobDate > today) {
+      setMessage("Date of birth cannot be in the future.")
+      setLoading1(false);
+      return;
+    }
+
+    const uidData = {
+      UID: uidInput,
+      formattedDob: formattedDob,
+    };
+console.log(uidData,"uidData");
+    try {
+      const uidResponse = await axios.post(
+        "https://oymsapi.bsgindia.org/get-uid",
+        uidData,
+        {
+          headers: {
+            "x-api-key": "aba92403-4435-46ce-bb47-9b04941134b3",
+          },
+        }
+      );
+
+      if (uidResponse.data) {
+        if (uidResponse.data.dob === formattedDob) {
+          setUserData(uidResponse.data);
+          setMessage("Verification successful. Proceeding...");
+        } else {
+          setMessage("Incorrect Data");
+        }
+      } else {
+        setMessage((prev) => ({
+          ...prev,
+          uid: "No data returned from the server.",
+        }));
+      }
+    } catch (error) {
+      setMessage((prev) => ({
+        ...prev,
+        uid: "Error fetching UID data. Please try again.",
+      }));
+    } finally {
+      setLoading1(false);
+    }
+  };
+
   return (
     <div className="p-4 max-w-md mx-auto border rounded shadow-md mt-32">
       <h1 className="text-2xl font-bold mb-4 uppercase text-center text-[#1D56A5]">
@@ -225,19 +306,6 @@ const Login = () => {
       <h2 className="text-xl font-bold mb-4 uppercase text-center text-[#1D56A5]">
         Trainer's Portal-Know Your Trainer's
       </h2>
-      <div className="mb-4">
-        <label htmlFor="uidInput" className="block mb-2 font-medium">
-          Enter BSG UID:
-        </label>
-        <input
-          type="text"
-          id="uidInput"
-          value={uidInput}
-          onChange={(e) => setUidInput(e.target.value)}
-          placeholder="Enter BSG UID"
-          className="w-full border rounded px-3 py-2"
-        />
-      </div>
 
       <div className="mb-4">
         <label htmlFor="course" className="block mb-2 font-medium">
@@ -251,6 +319,7 @@ const Login = () => {
             setMessage("");
             setHonourableNumber("");
             setParchmentNumber("");
+            setErrors({}); // Reset errors when course changes
           }}
           className="w-full border rounded px-3 py-2"
         >
@@ -272,8 +341,15 @@ const Login = () => {
             value={honourableNumber}
             onChange={(e) => setHonourableNumber(e.target.value)}
             placeholder="Enter Honourable Number"
-            className="w-full border rounded px-3 py-2"
+            className={`w-full border rounded px-3 py-2 ${
+              errors.honourableNumber ? "border-red-500" : ""
+            }`}
           />
+          {errors.honourableNumber && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.honourableNumber}
+            </p>
+          )}
         </div>
       )}
 
@@ -288,13 +364,20 @@ const Login = () => {
             value={parchmentNumber}
             onChange={(e) => setParchmentNumber(e.target.value)}
             placeholder="Enter Parchment Number"
-            className="w-full border rounded px-3 py-2"
+            className={`w-full border rounded px-3 py-2 ${
+              errors.parchmentNumber ? "border-red-500" : ""
+            }`}
           />
+          {errors.parchmentNumber && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.parchmentNumber}
+            </p>
+          )}
         </div>
       )}
 
       <button
-        onClick={handleCombinedSubmit}
+        onClick={handleSubmit}
         disabled={loading}
         className="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600"
       >
@@ -303,7 +386,7 @@ const Login = () => {
 
       {message && (
         <div
-          className={`mt-4 p-3 rounded ${
+          className={`my-4 p-3 rounded ${
             message.includes("successful")
               ? "bg-green-100 text-green-800"
               : "bg-red-100 text-red-800"
@@ -312,6 +395,56 @@ const Login = () => {
           {message}
         </div>
       )}
+
+      {submitted ? (
+        <>
+          <div className="mb-4">
+            <label htmlFor="uidInput" className="block mb-2 font-medium">
+              Enter BSG UID:
+            </label>
+            <input
+              type="text"
+              id="uidInput"
+              value={uidInput}
+              onChange={(e) => setUidInput(e.target.value)}
+              placeholder="Enter BSG UID"
+              className={`w-full border rounded px-3 py-2 ${
+                errors.uidInput ? "border-red-500" : "border-gray-300"
+              }`}
+            />
+            {errors.uidInput && (
+              <p className="text-red-500 text-sm mt-1">{errors.uidInput}</p>
+            )}
+          </div>
+          <div className="mb-4">
+            <label htmlFor="dobInput" className="block mb-2 font-medium">
+              Enter DOB (DD-MM-YYYY):
+            </label>
+            <input
+              type="date" // Custom input for DD-MM-YYYY
+              id="dobInput"
+              value={dob}
+              onChange={(e) => setDob(e.target.value)}
+              placeholder="Enter DOB (DD-MM-YYYY)"
+              className={`w-full border rounded px-3 py-2 ${
+                errors.dob ? "border-red-500" : "border-gray-300"
+              }`}
+            />
+            {errors.dob && (
+              <p className="text-red-500 text-sm mt-1">{errors.dob}</p>
+            )}
+          </div>
+          <button
+            onClick={handleCombinedSubmit}
+            disabled={loading1}
+            className="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600"
+          >
+            {loading1 ? "Verifying..." : "Verify Data"}
+          </button>
+        </>
+      ) : null}
+
+
 
       {userData && (
         <div className="mt-4 p-4 border rounded shadow">
@@ -338,8 +471,13 @@ const Login = () => {
                 value={userEmail}
                 onChange={(e) => setUserEmail(e.target.value)}
                 placeholder="Enter your email"
-                className="w-full border rounded px-3 py-2"
+                className={`w-full border rounded px-3 py-2 ${
+                  errors.userEmail ? "border-red-500" : ""
+                }`}
               />
+              {errors.userEmail && (
+                <p className="text-red-500 text-sm mt-1">{errors.userEmail}</p>
+              )}
               <button
                 onClick={() => handleUpdateEmail(userData._id)}
                 disabled={emailUpdating}
@@ -349,29 +487,6 @@ const Login = () => {
               </button>
             </div>
           )}
-
-          {/* {userData.bsgUid === "NA" && (
-            <div className="mb-4">
-              <label htmlFor="bsgnumber" className="block mb-2 font-medium">
-                Enter BSGUID Number:
-              </label>
-              <input
-                type="text"
-                id="bsgnumber"
-                value={bsgnumber}
-                onChange={(e) => setBsgNumber(e.target.value)}
-                placeholder="Enter your BSG Number"
-                className="w-full border rounded px-3 py-2"
-              />
-              <button
-                onClick={() => handleUpdateBsgNumber(userData._id)}
-                disabled={bsgUpdating}
-                className="bg-yellow-500 text-white font-bold py-2 px-4 rounded hover:bg-yellow-600 mt-4"
-              >
-                {bsgUpdating ? "Updating..." : "Update BSG Number"}
-              </button>
-            </div>
-          )} */}
 
           {userData.email !== "NA" && (
             <div className="mt-4">
