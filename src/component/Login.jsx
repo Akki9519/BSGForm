@@ -4,6 +4,7 @@ import { BASE_URL } from "../constant/constant";
 import { useNavigate } from "react-router-dom";
 import SecureLS from "secure-ls";
 import Feedback from "./Feedback";
+import { Link } from 'react-router-dom';
 
 const ls = new SecureLS({ encodingType: "aes", isCompression: false });
 
@@ -308,7 +309,7 @@ console.log(uidData,"uidData");
 
   return (
     <>
-    <div className="p-4 max-w-md mx-auto border rounded shadow-md mt-32">
+    <div className="p-4 max-w-md mx-auto border rounded shadow-md my-32">
       <h1 className="text-2xl font-bold mb-4 uppercase text-center text-[#1D56A5]">
         The Bharat Scouts and Guides
       </h1>
@@ -526,7 +527,18 @@ console.log(uidData,"uidData");
       )}
     </div>
     
-    <Feedback/>
+    {/* <div className="my-4 absolute bottom-0 p-3 rounded bg-blue-100 text-blue-800">
+      <p>If you have any issues, please <Link to="/feedback" className="text-red-600 hover:text-red-800">click here</Link> to go to the feedback page.</p>
+    </div> */}
+<div className="fixed bottom-0 left-0 w-full p-3 bg-blue-100 text-blue-800">
+  <p className="text-center">
+    If you have any issues, please{" "}
+    <Link to="/feedback" className="text-red-600 hover:text-red-800">
+      click here
+    </Link>{" "}
+    to go to the feedback page.
+  </p>
+</div>
 
     </>
   );

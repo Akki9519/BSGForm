@@ -11,7 +11,13 @@ const Feedback = () => {
     const [feedbackUid, setFeedbackUid] = useState("");
     const [feedbackNumber, setFeedbackNumber] = useState("");
     const [message1, setMessage1] = useState("");
+    const [issue, setIssue] = useState("");
 
+
+
+    useEffect(() => {
+      window.scrollTo(0, 0);
+    }, []);
     const handleFeedbackSubmit=async(e)=>{
         e.preventDefault();
     
@@ -22,7 +28,8 @@ const Feedback = () => {
           !feedbackHonuorable ||
           !feedbackNumber ||
           !feedbackUid ||
-          !feedbackSection
+          !feedbackSection ||
+          !issue
         ) {
           setMessage1("All fields are required.");
           return;
@@ -48,7 +55,8 @@ const Feedback = () => {
           feedbackHonuorable:feedbackHonuorable,
           feedbackNumber:feedbackNumber,
           feedbackUid:feedbackUid,
-          feedbackSection:feedbackSection
+          feedbackSection:feedbackSection,
+          issue:issue
     
         }
         console.log(data,"data")
@@ -65,6 +73,7 @@ const Feedback = () => {
       setFeedbackNumber("");
       setFeedbackUid("");
       setFeedbackSection("");
+      setIssue("");
       return;
     }
         } catch (error) {
@@ -104,9 +113,23 @@ const Feedback = () => {
         </div>
   
         <div>
-          <label for="section" class="block text-sm font-medium text-gray-700">Enter the Section Name</label>
-          <input type="text" id="section" placeholder="Enter the Section Name" value={feedbackSection} onChange={(e) => setFeedbackSection(e.target.value)} class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" />
-        </div>
+  <label htmlFor="section" className="block text-sm font-medium text-gray-700">Select the Section</label>
+  <select
+    id="section"
+    value={feedbackSection}
+    onChange={(e) => setFeedbackSection(e.target.value)}
+    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+  >
+    <option value="">Select a Section</option>
+    <option value="Scout">Scout</option>
+    <option value="Guide">Guide</option>
+    <option value="Bulbul">Bulbul</option>
+    <option value="Cub">Cub</option>
+    <option value="Ranger">Ranger</option>
+    <option value="Rover">Rover</option>
+  </select>
+</div>
+
   
         <div>
           <label for="chargeNumber" class="block text-sm font-medium text-gray-700">Enter the Honourable Charge Number</label>
@@ -122,6 +145,17 @@ const Feedback = () => {
           <label for="mobile" class="block text-sm font-medium text-gray-700">Enter the Mobile Number</label>
           <input type="text" id="mobile" placeholder="Enter the Mobile Number" value={feedbackNumber} onChange={(e) => setFeedbackNumber(e.target.value)} class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" />
         </div>
+        <div>
+  <label htmlFor="issueDescription" className="block text-sm font-medium text-gray-700">Enter the Issue in Detail</label>
+  <textarea
+    id="issueDescription"
+    placeholder="Enter the Issue in Detail"
+    value={issue}
+    onChange={(e) => setIssue(e.target.value)}
+    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+  />
+</div>
+
   
         <div class="mt-6">
           <button type="submit" class="w-full py-3 bg-[#1D56A5] text-white font-semibold rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" onClick={handleFeedbackSubmit}>
