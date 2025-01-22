@@ -241,7 +241,7 @@ const PersonalInformation = () => {
   const getLocal = () => {
     const storedName = ls.get("name"); // Use secure-ls to get the name
     const storedEmail = ls.get("email"); // Use secure-ls to get the email
-    const storedBsgUid = ls.get("bsgnumber"); // Use secure-ls to get the BSG UID
+    const storedBsgUid = ls.get("oymsuid"); // Use secure-ls to get the BSG UID
     const storedBsgdob = ls.get("dob");
     console.log(storedBsgdob, "storedBsgdob");
     const storedMobile = ls.get("MOBILE");

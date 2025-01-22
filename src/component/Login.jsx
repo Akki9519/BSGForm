@@ -282,6 +282,8 @@ console.log(uidData,"uidData");
       if (uidResponse.data) {
         if (uidResponse.data.dob === formattedDob) {
           setUserData(uidResponse.data);
+          ls.set("oymsuid", uidInput);
+          ls.set("oymsdob", formattedDob);
           setMessage("Verification successful. Proceeding...");
         } else {
           setMessage("Incorrect Data");
