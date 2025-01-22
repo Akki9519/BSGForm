@@ -3,6 +3,7 @@ import axios from "axios";
 import { BASE_URL } from "../constant/constant";
 import { useNavigate } from "react-router-dom";
 import SecureLS from "secure-ls";
+import Feedback from "./Feedback";
 
 const ls = new SecureLS({ encodingType: "aes", isCompression: false });
 
@@ -20,11 +21,13 @@ const convertDateFormat = (dateString) => {
 
 const Login = () => {
   const [email, setEmail] = useState("");
+
   const [selectedCourse, setSelectedCourse] = useState("");
   const [honourableNumber, setHonourableNumber] = useState("");
   const [bsgnumber, setBsgNumber] = useState("");
   const [parchmentNumber, setParchmentNumber] = useState("");
   const [message, setMessage] = useState("");
+
   const [userData, setUserData] = useState(null);
   const [userEmail, setUserEmail] = useState("");
   const [loading, setLoading] = useState(false);
@@ -37,6 +40,7 @@ const Login = () => {
   const [dob, setDob] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState({});
+
 
   const navigate = useNavigate();
 
@@ -298,7 +302,10 @@ console.log(uidData,"uidData");
     }
   };
 
+
+
   return (
+    <>
     <div className="p-4 max-w-md mx-auto border rounded shadow-md mt-32">
       <h1 className="text-2xl font-bold mb-4 uppercase text-center text-[#1D56A5]">
         The Bharat Scouts and Guides
@@ -326,14 +333,14 @@ console.log(uidData,"uidData");
           <option value="">You Are</option>
           <option value="LT">LT</option>
           <option value="ALT">ALT</option>
-          <option value="HWB">HWB</option>
+          {/* <option value="HWB">HWB</option> */}
         </select>
       </div>
 
       {(selectedCourse === "LT" || selectedCourse === "ALT") && (
         <div className="mb-4">
           <label htmlFor="honourableNumber" className="block mb-2 font-medium">
-            Honourable Number:
+          Honourable Charge Number:
           </label>
           <input
             type="text"
@@ -508,9 +515,18 @@ console.log(uidData,"uidData");
               )}
             </div>
           )}
+
+
+
+
+
         </div>
       )}
     </div>
+    
+    <Feedback/>
+
+    </>
   );
 };
 

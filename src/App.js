@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Verify from "./component/Verify";
 import Login from "./component/Login";
+import FeedBack from './component/Feedback'
 import Navigation from "./component/Form"; // Import the Navigation component
 import ProtectedRoute from "./ProtectedRoute";
 const App = () => {
@@ -10,6 +11,7 @@ const App = () => {
       <Routes>
       {/* <Route path="/profile" exact element={< ProtectedRoute component={Profile} />} /> */}
         <Route path="/" element={<Login />} />
+        <Route path="/feedback" element={<FeedBack />} />
         <Route
           path="/form"
           exact element={
