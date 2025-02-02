@@ -4,7 +4,7 @@ import { BASE_URL } from "../constant/constant";
 import { useNavigate } from "react-router-dom";
 import SecureLS from "secure-ls";
 import Feedback from "./Feedback";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
 const ls = new SecureLS({ encodingType: "aes", isCompression: false });
 
@@ -42,7 +42,6 @@ const Login = () => {
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState({});
 
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -51,25 +50,33 @@ const Login = () => {
     }
   }, [userData]);
 
-  const handleVerifyEmail = async (email) => {
+  const handleVerifyEmail = async (email, honourableNumber) => {
+    console.log("Honourable Number:", honourableNumber);
     setVerifyingEmail(true);
+
     try {
       const response = await axios.post(`${BASE_URL}/api/v2/verify-email`, {
         email,
+        honourableNumber,
       });
+
+      console.log("Response Data:", response.data);
+      console.log("Response Status  1:", response.data.mesage);
+      console.log("Response Status w:", response.data.success);
+
       if (
         response.data.message ===
         "Verification email sent! Please check your inbox."
       ) {
         setMessage("Verification email sent! Please check your inbox.");
+      } else if (response.data?.success === true) {
+        setEmailVerified(true);
       }
     } catch (error) {
-      if (
-        error.response &&
-        error.response.data.message === "Email is already verified."
-      ) {
+      console.error("Error during email verification:", error);
+
+      if (error.response?.data?.message === "Email is already verified.") {
         setMessage("Email is already verified.");
-        setEmailVerified(true);
       } else {
         setMessage("Error during email verification. Please try again.");
       }
@@ -77,6 +84,8 @@ const Login = () => {
       setVerifyingEmail(false);
     }
   };
+
+
 
   const handleUpdateEmail = async (userId) => {
     if (!userEmail) {
@@ -168,7 +177,7 @@ const Login = () => {
         `${BASE_URL}/api/v2/login`,
         loginData
       );
-console.log(loginResponse,"loginResponse")
+      console.log(loginResponse, "loginResponse");
       if (loginResponse.data) {
         setSubmitted(true);
         const { user, token, _id } = loginResponse.data;
@@ -183,7 +192,7 @@ console.log(loginResponse,"loginResponse")
           loginResponse.data.ltuser ||
           loginResponse.data.altuser ||
           loginResponse.data.hwbuser;
-console.log(userDetails,"userDetails");
+        console.log(userDetails, "userDetails");
         if (userDetails) {
           const {
             name,
@@ -196,11 +205,11 @@ console.log(userDetails,"userDetails");
             STATE,
             AADHAR_NO,
           } = userDetails;
-          console.log(userDetails.dob,"userDetailsDob");
-          setUidInput(userDetails.bsgUid)
+          console.log(userDetails.dob, "userDetailsDob");
+          setUidInput(userDetails.bsgUid);
 
           const formattedDob = convertDateFormat(userDetails.dob);
-        console.log(formattedDob,"formatted")
+          console.log(formattedDob, "formatted");
           setDob(formattedDob);
 
           // Store user details in local storage
@@ -214,7 +223,7 @@ console.log(userDetails,"userDetails");
           ls.set("STATE", STATE);
           ls.set("AADHAR_NO", AADHAR_NO);
 
-          setMessage("Login successful!"); 
+          setMessage("Login successful!");
         }
       } else {
         setErrors((prev) => ({
@@ -224,10 +233,12 @@ console.log(userDetails,"userDetails");
       }
     } catch (error) {
       console.error("Error during login:", error);
-      if(error.response.data.message ==="No related data found for the given details"){
-        setMessage("No related data found for the given details")
+      if (
+        error.response.data.message ===
+        "No related data found for the given details"
+      ) {
+        setMessage("No related data found for the given details");
       }
-  
     } finally {
       setLoading(false); // Ensure loading is stopped
     }
@@ -240,7 +251,6 @@ console.log(userDetails,"userDetails");
     setErrors({}); // Reset errors
 
     const formattedDob = convertDateFormat(dob);
-
 
     if (!uidInput) {
       setErrors((prev) => ({ ...prev, uidInput: "Please enter your BsgUid." }));
@@ -259,7 +269,7 @@ console.log(userDetails,"userDetails");
     const dobDate = new Date(formattedDob);
     const today = new Date();
     if (dobDate > today) {
-      setMessage("Date of birth cannot be in the future.")
+      setMessage("Date of birth cannot be in the future.");
       setLoading1(false);
       return;
     }
@@ -268,7 +278,7 @@ console.log(userDetails,"userDetails");
       UID: uidInput,
       formattedDob: formattedDob,
     };
-console.log(uidData,"uidData");
+    console.log(uidData, "uidData");
     try {
       const uidResponse = await axios.post(
         "https://oymsapi.bsgindia.org/get-uid",
@@ -305,241 +315,238 @@ console.log(uidData,"uidData");
     }
   };
 
-
-
   return (
     <>
-    <div className="p-4 max-w-md mx-auto border rounded shadow-md my-32">
-      <h1 className="text-2xl font-bold mb-4 uppercase text-center text-[#1D56A5]">
-        The Bharat Scouts and Guides
-      </h1>
-      <h2 className="text-xl font-bold mb-4 uppercase text-center text-[#1D56A5]">
-        Trainer's Portal-Know Your Trainer's
-      </h2>
+      <div className="p-4 max-w-md mx-auto border rounded shadow-md my-32">
+        <h1 className="text-2xl font-bold mb-4 uppercase text-center text-[#1D56A5]">
+          The Bharat Scouts and Guides
+        </h1>
+        <h2 className="text-xl font-bold mb-4 uppercase text-center text-[#1D56A5]">
+          Trainer's Portal-Know Your Trainer's
+        </h2>
 
-      <div className="mb-4">
-        <label htmlFor="course" className="block mb-2 font-medium">
-          You Are:
-        </label>
-        <select
-          id="course"
-          value={selectedCourse}
-          onChange={(e) => {
-            setSelectedCourse(e.target.value);
-            setMessage("");
-            setHonourableNumber("");
-            setParchmentNumber("");
-            setErrors({}); // Reset errors when course changes
-          }}
-          className="w-full border rounded px-3 py-2"
-        >
-          <option value="">You Are</option>
-          <option value="LT">LT</option>
-          <option value="ALT">ALT</option>
-          {/* <option value="HWB">HWB</option> */}
-        </select>
-      </div>
-
-      {(selectedCourse === "LT" || selectedCourse === "ALT") && (
         <div className="mb-4">
-          <label htmlFor="honourableNumber" className="block mb-2 font-medium">
-          Honourable Charge Number:
+          <label htmlFor="course" className="block mb-2 font-medium">
+            You Are:
           </label>
-          <input
-            type="text"
-            id="honourableNumber"
-            value={honourableNumber}
-            onChange={(e) => setHonourableNumber(e.target.value)}
-            placeholder="Enter Honourable Number"
-            className={`w-full border rounded px-3 py-2 ${
-              errors.honourableNumber ? "border-red-500" : ""
-            }`}
-          />
-          {errors.honourableNumber && (
-            <p className="text-red-500 text-sm mt-1">
-              {errors.honourableNumber}
-            </p>
-          )}
+          <select
+            id="course"
+            value={selectedCourse}
+            onChange={(e) => {
+              setSelectedCourse(e.target.value);
+              setMessage("");
+              setHonourableNumber("");
+              setParchmentNumber("");
+              setErrors({}); // Reset errors when course changes
+            }}
+            className="w-full border rounded px-3 py-2"
+          >
+            <option value="">You Are</option>
+            <option value="LT">LT</option>
+            <option value="ALT">ALT</option>
+            {/* <option value="HWB">HWB</option> */}
+          </select>
         </div>
-      )}
 
-      {selectedCourse === "HWB" && (
-        <div className="mb-4">
-          <label htmlFor="parchmentNumber" className="block mb-2 font-medium">
-            Parchment Number:
-          </label>
-          <input
-            type="text"
-            id="parchmentNumber"
-            value={parchmentNumber}
-            onChange={(e) => setParchmentNumber(e.target.value)}
-            placeholder="Enter Parchment Number"
-            className={`w-full border rounded px-3 py-2 ${
-              errors.parchmentNumber ? "border-red-500" : ""
-            }`}
-          />
-          {errors.parchmentNumber && (
-            <p className="text-red-500 text-sm mt-1">
-              {errors.parchmentNumber}
-            </p>
-          )}
-        </div>
-      )}
-
-      <button
-        onClick={handleSubmit}
-        disabled={loading}
-        className="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600"
-      >
-        {loading ? "Submitting..." : "Submit"}
-      </button>
-
-      {message && (
-        <div
-          className={`my-4 p-3 rounded ${
-            message.includes("successful")
-              ? "bg-green-100 text-green-800"
-              : "bg-red-100 text-red-800"
-          }`}
-        >
-          {message}
-        </div>
-      )}
-
-      {submitted ? (
-        <>
+        {(selectedCourse === "LT" || selectedCourse === "ALT") && (
           <div className="mb-4">
-            <label htmlFor="uidInput" className="block mb-2 font-medium">
-              Enter BSG UID:
+            <label
+              htmlFor="honourableNumber"
+              className="block mb-2 font-medium"
+            >
+              Honourable Charge Number:
             </label>
             <input
               type="text"
-              id="uidInput"
-              value={uidInput}
-              onChange={(e) => setUidInput(e.target.value)}
-              placeholder="Enter BSG UID"
+              id="honourableNumber"
+              value={honourableNumber}
+              onChange={(e) => setHonourableNumber(e.target.value)}
+              placeholder="Enter Honourable Number"
               className={`w-full border rounded px-3 py-2 ${
-                errors.uidInput ? "border-red-500" : "border-gray-300"
+                errors.honourableNumber ? "border-red-500" : ""
               }`}
             />
-            {errors.uidInput && (
-              <p className="text-red-500 text-sm mt-1">{errors.uidInput}</p>
+            {errors.honourableNumber && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.honourableNumber}
+              </p>
             )}
           </div>
+        )}
+
+        {selectedCourse === "HWB" && (
           <div className="mb-4">
-            <label htmlFor="dobInput" className="block mb-2 font-medium">
-              Enter DOB (DD-MM-YYYY):
+            <label htmlFor="parchmentNumber" className="block mb-2 font-medium">
+              Parchment Number:
             </label>
             <input
-              type="date" // Custom input for DD-MM-YYYY
-              id="dobInput"
-              value={dob}
-              onChange={(e) => setDob(e.target.value)}
-              placeholder="Enter DOB (DD-MM-YYYY)"
+              type="text"
+              id="parchmentNumber"
+              value={parchmentNumber}
+              onChange={(e) => setParchmentNumber(e.target.value)}
+              placeholder="Enter Parchment Number"
               className={`w-full border rounded px-3 py-2 ${
-                errors.dob ? "border-red-500" : "border-gray-300"
+                errors.parchmentNumber ? "border-red-500" : ""
               }`}
             />
-            {errors.dob && (
-              <p className="text-red-500 text-sm mt-1">{errors.dob}</p>
+            {errors.parchmentNumber && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.parchmentNumber}
+              </p>
             )}
           </div>
-          <button
-            onClick={handleCombinedSubmit}
-            disabled={loading1}
-            className="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600"
+        )}
+
+        <button
+          onClick={handleSubmit}
+          disabled={loading}
+          className="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600"
+        >
+          {loading ? "Submitting..." : "Submit"}
+        </button>
+
+        {message && (
+          <div
+            className={`my-4 p-3 rounded ${
+              message.includes("successful")
+                ? "bg-green-100 text-green-800"
+                : "bg-red-100 text-red-800"
+            }`}
           >
-            {loading1 ? "Verifying..." : "Verify Data"}
-          </button>
-        </>
-      ) : null}
+            {message}
+          </div>
+        )}
 
-
-
-      {userData && (
-        <div className="mt-4 p-4 border rounded shadow">
-          <h3 className="text-lg font-bold mb-2">User Details:</h3>
-          <p>
-            <strong>Name:</strong> {userData.name}
-          </p>
-          <p>
-            <strong>State:</strong> {userData.state_name}
-          </p>
-
-          <p>
-            <strong>Email:</strong> {userData.email_id}
-          </p>
-
-          {userData.email_id === "NA" && (
+        {submitted ? (
+          <>
             <div className="mb-4">
-              <label htmlFor="userEmail" className="block mb-2 font-medium">
-                Enter New Email for Verification:
+              <label htmlFor="uidInput" className="block mb-2 font-medium">
+                Enter BSG UID:
               </label>
               <input
-                type="email"
-                id="userEmail"
-                value={userEmail}
-                onChange={(e) => setUserEmail(e.target.value)}
-                placeholder="Enter your email"
+                type="text"
+                id="uidInput"
+                value={uidInput}
+                onChange={(e) => setUidInput(e.target.value)}
+                placeholder="Enter BSG UID"
                 className={`w-full border rounded px-3 py-2 ${
-                  errors.userEmail ? "border-red-500" : ""
+                  errors.uidInput ? "border-red-500" : "border-gray-300"
                 }`}
               />
-              {errors.userEmail && (
-                <p className="text-red-500 text-sm mt-1">{errors.userEmail}</p>
-              )}
-              <button
-                onClick={() => handleUpdateEmail(userData._id)}
-                disabled={emailUpdating}
-                className="bg-yellow-500 text-white font-bold py-2 px-4 rounded hover:bg-yellow-600 mt-4"
-              >
-                {emailUpdating ? "Updating..." : "Update Email"}
-              </button>
-            </div>
-          )}
-
-          {userData.email !== "NA" && (
-            <div className="mt-4">
-              {!emailVerified ? (
-                <button
-                  onClick={() => handleVerifyEmail(userData.email_id)}
-                  disabled={verifyingEmail}
-                  className="bg-yellow-500 text-white font-bold py-2 px-4 rounded hover:bg-yellow-600"
-                >
-                  {verifyingEmail ? "Verifying..." : "Verify Email"}
-                </button>
-              ) : (
-                <button
-                  onClick={() => navigate("/form")}
-                  className="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600"
-                >
-                  Proceed
-                </button>
+              {errors.uidInput && (
+                <p className="text-red-500 text-sm mt-1">{errors.uidInput}</p>
               )}
             </div>
-          )}
+            <div className="mb-4">
+              <label htmlFor="dobInput" className="block mb-2 font-medium">
+                Enter DOB (DD-MM-YYYY):
+              </label>
+              <input
+                type="date" // Custom input for DD-MM-YYYY
+                id="dobInput"
+                value={dob}
+                onChange={(e) => setDob(e.target.value)}
+                placeholder="Enter DOB (DD-MM-YYYY)"
+                className={`w-full border rounded px-3 py-2 ${
+                  errors.dob ? "border-red-500" : "border-gray-300"
+                }`}
+              />
+              {errors.dob && (
+                <p className="text-red-500 text-sm mt-1">{errors.dob}</p>
+              )}
+            </div>
+            <button
+              onClick={handleCombinedSubmit}
+              disabled={loading1}
+              className="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600"
+            >
+              {loading1 ? "Verifying..." : "Verify Data"}
+            </button>
+          </>
+        ) : null}
 
+        {userData && (
+          <div className="mt-4 p-4 border rounded shadow">
+            <h3 className="text-lg font-bold mb-2">User Details:</h3>
+            <p>
+              <strong>Name:</strong> {userData.name}
+            </p>
+            <p>
+              <strong>State:</strong> {userData.state_name}
+            </p>
 
+            <p>
+              <strong>Email:</strong> {userData.email_id}
+            </p>
 
+            {userData.email_id === "NA" && (
+              <div className="mb-4">
+                <label htmlFor="userEmail" className="block mb-2 font-medium">
+                  Enter New Email for Verification:
+                </label>
+                <input
+                  type="email"
+                  id="userEmail"
+                  value={userEmail}
+                  onChange={(e) => setUserEmail(e.target.value)}
+                  placeholder="Enter your email"
+                  className={`w-full border rounded px-3 py-2 ${
+                    errors.userEmail ? "border-red-500" : ""
+                  }`}
+                />
+                {errors.userEmail && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.userEmail}
+                  </p>
+                )}
+                <button
+                  onClick={() => handleUpdateEmail(userData._id)}
+                  disabled={emailUpdating}
+                  className="bg-yellow-500 text-white font-bold py-2 px-4 rounded hover:bg-yellow-600 mt-4"
+                >
+                  {emailUpdating ? "Updating..." : "Update Email"}
+                </button>
+              </div>
+            )}
 
+            {userData.email !== "NA" && (
+              <div className="mt-4">
+                {!emailVerified ? (
+                  <button
+                    onClick={() =>
+                      handleVerifyEmail(userData.email_id, honourableNumber)
+                    }
+                    disabled={verifyingEmail}
+                    className="bg-yellow-500 text-white font-bold py-2 px-4 rounded hover:bg-yellow-600"
+                  >
+                    {verifyingEmail ? "Verifying..." : "Verify Email"}
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => navigate("/form")}
+                    className="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600"
+                  >
+                    Proceed
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
-        </div>
-      )}
-    </div>
-    
-    {/* <div className="my-4 absolute bottom-0 p-3 rounded bg-blue-100 text-blue-800">
+      {/* <div className="my-4 absolute bottom-0 p-3 rounded bg-blue-100 text-blue-800">
       <p>If you have any issues, please <Link to="/feedback" className="text-red-600 hover:text-red-800">click here</Link> to go to the feedback page.</p>
     </div> */}
-<div className="fixed bottom-0 left-0 w-full p-3 bg-blue-100 text-blue-800">
-  <p className="text-center">
-    If you have any issues, please{" "}
-    <Link to="/feedback" className="text-red-600 hover:text-red-800">
-      click here
-    </Link>{" "}
-    to go to the feedback page.
-  </p>
-</div>
-
+      <div className="fixed bottom-0 left-0 w-full p-3 bg-blue-100 text-blue-800">
+        <p className="text-center">
+          If you have any issues, please{" "}
+          <Link to="/feedback" className="text-red-600 hover:text-red-800">
+            click here
+          </Link>{" "}
+          to go to the feedback page.
+        </p>
+      </div>
     </>
   );
 };

@@ -16,13 +16,15 @@ const EmailVerification = () => {
         );
         console.log(response, "response");
         console.log(response.data.message, "message");
+        console.log(response.data.redirectUrl, "url");
+   
         setStatus({
           error: "",
           success: "Your email has been successfully verified! Redirecting...",
         });
         setTimeout(() => {
           navigate("/form");
-        }, 5000);
+        }, 1000);
       } catch (err) {
         setStatus({
           error: err.response?.data?.message || "Something went wrong!",

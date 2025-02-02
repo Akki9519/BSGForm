@@ -9,6 +9,7 @@ const Feedback = () => {
     const [feedbackSection, setFeedbackSection] = useState("");
     const [feedbackHonuorable, setFeedbackHonuorable] = useState("");
     const [feedbackUid, setFeedbackUid] = useState("");
+    const [feedbackWing, setFeedbackWing] = useState("");
     const [feedbackNumber, setFeedbackNumber] = useState("");
     const [message1, setMessage1] = useState("");
     const [issue, setIssue] = useState("");
@@ -29,7 +30,8 @@ const Feedback = () => {
           !feedbackNumber ||
           !feedbackUid ||
           !feedbackSection ||
-          !issue
+          !issue || 
+          !feedbackWing
         ) {
           setMessage1("All fields are required.");
           return;
@@ -56,8 +58,8 @@ const Feedback = () => {
           feedbackNumber:feedbackNumber,
           feedbackUid:feedbackUid,
           feedbackSection:feedbackSection,
-          issue:issue
-    
+          issue:issue,
+           feedbackWing:feedbackWing
         }
         console.log(data,"data")
     
@@ -74,6 +76,7 @@ const Feedback = () => {
       setFeedbackUid("");
       setFeedbackSection("");
       setIssue("");
+      setFeedbackWing("");
       return;
     }
         } catch (error) {
@@ -112,6 +115,21 @@ const Feedback = () => {
           <input type="email" id="email" placeholder="Enter the Email as eg: xyz81@gmail.com" value={feedbackEmail} onChange={(e) => setFeedbackEmail(e.target.value)} class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" />
         </div>
   
+
+        <div>
+  <label htmlFor="section" className="block text-sm font-medium text-gray-700">Select Wing</label>
+  <select
+    id="section"
+    value={feedbackWing}
+    onChange={(e) => setFeedbackWing(e.target.value)}
+    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+  >
+    <option value="">Select Wing</option>
+    <option value="LT">LT</option>
+    <option value="ALT">ALT</option>
+  
+  </select>
+</div>
         <div>
   <label htmlFor="section" className="block text-sm font-medium text-gray-700">Select the Section</label>
   <select
