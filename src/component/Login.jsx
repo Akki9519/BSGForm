@@ -3,7 +3,7 @@ import axios from "axios";
 import { BASE_URL } from "../constant/constant";
 import { useNavigate } from "react-router-dom";
 import SecureLS from "secure-ls";
-import Feedback from "./Feedback";
+import sampleVideo from "../assets/BSG-KytForm - 23 January 2025 (1).mp4";
 import { Link } from "react-router-dom";
 
 const ls = new SecureLS({ encodingType: "aes", isCompression: false });
@@ -41,7 +41,7 @@ const Login = () => {
   const [dob, setDob] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState({});
-
+  const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -317,7 +317,53 @@ const Login = () => {
 
   return (
     <>
-      <div className="p-4 max-w-md mx-auto border rounded shadow-md my-32">
+    <div className="max-w-3xl mx-auto p-4 rounded-xl mt-10 text-center">
+      <h2 className=" font-bold text-gray-800 mb-2 uppercase text-md">Disclaimer</h2>
+      <p className="text-black mb-3">
+        Use the following abbreviations when writing your <strong>Honourable Charge Number:
+        </strong>:
+      </p>
+      <div className="flex flex-wrap justify-center gap-3">
+        <span className="bg-blue-600 text-white px-3 py-1 rounded-lg text-sm font-semibold">R - Rover</span>
+        <span className="bg-purple-600 text-white px-3 py-1 rounded-lg text-sm font-semibold">Ra - Ranger</span>
+        <span className="bg-green-600 text-white px-3 py-1 rounded-lg text-sm font-semibold">S - Scout</span>
+        <span className="bg-yellow-500 text-white px-3 py-1 rounded-lg text-sm font-semibold">C - Cub</span>
+        <span className="bg-red-500 text-white px-3 py-1 rounded-lg text-sm font-semibold">B - Bulbul</span>
+        <span className="bg-indigo-600 text-white px-3 py-1 rounded-lg text-sm font-semibold">G - Guide</span>
+      </div>
+    </div>
+
+    <div className="flex flex-col items-center justify-center mt-5 ">
+    <p className="text-lg text-gray-800 font-medium mb-4 text-center">
+    📢 Please watch the video before submitting the <span className="font-semibold text-blue-600">KYT form.</span>
+  </p>
+      <button
+        onClick={() => setIsOpen(true)}
+        className="px-6 py-2 bg-[#1D56A5] text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition"
+      >
+      🎥 Watch Video
+      </button>
+
+      {isOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-4 rounded-lg shadow-lg max-w-3xl w-full relative">
+            
+            <button
+              onClick={() => setIsOpen(false)}
+              className=" bg-red-600 text-white px-1.5 py-.5 rounded-full hover:bg-red-700 transition"
+            >
+              ✕
+            </button> 
+            <video src={sampleVideo} controls className="w-full rounded-lg" />
+          </div>
+        </div>
+      )}
+    </div>
+
+
+
+
+      <div className="p-4 max-w-md mx-auto border rounded shadow-md mb-32 mt-10">
         <h1 className="text-2xl font-bold mb-4 uppercase text-center text-[#1D56A5]">
           The Bharat Scouts and Guides
         </h1>

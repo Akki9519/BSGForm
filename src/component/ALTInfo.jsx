@@ -54,6 +54,7 @@ const ALTInfo = () => {
         return [...prev, subWing];
       }
     });
+    
   };
 
   const handleSubmit = async (e) => {
@@ -177,13 +178,14 @@ const ALTInfo = () => {
   const fetchData = async () => {
     try {
       const userId = ls.get("_id"); // Corrected usage
+      // const userId =localStorage.getItem("userId")
       console.log(userId, "userId");
       if (!userId) {
         toast.error("User  ID not found. Please log in again.");
         return;
       }
 
-      const response = await axios.get(`${BASE_URL}/api/v2/altinfo/${userId}`);
+      const response = await axios.get(`${BASE_URL}/api/kytuser/alt/${userId}`);
       console.log(response, "responseeeee");
 
       if (response.data.some((item) => item.isSubmitted === true)) {
