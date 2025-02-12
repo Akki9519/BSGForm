@@ -178,6 +178,7 @@ const ALTInfo = () => {
   const fetchData = async () => {
     try {
       const userId = ls.get("_id"); // Corrected usage
+      console.log(userId,"userId")
       // const userId =localStorage.getItem("userId")
       console.log(userId, "userId");
       if (!userId) {
@@ -185,8 +186,8 @@ const ALTInfo = () => {
         return;
       }
 
-      const response = await axios.get(`${BASE_URL}/api/kytuser/alt/${userId}`);
-      console.log(response, "responseeeee");
+      const response = await axios.get(`${BASE_URL}/api/v2/altinfo/${userId}`);
+      console.log(response, "altresponse");
 
       if (response.data.some((item) => item.isSubmitted === true)) {
         setIsSubmitted(true);

@@ -22,7 +22,7 @@ const convertDateFormat = (dateString) => {
 
 const Login = () => {
   const [email, setEmail] = useState("");
-
+  const [savedName, setSavedName] = useState("");
   const [selectedCourse, setSelectedCourse] = useState("");
   const [honourableNumber, setHonourableNumber] = useState("");
   const [bsgnumber, setBsgNumber] = useState("");
@@ -222,7 +222,7 @@ const Login = () => {
           ls.set("dob", dob);
           ls.set("STATE", STATE);
           ls.set("AADHAR_NO", AADHAR_NO);
-
+setSavedName(name)
           setMessage("Login successful!");
         }
       } else {
@@ -450,6 +450,12 @@ const Login = () => {
         >
           {loading ? "Submitting..." : "Submit"}
         </button>
+        {savedName && (
+  <div className="mt-4 p-3 bg-green-100 border-l-4 border-green-500 text-green-800 rounded-lg shadow-sm">
+    <p className="font-semibold text-lg">✅ Users related with this name:</p>
+    <p className="text-xl text-red-500 font-bold">{savedName}</p>
+  </div>
+)}
 
         {message && (
           <div
