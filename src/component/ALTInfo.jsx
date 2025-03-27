@@ -84,25 +84,25 @@ const ALTInfo = () => {
       setLoading(false);
       return;
     }
-    const requiredFields = [
-      formData.courseFromDate,
-      formData.courseToDate,
-      formData.certificateNumber,
-      formData.certificateDate,
-      formData.courseLeader,
-      formData.coursePlace,
-      formData.issuedDate,
-    ];
-    console.log(requiredFields, "requiredfilled");
-    const allFieldsFilled = requiredFields.every(
-      (field) => field !== "" && field !== undefined
-    );
+    // const requiredFields = [
+    //   formData.courseFromDate,
+    //   formData.courseToDate,
+    //   formData.certificateNumber,
+    //   formData.certificateDate,
+    //   formData.courseLeader,
+    //   formData.coursePlace,
+    //   formData.issuedDate,
+    // ];
+    // console.log(requiredFields, "requiredfilled");
+    // const allFieldsFilled = requiredFields.every(
+    //   (field) => field !== "" && field !== undefined
+    // );
 
-    if (!allFieldsFilled) {
-      toast.error("Please fill out all fields before submitting.");
-      setLoading(false);
-      return;
-    }
+    // if (!allFieldsFilled) {
+    //   toast.error("Please fill out all fields before submitting.");
+    //   setLoading(false);
+    //   return;
+    // }
 
     // Prepare the data to be sent to the server
     const data = {
@@ -587,7 +587,7 @@ const ALTInfo = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
                 <div>
                   <label className="block mb-2 font-bold text-black">
-                    Course From Date<span className="text-red-500">*</span>
+                    Course From Date
                   </label>
                   <input
                     type="date"
@@ -612,7 +612,7 @@ const ALTInfo = () => {
 
                 <div>
                   <label className="block mb-2 font-bold text-black">
-                    Course To Date<span className="text-red-500">*</span>
+                    Course To Date
                   </label>
                   <input
                     type="date"
@@ -639,7 +639,7 @@ const ALTInfo = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
                 <div className="mb-2">
                   <label className="block mb-2 font-bold text-black">
-                    Certificate Number<span className="text-red-500">*</span>
+                    Certificate Number
                   </label>
                   <input
                     type="text"
@@ -651,21 +651,10 @@ const ALTInfo = () => {
                   />
                 </div>
 
-                {/* <div className="mb-2">
-                  <label className="block mb-2 font-bold text-black">
-                    Certificate Date
-                  </label>
-                  <input
-                    type="date"
-                    name="certificateDate"
-                    value={formData.certificateDate}
-                    onChange={handleInputChange1}
-                    className="border border-gray-300 rounded px-3 py-2 w-full"
-                  />
-                </div> */}
+             
                 <div className="mb-2">
                   <label className="block mb-2 font-bold text-black">
-                    Certificate Date<span className="text-red-500">*</span>
+                    Certificate Date
                   </label>
                   <input
                     type="date"
@@ -692,7 +681,7 @@ const ALTInfo = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
                 <div className="mb-2">
                   <label className="block mb-2 font-bold text-black">
-                    Leader of the Course<span className="text-red-500">*</span>
+                    Leader of the Course
                   </label>
                   <input
                     type="text"
@@ -705,7 +694,7 @@ const ALTInfo = () => {
                 </div>
                 <div className="mb-2">
                   <label className="block mb-2 font-bold text-black">
-                    Place<span className="text-red-500">*</span>
+                    Place
                   </label>
                   <input
                     type="text"
