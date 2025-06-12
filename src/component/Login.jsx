@@ -6,8 +6,8 @@ import SecureLS from "secure-ls";
 import sampleVideo from "../assets/BSG-KytForm - 23 January 2025 (1).mp4";
 import { Link } from "react-router-dom";
 
-const ls = new SecureLS({ encodingType: "aes", isCompression: false });
 
+const ls = new SecureLS({ encodingType: "aes", isCompression: false });
 const convertDateFormat = (dateString) => {
   const parts = dateString.split("-");
   if (parts.length === 3) {
@@ -28,7 +28,6 @@ const Login = () => {
   const [bsgnumber, setBsgNumber] = useState("");
   const [parchmentNumber, setParchmentNumber] = useState("");
   const [message, setMessage] = useState("");
-
   const [userData, setUserData] = useState(null);
   const [userEmail, setUserEmail] = useState("");
   const [loading, setLoading] = useState(false);
@@ -291,6 +290,7 @@ setSavedName(name)
       );
 
       if (uidResponse.data) {
+        console.log(uidResponse,"uidResponse")
         if (uidResponse.data.dob === formattedDob) {
           setUserData(uidResponse.data);
           ls.set("oymsuid", uidInput);
