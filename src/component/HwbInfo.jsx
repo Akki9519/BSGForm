@@ -150,8 +150,8 @@ const HwbForm = () => {
       if (course.toDate && course.certificateDate) {
         const toDate = new Date(course.toDate);
         const certificateDate = new Date(course.certificateDate);
-        if (certificateDate <= toDate) {
-          newErrors[index].certificateDate = "Certificate Date must be greater than To Date.";
+        if (certificateDate < toDate) {
+          newErrors[index].certificateDate = "Certificate Date must be greater than or equal to To Date.";
           isValid = false;
         }
       }

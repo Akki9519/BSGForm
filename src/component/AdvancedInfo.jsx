@@ -181,16 +181,26 @@ const AdvanceForm = () => {
         }
       }
   
-      // Check if the certificateDate is greater than toDate
-      if (course.toDate && course.certificateDate) {
-        const toDate = new Date(course.toDate);
-        const certificateDate = new Date(course.certificateDate);
-        if (certificateDate <= toDate) {
-          newErrors[index].certificateDate = "Certificate Date must be greater than To Date.";
-          isValid = false;
-        }
-      }
-    });
+    //   // Check if the certificateDate is greater than toDate
+    //   if (course.toDate && course.certificateDate) {
+    //     const toDate = new Date(course.toDate);
+    //     const certificateDate = new Date(course.certificateDate);
+    //     if (certificateDate <= toDate) {
+    //       newErrors[index].certificateDate = "Certificate Date must be greater than To Date.";
+    //       isValid = false;
+    //     }
+    //   }
+    // });
+    // Check if the certificateDate is less than toDate
+if (course.toDate && course.certificateDate) {
+  const toDate = new Date(course.toDate);
+  const certificateDate = new Date(course.certificateDate);
+  if (certificateDate < toDate) {
+    newErrors[index].certificateDate = "Certificate Date must be greater than or equal to ToDate.";
+    isValid = false;
+  }
+}
+});
   
     setErrors(newErrors);
     return isValid;

@@ -590,15 +590,21 @@ setSavedName(name)
       {/* <div className="my-4 absolute bottom-0 p-3 rounded bg-blue-100 text-blue-800">
       <p>If you have any issues, please <Link to="/feedback" className="text-red-600 hover:text-red-800">click here</Link> to go to the feedback page.</p>
     </div> */}
-      <div className="fixed bottom-0 left-0 w-full p-3 bg-blue-100 text-blue-800">
-        <p className="text-center">
-          If you have any issues, please{" "}
-          <Link to="/feedback" className="text-red-600 hover:text-red-800">
-            click here
-          </Link>{" "}
-          to go to the feedback page.
-        </p>
-      </div>
+<div className="fixed bottom-0 left-0 w-full p-3 bg-blue-100 text-blue-800">
+  <p className="text-center">
+    If you have any issues, please{" "}
+    <a
+      href="https://support.bsgindia.org/"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-red-600 hover:text-red-800"
+    >
+      click here
+    </a>{" "}
+    to go to the BSG Helpdesk.
+  </p>
+</div>
+
     </>
   );
 };

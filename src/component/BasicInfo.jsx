@@ -176,8 +176,8 @@ const BasicForm = () => {
         // Check if Certificate Date is after To Date
         if (course.certificateDate) {
           const certificateDate = new Date(course.certificateDate);
-          if (certificateDate <= toDate) {
-            newErrors[index].certificateDate = "Certificate Date must be after To Date.";
+          if (certificateDate < toDate) {
+            newErrors[index].certificateDate = "Certificate Date must be greater than or equal to To Date.";
             isValid = false;
           }
         }
